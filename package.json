@@ -1,0 +1,19 @@
+{
+  "name": "aeg-limelight-api",
+  "private": true,
+  "version": "0.0.1",
+  "main": "./lib/api.js",
+  "devDependencies": {
+    "should": "^5.2.0",
+    "mocha": "^2.2.1"
+  },
+  "dependencies": {
+    "aeg-logger": "git+ssh://git@bitbucket.org:AdExchangeGrp/aeg-logger.git#v0.0.3",
+    "aeg-async": "git+ssh://git@bitbucket.org:AdExchangeGrp/aeg-async.git#v0.0.1",
+    "config": "^1.12.0",
+    "querystring": "^0.2.0",
+    "request": "^2.53.0",
+    "stringformat": "0.0.5",
+    "underscore": "^1.8.2"
+  }
+}

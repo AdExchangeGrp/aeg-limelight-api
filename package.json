@@ -1,15 +1,24 @@
 {
   "name": "aeg-limelight-api",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./lib/api.js",
+  "scripts": {
+    "test": "mocha --recursive test/",
+    "test:watch": "npm run test -- -w",
+    "jshint": "jshint .",
+    "jshint:watch": "npm run jshint && onchange \"**/*.js\" \".jshint*\" -- npm run jshint",
+    "dev": "parallelshell \"npm run jshint:watch\" \"npm run test:watch\""
+  },
   "devDependencies": {
     "should": "^5.2.0",
-    "mocha": "^2.2.1"
+    "mocha": "^2.2.5",
+    "parallelshell": "^1.1.1",
+    "onchange": "^1.1.0"
   },
   "dependencies": {
-    "aeg-logger": "git+ssh://git@bitbucket.org:AdExchangeGrp/aeg-logger.git#v0.0.3",
-    "aeg-async": "git+ssh://git@bitbucket.org:AdExchangeGrp/aeg-async.git#v0.0.1",
+    "aeg-logger": "git+ssh://git@bitbucket.org:AdExchangeGrp/aeg-logger.git#v0.0.4",
+    "aeg-async": "git+ssh://git@bitbucket.org:AdExchangeGrp/aeg-async.git#v0.0.2",
     "config": "^1.12.0",
     "querystring": "^0.2.0",
     "request": "^2.53.0",

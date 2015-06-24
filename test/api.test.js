@@ -8,20 +8,31 @@ var logger = require('aeg-logger');
 
 describe('api domain mhioffers', function () {
 
-	var api = new Api({user: 'AdExchange', pass: 'Z9X5HfK9VfBf3Y', domain: 'www.mhioffers.com'});
+	var api = new Api({user: 'Ad Exchange Group', pass: '4rTKYUWmbPhpW', domain: 'www.globalvoffers.com'});
 
-	describe.skip('#findActiveCampaigns()', function () {
+	describe.skip('#getCampaign()', function () {
+		it('should return without error', function (done) {
+			api.getCampaign(77, function (err, result) {
+				if (!err) {
+					logger.info(result.body);
+					result.responseCode.should.be.equal(100);
+					result.responseCodeDesc.should.be.equal('Success');
+				}
+				done(err);
+			});
+		});
+	});
+
+	describe('#findOrders()', function () {
 		it('should return without error', function (done) {
 			api.findOrders({
-				campaign_id: 14,
-				criteria: 'all,full_refunds,partial_refunds',
-				product_ids: [26],
+				campaign_id: 77,
+				criteria: 'all',
 				start_date: '04/22/2015',
 				end_date: '04/26/2015',
-				customer_id: 63571,
-				return_type: 'order_view'
+				customer_id: 63571
 			}, function (err, result) {
-				logger.info(result.body);
+				logger.info(result);
 				//noinspection JSValidateTypes
 				(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
 				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
@@ -30,11 +41,11 @@ describe('api domain mhioffers', function () {
 		});
 	});
 
-	describe('#findUpdatedOrders()', function () {
+	describe.skip('#findUpdatedOrders()', function () {
 		it('should return without error', function (done) {
 			api.findUpdatedOrders({
 				campaign_id: 14,
-				group_keys: ['refund'],
+				group_keys: 'refund',
 				start_date: '04/22/2015',
 				end_date: '04/23/2015'
 			}, function (err, result) {
@@ -42,6 +53,17 @@ describe('api domain mhioffers', function () {
 				//noinspection JSValidateTypes
 				(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
 				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
+				done(err);
+			});
+		});
+
+		it('should return without error', function (done) {
+			api.getOrder(246059, function (err, result) {
+				if (!err) {
+					logger.info(result.body);
+					result.responseCode.should.be.equal(100);
+					result.responseCodeDesc.should.be.equal('Success');
+				}
 				done(err);
 			});
 		});

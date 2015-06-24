@@ -6,7 +6,49 @@ require('should');
 var Api = require('../lib/api.js').Api;
 var logger = require('aeg-logger');
 
-describe('extensions', function () {
+describe('api domain mhioffers', function () {
+
+	var api = new Api({user: 'AdExchange', pass: 'Z9X5HfK9VfBf3Y', domain: 'www.mhioffers.com'});
+
+	describe.skip('#findActiveCampaigns()', function () {
+		it('should return without error', function (done) {
+			api.findOrders({
+				campaign_id: 14,
+				criteria: 'all,full_refunds,partial_refunds',
+				product_ids: [26],
+				start_date: '04/22/2015',
+				end_date: '04/26/2015',
+				customer_id: 63571,
+				return_type: 'order_view'
+			}, function (err, result) {
+				logger.info(result.body);
+				//noinspection JSValidateTypes
+				(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
+				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
+				done(err);
+			});
+		});
+	});
+
+	describe('#findUpdatedOrders()', function () {
+		it('should return without error', function (done) {
+			api.findUpdatedOrders({
+				campaign_id: 14,
+				group_keys: ['refund'],
+				start_date: '04/22/2015',
+				end_date: '04/23/2015'
+			}, function (err, result) {
+				logger.info(result.body);
+				//noinspection JSValidateTypes
+				(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
+				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
+				done(err);
+			});
+		});
+	});
+});
+
+describe.skip('api domain dvd-crm', function () {
 
 	var api = new Api({user: 'Snowball', pass: '8KX2DjfxnXWtYp', domain: 'www.dvd-crm.com'});
 

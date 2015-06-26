@@ -6,11 +6,11 @@ require('should');
 var Api = require('../lib/api.js').Api;
 var logger = require('aeg-logger');
 
-describe('api domain mhioffers', function () {
+describe.skip('api domain mhioffers', function () {
 
 	var api = new Api({user: 'Ad Exchange Group', pass: '4rTKYUWmbPhpW', domain: 'www.globalvoffers.com'});
 
-	describe.skip('#getCampaign()', function () {
+	describe('#getCampaign()', function () {
 		it('should return without error', function (done) {
 			api.getCampaign(77, function (err, result) {
 				if (!err) {
@@ -41,7 +41,7 @@ describe('api domain mhioffers', function () {
 		});
 	});
 
-	describe.skip('#findUpdatedOrders()', function () {
+	describe('#findUpdatedOrders()', function () {
 		it('should return without error', function (done) {
 			api.findUpdatedOrders({
 				campaign_id: 14,
@@ -70,7 +70,7 @@ describe('api domain mhioffers', function () {
 	});
 });
 
-describe.skip('api domain dvd-crm', function () {
+describe('api domain dvd-crm', function () {
 
 	var api = new Api({user: 'Snowball', pass: '8KX2DjfxnXWtYp', domain: 'www.dvd-crm.com'});
 

@@ -4,7 +4,6 @@
 
 require('should');
 var Api = require('../lib/api.js').Api;
-var logger = require('aeg-logger');
 
 describe.skip('api domain mhioffers', function () {
 
@@ -14,7 +13,6 @@ describe.skip('api domain mhioffers', function () {
 		it('should return without error', function (done) {
 			api.getCampaign(77, function (err, result) {
 				if (!err) {
-					logger.info(result.body);
 					result.responseCode.should.be.equal(100);
 					result.responseCodeDesc.should.be.equal('Success');
 				}
@@ -32,7 +30,6 @@ describe.skip('api domain mhioffers', function () {
 				end_date: '04/26/2015',
 				customer_id: 63571
 			}, function (err, result) {
-				logger.info(result);
 				//noinspection JSValidateTypes
 				(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
 				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
@@ -49,7 +46,6 @@ describe.skip('api domain mhioffers', function () {
 				start_date: '04/22/2015',
 				end_date: '04/23/2015'
 			}, function (err, result) {
-				logger.info(result.body);
 				//noinspection JSValidateTypes
 				(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
 				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
@@ -60,7 +56,6 @@ describe.skip('api domain mhioffers', function () {
 		it('should return without error', function (done) {
 			api.getOrder(246059, function (err, result) {
 				if (!err) {
-					logger.info(result.body);
 					result.responseCode.should.be.equal(100);
 					result.responseCodeDesc.should.be.equal('Success');
 				}
@@ -78,7 +73,6 @@ describe('api domain dvd-crm', function () {
 		it('should return without error', function (done) {
 			api.findActiveCampaigns(function (err, result) {
 				if (!err) {
-					logger.info(result.body);
 					result.responseCode.should.be.equal(100);
 					result.responseCodeDesc.should.be.equal('Success');
 				}
@@ -91,7 +85,6 @@ describe('api domain dvd-crm', function () {
 		it('should return without error', function (done) {
 			api.getCampaign(34, function (err, result) {
 				if (!err) {
-					logger.info(result.body);
 					result.responseCode.should.be.equal(100);
 					result.responseCodeDesc.should.be.equal('Success');
 				}
@@ -109,7 +102,6 @@ describe('api domain dvd-crm', function () {
 				start_date: '01/01/2013',
 				end_date: '02/01/2015'
 			}, function (err, result) {
-				logger.info(result.body);
 				//noinspection JSValidateTypes
 				(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
 				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
@@ -122,7 +114,6 @@ describe('api domain dvd-crm', function () {
 		it('should return without error', function (done) {
 			api.getOrder(10000, function (err, result) {
 				if (!err) {
-					logger.info(result.body);
 					result.responseCode.should.be.equal(100);
 					result.responseCodeDesc.should.be.equal('Success');
 				}
@@ -135,7 +126,6 @@ describe('api domain dvd-crm', function () {
 		it('should return without error', function (done) {
 			api.getOrders([10000, 10018], function (err, result) {
 				if (!err) {
-					logger.info(result.body);
 					result.responseCode.should.be.equal(100);
 					result.responseCodeDesc.should.be.equal('Success');
 				}
@@ -151,7 +141,6 @@ describe('api domain dvd-crm', function () {
 				start_date: '01/01/2013',
 				end_date: '02/01/2015'
 			}, function (err, result) {
-				logger.info(result.body);
 				//noinspection JSValidateTypes
 				(result.responseCode === 604 || result.responseCode === 100).should.be.ok;
 				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No customers found').should.be.ok;
@@ -163,7 +152,6 @@ describe('api domain dvd-crm', function () {
 	describe('#getCustomer()', function () {
 		it('should return without error', function (done) {
 			api.getCustomer(1, function (err, result) {
-				logger.info(result.body);
 				result.responseCode.should.be.equal(603);
 				result.responseCodeDesc.should.be.equal('Invalid customer Id supplied');
 				done();
@@ -174,7 +162,6 @@ describe('api domain dvd-crm', function () {
 	describe('#getProducts()', function () {
 		it('should return without error', function (done) {
 			api.getProducts([26], function (err, result) {
-				logger.info(result.body);
 				result.responseCode.should.be.equal(600);
 				result.responseCodeDesc.should.be.equal('Invalid product Id supplied');
 				done();

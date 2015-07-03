@@ -7,7 +7,7 @@ cache: true
 env:
   global:
     - XUNIT_FILE=shippable/testresults/result.xml
-    - PROJECT=aeg-hitpath-api
+    - PROJECT=aeg-limelight-api
     - secure: Szf25H2dsTxIMkNFYfYni/9pS2XgCbG5vad9Q1jUMW1DKXaE8w2k/SIeBsUA1gaF+rE7d4JPJjx/vb+52ALHsbx+z9GIDbU56rU5sLVVL2fSnOHD92qP3wTE8kuCWn4CgRtDtr/1i1sdP0MENmY/7UIC2FjJPiCoDQb8b3MHC0kZYMkEqcYq+EQlbChTO3312L5uAjteV4s+rd6Mcqy/jTDhD3yhNRZCN+qJ8msaQMpWTZixtbCECg2DNp1NGu3h37oKaZ2qRnoCUq64nz3/JoylxhX6yAHMB3DzAFYw1bGVerqTWBtXHwvwHUJeA8ds79+kOYj3+wmxvvdN1sBoKw==
 
 # exclude

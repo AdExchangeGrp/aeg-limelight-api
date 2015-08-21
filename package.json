@@ -1,5 +1,5 @@
 {
-  "name": "aeg-limelight-api",
+  "name": "@adexchangedevops/aeg-limelight-api",
   "version": "0.0.10",
   "description": "Limelight API",
   "main": "./lib/api.js",

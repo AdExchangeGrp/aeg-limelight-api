@@ -3,9 +3,9 @@
 /*jshint camelcase: false */
 
 require('should');
-var Api = require('../lib/api.js').Api;
+var Api = require('../../lib/api.js').Api;
 
-describe.skip('api domain mhioffers', function () {
+describe('api domain mhioffers', function () {
 
 	var api = new Api({user: 'Ad Exchange Group', pass: '4rTKYUWmbPhpW', domain: 'www.globalvoffers.com'});
 

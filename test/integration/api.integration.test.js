@@ -162,8 +162,8 @@ describe('api domain dvd-crm', function () {
 	describe('#getProducts()', function () {
 		it('should return without error', function (done) {
 			api.getProducts([26], function (err, result) {
-				result.responseCode.should.be.equal(600);
-				result.responseCodeDesc.should.be.equal('Invalid product Id supplied');
+				result.responseCode.should.be.equal(100);
+				result.responseCodeDesc.should.be.equal('Success');
 				done();
 			});
 		});

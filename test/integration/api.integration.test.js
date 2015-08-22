@@ -168,6 +168,16 @@ describe('api domain dvd-crm', function () {
 			});
 		});
 	});
+
+	describe('#findShippingMethods()', function () {
+		it('should return without error', function (done) {
+			api.findShippingMethods({campaign_id: 'all', return_type: 'shipping_method_view'}, function (err, result) {
+				result.responseCode.should.be.equal(100);
+				result.responseCodeDesc.should.be.equal('Success');
+				done();
+			});
+		});
+	});
 });
 
 /*jshint camelcase: true */

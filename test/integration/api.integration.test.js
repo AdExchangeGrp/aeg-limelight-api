@@ -38,6 +38,36 @@ describe('api domain mhioffers', function () {
 		});
 	});
 
+	describe('#getOrder()', function () {
+		it('should return without error', function (done) {
+			api.getOrder(580395, function (err, result) {
+				if (!err) {
+					result.responseCode.should.be.equal(100);
+					result.responseCodeDesc.should.be.equal('Success');
+				}
+				done(err);
+			});
+		});
+	});
+
+	describe.skip('#updateOrders()', function () {
+		it('should return without error', function (done) {
+			api.updateOrders({
+				orderIds: '580383,580395',
+				actions: 'tracking_number,tracking_number',
+				values: '123457TEST,1234567TEST'
+			}, function (err, result) {
+				if (!err) {
+					//response code is 343 if the value is the same
+					result.responseCode.should.be.equal('100,100');
+					//this is undefined from the API with mutiple order updates
+					//result.responseCodeDesc.should.be.equal('Success');
+				}
+				done(err);
+			});
+		});
+	});
+
 	describe('#findUpdatedOrders()', function () {
 		it('should return without error', function (done) {
 			api.findUpdatedOrders({

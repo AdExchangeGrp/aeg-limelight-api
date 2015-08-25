@@ -1,6 +1,6 @@
 {
   "name": "@adexchangedevops/aeg-limelight-api",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Limelight API",
   "main": "./lib/api.js",
   "author": "Justin Durham",

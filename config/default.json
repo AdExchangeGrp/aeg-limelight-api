@@ -1,9 +1,16 @@
 {
   "Logger": {
-    "consoleLevel": "error",
-    "fileLevel": "debug",
-    "filename": "logs/limelight-import.log",
-    "logToFile": true
+    "transports": [
+      {
+        "type": "console",
+        "level": "debug"
+      },
+      {
+        "type": "file",
+        "level": "debug",
+        "filename": "logs/limelight-import.log"
+      }
+    ]
   },
   "LimelightApi": {
     "membershipApiUrl": "https://{0}/admin/membership.php",

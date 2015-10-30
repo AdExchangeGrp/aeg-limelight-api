@@ -28,11 +28,12 @@
     "istanbul": "^0.3.17"
   },
   "dependencies": {
-    "@adexchangedevops/aeg-logger": "^0.0.12",
+    "@adexchangedevops/aeg-logger": "^0.0.19",
     "config": "^1.12.0",
     "querystring": "^0.2.0",
     "request": "^2.53.0",
     "stringformat": "0.0.5",
     "underscore": "^1.8.2"
-  }
+  },
+  "engine": "node >= 4.1.0"
 }

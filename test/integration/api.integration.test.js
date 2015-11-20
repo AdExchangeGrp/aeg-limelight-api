@@ -95,7 +95,7 @@ describe.skip('api domain mhioffers', () => {
 
 describe.skip('api domain dvd-crm', ()=> {
 
-	var api = new Api({user: 'Snowball', pass: '8KX2DjfxnXWtYp', domain: 'www.dvd-crm.com'});
+	let api = new Api({user: 'Snowball', pass: '8KX2DjfxnXWtYp', domain: 'www.dvd-crm.com'});
 
 	describe('#findActiveCampaigns()', ()=> {
 		it('should return without error', (done)=> {
@@ -210,7 +210,7 @@ describe.skip('api domain dvd-crm', ()=> {
 
 describe('api domain dvd-crm', ()=> {
 
-	var api = new Api({user: 'ad.exchange', pass: '7Jnb5ppn86PRnn', domain: 'www.mytrackingcenter.com'});
+	let api = new Api({user: 'ad.exchange', pass: '7Jnb5ppn86PRnn', domain: 'www.mytrackingcenter.com'});
 
 	it('should return without error', (done) => {
 		api.getOrder(725547, (err, result)=> {

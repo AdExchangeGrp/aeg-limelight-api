@@ -1,11 +1,9 @@
 'use strict';
 
-/*jshint camelcase: false */
-
 require('should');
 var Api = require('../../lib/api.js').Api;
 
-describe('api domain mhioffers', function () {
+describe.skip('api domain mhioffers', function () {
 
 	var api = new Api({user: 'Ad Exchange Group', pass: '4rTKYUWmbPhpW', domain: 'www.globalvoffers.com'});
 
@@ -95,7 +93,7 @@ describe('api domain mhioffers', function () {
 	});
 });
 
-describe('api domain dvd-crm', function () {
+describe.skip('api domain dvd-crm', function () {
 
 	var api = new Api({user: 'Snowball', pass: '8KX2DjfxnXWtYp', domain: 'www.dvd-crm.com'});
 
@@ -210,4 +208,19 @@ describe('api domain dvd-crm', function () {
 	});
 });
 
-/*jshint camelcase: true */
+describe('api domain dvd-crm', function () {
+
+	var api = new Api({user: 'ad.exchange', pass: '7Jnb5ppn86PRnn', domain: 'www.mytrackingcenter.com'});
+
+	it('should return without error', function (done) {
+		api.getOrder(725547, function (err, result) {
+			if (!err) {
+				console.log(result);
+				result.responseCode.should.be.equal(100);
+				result.responseCodeDesc.should.be.equal('Success');
+			}
+			done(err);
+		});
+	});
+
+});

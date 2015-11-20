@@ -1,0 +1,11 @@
+logger:
+  transports:
+    - type: console
+      level: debug
+    - type: file
+      level: debug
+      filename: logs/aeg-limelight-api.log
+
+limelightApi:
+  membershipApiUrl: "https://{0}/admin/membership.php"
+  transactionApiUrl: "https://{0}/admin/transaction.php"

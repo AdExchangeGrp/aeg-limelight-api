@@ -2,7 +2,7 @@
 
 ### What is this repository for? ###
 
-This code is a driver for the Limelight API.
+This code is a driver for the Limelight API
 
 ### How do I get set up? ###
 1. Clone the repository

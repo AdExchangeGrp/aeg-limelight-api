@@ -15,9 +15,8 @@
     "test:coverage": "istanbul cover _mocha -- --recursive test/",
     "jshint": "jshint .",
     "jshint:watch": "npm run jshint && onchange \"**/*.js\" \".jshint*\" -- npm run jshint",
-    "compile": "babel -d ./lib/ ./src/",
-    "build": "npm run jshint && npm run compile && istanbul cover _mocha -- --recursive --compilers js:babel-core/register --reporter mocha-junit-reporter test/unit",
-    "patch": "git reset --hard HEAD && git clean -fd && npm run compile && npm version patch -m \"[ci skip] %s\" && git push origin master && git push origin master --tags && npm publish"
+    "build": "npm run jshint && istanbul cover _mocha -- --recursive --compilers js:babel-core/register --reporter mocha-junit-reporter test/unit",
+    "patch": "git reset --hard HEAD && git clean -fd && npm version patch -m \"[ci skip] %s\" && git push origin master && git push origin master --tags && npm publish"
   },
   "devDependencies": {
     "istanbul": "^0.3.17",

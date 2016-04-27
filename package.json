@@ -15,17 +15,17 @@
     "test:coverage": "istanbul cover _mocha -- --recursive test/",
     "jshint": "jshint .",
     "jshint:watch": "npm run jshint && onchange \"**/*.js\" \".jshint*\" -- npm run jshint",
-    "dev": "parallelshell \"npm run jshint:watch\" \"npm run test:watch\"",
-    "build": "npm run jshint && mocha --recursive  --reporter mocha-junit-reporter test/unit/",
-    "postversion": "git push && git push --tags && npm publish ."
+    "build": "npm run jshint && istanbul cover _mocha -- --recursive --reporter mocha-junit-reporter test/unit",
+    "patch": "git reset --hard HEAD && git clean -fd && npm version patch -m \"[ci skip] %s\" && git push origin master && git push origin master --tags && npm publish"
   },
   "devDependencies": {
-    "should": "^5.2.0",
+    "istanbul": "^0.3.17",
+    "jshint": "^2.9.2",
     "mocha": "^2.2.5",
     "mocha-junit-reporter": "^1.9.1",
-    "parallelshell": "^1.1.1",
     "onchange": "^1.1.0",
-    "istanbul": "^0.3.17"
+    "parallelshell": "^1.1.1",
+    "should": "^5.2.0"
   },
   "dependencies": {
     "@adexchange/aeg-logger": "0.0.24",

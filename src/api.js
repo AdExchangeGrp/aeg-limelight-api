@@ -1,13 +1,13 @@
 'use strict';
 
-const config = require('config');
-const request = require('request');
-const _ = require('underscore');
-const logger = require('@adexchange/aeg-logger');
-const $ = require('stringformat');
-const qs = require('querystring');
+import config from 'config';
+import request from 'request';
+import _ from 'lodash';
+import logger from '@adexchange/aeg-logger';
+import qs from 'querystring';
+import $ from 'stringformat';
 
-const conf = config.get('limelightApi');
+const conf = config.get('aeg-limelight-api');
 
 class Api {
 
@@ -302,7 +302,7 @@ class Api {
 
 	composeApiCall(apiType, method, params) {
 
-		let form = {
+		const form = {
 			username: this.user,
 			password: this.pass,
 			method: method
@@ -320,9 +320,8 @@ class Api {
 
 	apiRequest(apiType, method, params, callback) {
 
-		let requestParams = this.composeApiCall(apiType, method, params);
-
-		let self = this;
+		const self = this;
+		const requestParams = this.composeApiCall(apiType, method, params);
 
 		request.post(
 			requestParams,
@@ -341,7 +340,7 @@ class Api {
 
 				//so it appears LL really sucks, because it uses different response codes for different api calls
 
-				let result = {};
+				const result = {};
 
 				if (body.response_code) {
 					result.responseCode = parseInt(body.response_code);

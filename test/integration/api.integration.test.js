@@ -1,7 +1,7 @@
 'use strict';
 
 require('should');
-const Api = require('../../lib/api.js').Api;
+const Api = require('../../src/api.js').Api;
 
 describe.skip('api domain mhioffers', () => {
 

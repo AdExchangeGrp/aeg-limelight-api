@@ -302,7 +302,7 @@ class Api {
 
 	composeApiCall(apiType, method, params) {
 
-		let form = {
+		const form = {
 			username: this.user,
 			password: this.pass,
 			method: method
@@ -320,9 +320,8 @@ class Api {
 
 	apiRequest(apiType, method, params, callback) {
 
-		let requestParams = this.composeApiCall(apiType, method, params);
-
-		let self = this;
+		const self = this;
+		const requestParams = this.composeApiCall(apiType, method, params);
 
 		request.post(
 			requestParams,
@@ -341,7 +340,7 @@ class Api {
 
 				//so it appears LL really sucks, because it uses different response codes for different api calls
 
-				let result = {};
+				const result = {};
 
 				if (body.response_code) {
 					result.responseCode = parseInt(body.response_code);

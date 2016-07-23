@@ -369,10 +369,12 @@ class Api {
 				}
 
 				//if its an array there are multiple operations involved, some might fail some not
-				if (!_.isArray(result.responseCode) && result.responseCode === 100) {
+				if (_.isArray(result.responseCode)) {
 					result.body = body;
 				} else {
-					result.body = {};
+					if (result.responseCode === 100) {
+						result.body = body;
+					}
 				}
 
 				if (result.body && result.body.data) {

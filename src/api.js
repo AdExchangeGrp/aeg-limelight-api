@@ -343,20 +343,36 @@ class Api {
 				const result = {};
 
 				if (body.response_code) {
-					result.responseCode = parseInt(body.response_code);
-					result.responseCodeDesc = self.membershipResponseCodes[body.response_code];
+
+					const codes = body.response_code.split(',');
+
+					if (codes.length === 1) {
+						result.responseCode = parseInt(body.response_code);
+						result.responseCodeDesc = self.membershipResponseCodes[body.response_code.toString()];
+					} else {
+						//if its an array there are multiple operations involved
+						result.responseCode = _.map(codes, (code) => {
+							return parseInt(code);
+						});
+						result.responseCodeDesc = _.map(codes, (code) => {
+							return self.membershipResponseCodes[code.toString()];
+						});
+					}
 				}
 				else if (body.response) {
 					result.responseCode = parseInt(body.response);
-					result.responseCodeDesc = self.membershipResponseCodes[body.response];
+					result.responseCodeDesc = self.membershipResponseCodes[body.response.toString()];
 				} else {
 					logger.error(body);
 					result.responseCode = 500;
 					result.responseCodeDesc = 'Something has gone terribly wrong';
 				}
 
-				if (result.responseCode === 100) {
+				//if its an array there are multiple operations involved, some might fail some not
+				if (!_.isArray(result.responseCode) && result.responseCode === 100) {
 					result.body = body;
+				} else {
+					result.body = {};
 				}
 
 				if (result.body && result.body.data) {

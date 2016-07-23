@@ -208,7 +208,7 @@ describe.skip('api domain dvd-crm', ()=> {
 	});
 });
 
-describe('api domain dvd-crm', ()=> {
+describe.skip('api domain www.mytrackingcenter.com', ()=> {
 
 	let api = new Api({user: 'ad.exchange', pass: '7Jnb5ppn86PRnn', domain: 'www.mytrackingcenter.com'});
 
@@ -219,6 +219,24 @@ describe('api domain dvd-crm', ()=> {
 				result.responseCode.should.be.equal(100);
 				result.responseCodeDesc.should.be.equal('Success');
 			}
+			done(err);
+		});
+	});
+
+});
+
+describe('api www.mytrackingcenter.com multiple operations', ()=> {
+
+	let api = new Api({user: 'Push Innovation', pass: 'd9qCrYAJTKVXhR', domain: 'www.mytrackingcenter.com'});
+
+	it('should return without error', (done) => {
+		api.updateOrders({
+			orderIds: '1373334,1373335',
+			actions: 'tracking_number,tracking_number',
+			values: '12345,12345'
+		}, (err, result)=> {
+			console.log(err);
+			console.log(result);
 			done(err);
 		});
 	});

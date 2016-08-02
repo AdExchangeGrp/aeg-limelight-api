@@ -332,9 +332,7 @@ class Api {
 				}
 
 				//filtering characters that potentially break JSON parsing since LL uses URL encoded strings
-				body = body.replace(/%22/g, '');
-				body = body.replace(/%09/g, '');
-				body = body.replace(/%10/g, '');
+				body = body.replace(/%22|%00|%01|%02|%03|%04|%05|%06|%07|%08|%09|%0A|%0B|%0C|%0D|%0E|%0F|%10|%11|%12|%13|%14|%15|%16|%17|%18|%19|%1A|%1B|%1C|%1D|%1E|%1F/g, '');
 
 				body = qs.parse(body);
 

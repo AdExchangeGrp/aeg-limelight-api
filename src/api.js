@@ -12,7 +12,9 @@ const conf = config.get('aeg-limelight-api');
 class Api {
 
 	constructor(apiConfig) {
+
 		_.extend(this, apiConfig);
+
 		this.membershipResponseCodes = {
 			'100': 'Success',
 			'200': 'Invalid login credentials',
@@ -320,8 +322,8 @@ class Api {
 
 	apiRequest(apiType, method, params, callback) {
 
-		const self = this;
-		const requestParams = this.composeApiCall(apiType, method, params);
+		const self = this,
+			requestParams = this.composeApiCall(apiType, method, params);
 
 		request.post(
 			requestParams,
@@ -393,5 +395,5 @@ class Api {
 	}
 }
 
-module.exports.Api = Api;
+export {Api};
 

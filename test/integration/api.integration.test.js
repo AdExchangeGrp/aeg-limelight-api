@@ -5,7 +5,7 @@ import {Api} from '../../src/api.js';
 
 describe.skip('api domain mhioffers', () => {
 
-	let api = new Api({user: 'Ad Exchange Group', pass: '4rTKYUWmbPhpW', domain: 'www.globalvoffers.com'});
+	let api = new Api('Ad Exchange Group', '4rTKYUWmbPhpW', 'www.globalvoffers.com');
 
 	describe('#getCampaign()', () => {
 		it('should return without error', (done) => {
@@ -93,9 +93,9 @@ describe.skip('api domain mhioffers', () => {
 	});
 });
 
-describe.skip('api domain dvd-crm', ()=> {
+describe('api domain dvd-crm', ()=> {
 
-	let api = new Api({user: 'Snowball', pass: '8KX2DjfxnXWtYp', domain: 'www.dvd-crm.com'});
+	let api = new Api('Snowball', '8KX2DjfxnXWtYp', 'www.dvd-crm.com');
 
 	describe('#findActiveCampaigns()', ()=> {
 		it('should return without error', (done)=> {
@@ -210,7 +210,7 @@ describe.skip('api domain dvd-crm', ()=> {
 
 describe.skip('api domain www.mytrackingcenter.com', ()=> {
 
-	let api = new Api({user: 'ad.exchange', pass: '7Jnb5ppn86PRnn', domain: 'www.mytrackingcenter.com'});
+	let api = new Api('ad.exchange', '7Jnb5ppn86PRnn', 'www.mytrackingcenter.com');
 
 	it('should return without error', (done) => {
 		api.getOrder(725547, (err, result)=> {
@@ -225,9 +225,9 @@ describe.skip('api domain www.mytrackingcenter.com', ()=> {
 
 });
 
-describe('api www.mytrackingcenter.com multiple operations', ()=> {
+describe.skip('api www.mytrackingcenter.com multiple operations', ()=> {
 
-	let api = new Api({user: 'Push Innovation', pass: 'd9qCrYAJTKVXhR', domain: 'www.mytrackingcenter.com'});
+	let api = new Api('Push Innovation', 'd9qCrYAJTKVXhR', 'www.mytrackingcenter.com');
 
 	it('should return without error', (done) => {
 		api.updateOrders({

@@ -7,15 +7,14 @@ import logger from '@adexchange/aeg-logger';
 import qs from 'querystring';
 import $ from 'stringformat';
 
-const conf = config.get('aeg-limelight-api');
-
 class Api {
 
-	constructor(apiConfig) {
-
-		_.extend(this, apiConfig);
-
-		this.membershipResponseCodes = {
+	constructor(user, password, domain) {
+		this._user = user;
+		this._password = password;
+		this._domain = domain;
+		this._conf = config.get('aeg-limelight-api');
+		this._membershipResponseCodes = {
 			'100': 'Success',
 			'200': 'Invalid login credentials',
 			'320': 'Invalid Product Id',
@@ -305,8 +304,8 @@ class Api {
 	composeApiCall(apiType, method, params) {
 
 		const form = {
-			username: this.user,
-			password: this.pass,
+			username: this._user,
+			password: this._password,
 			method: method
 		};
 
@@ -315,7 +314,7 @@ class Api {
 		}
 
 		return {
-			url: apiType === 'membership' ? $(conf.membershipApiUrl, this.domain) : $(conf.transactionApiUrl, this.domain),
+			url: apiType === 'membership' ? $(this._conf.membershipApiUrl, this._domain) : $(this._conf.transactionApiUrl, this._domain),
 			form: form
 		};
 	}
@@ -348,20 +347,20 @@ class Api {
 
 					if (codes.length === 1) {
 						result.responseCode = parseInt(body.response_code);
-						result.responseCodeDesc = self.membershipResponseCodes[body.response_code.toString()];
+						result.responseCodeDesc = self._membershipResponseCodes[body.response_code.toString()];
 					} else {
 						//if its an array there are multiple operations involved
 						result.responseCode = _.map(codes, (code) => {
 							return parseInt(code);
 						});
 						result.responseCodeDesc = _.map(codes, (code) => {
-							return self.membershipResponseCodes[code.toString()];
+							return self._membershipResponseCodes[code.toString()];
 						});
 					}
 				}
 				else if (body.response) {
 					result.responseCode = parseInt(body.response);
-					result.responseCodeDesc = self.membershipResponseCodes[body.response.toString()];
+					result.responseCodeDesc = self._membershipResponseCodes[body.response.toString()];
 				} else {
 					logger.error(body);
 					result.responseCode = 500;

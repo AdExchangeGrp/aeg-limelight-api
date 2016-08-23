@@ -316,7 +316,8 @@ class Api extends EventEmitter {
 
 		return {
 			url: apiType === 'membership' ? $(this._conf.membershipApiUrl, this._domain) : $(this._conf.transactionApiUrl, this._domain),
-			form: form
+			form: form,
+			timeout: this._conf.timeout || 30000
 		};
 	}
 

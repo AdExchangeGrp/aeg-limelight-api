@@ -3,11 +3,11 @@
 import config from 'config';
 import request from 'request';
 import _ from 'lodash';
-import logger from '@adexchange/aeg-logger';
 import qs from 'querystring';
 import $ from 'stringformat';
+import {EventEmitter} from 'events';
 
-class Api {
+class Api extends EventEmitter {
 
 	constructor(user, password, domain) {
 		this._user = user;
@@ -362,7 +362,7 @@ class Api {
 					result.responseCode = parseInt(body.response);
 					result.responseCodeDesc = self._membershipResponseCodes[body.response.toString()];
 				} else {
-					logger.error(body);
+					self.emit('error', {message: 'Something has gone terribly wrong', data: {body}});
 					result.responseCode = 500;
 					result.responseCodeDesc = 'Something has gone terribly wrong';
 				}
@@ -380,17 +380,20 @@ class Api {
 					try {
 						result.body.data = JSON.parse(result.body.data);
 					} catch (ex) {
-						logger.error('Failed to parse result.body.data', ex);
-						logger.error(requestParams);
-						logger.error(result.body.data);
+						self.emit('error', {
+							message: 'Failed to parse result.body.data',
+							data: {
+								requestParams,
+								body: result.body.data
+							},
+							err: ex
+						});
 						return callback(ex);
 					}
 				}
 
 				callback(result.body ? null : result, result);
-			}).on('error', (err) => {
-			logger.error('API request error', {apiType: apiType, method: method, err: err});
-		});
+			});
 	}
 }
 

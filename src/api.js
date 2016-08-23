@@ -10,6 +10,7 @@ import {EventEmitter} from 'events';
 class Api extends EventEmitter {
 
 	constructor(user, password, domain) {
+		super();
 		this._user = user;
 		this._password = password;
 		this._domain = domain;

@@ -31,7 +31,6 @@
     "should": "^5.2.0"
   },
   "dependencies": {
-    "@adexchange/aeg-logger": "0.0.28",
     "config": "^1.12.0",
     "lodash": "^4.13.1",
     "querystring": "^0.2.0",

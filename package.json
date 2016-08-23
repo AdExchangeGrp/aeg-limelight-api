@@ -34,7 +34,7 @@
     "config": "^1.12.0",
     "lodash": "^4.13.1",
     "querystring": "^0.2.0",
-    "request": "^2.53.0",
+    "request": "^2.74.0",
     "stringformat": "0.0.5"
   },
   "engine": "node >= 4.1.0"

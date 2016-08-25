@@ -5,12 +5,12 @@ import request from 'request';
 import _ from 'lodash';
 import qs from 'querystring';
 import $ from 'stringformat';
-import {EventEmitter} from 'events';
+import {Base} from '@adexchange/aeg-common';
 
 /**
  * Limelight API wrapper
  */
-class Api extends EventEmitter {
+class Api extends Base {
 
 	/**
 	 * Constructor
@@ -152,7 +152,7 @@ class Api extends EventEmitter {
 
 		let args = Array.prototype.slice.call(arguments);
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		this._apiRequest('membership', 'campaign_find_active', {}, options, callback);
 	}
@@ -169,7 +169,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		campaignId = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!campaignId) {
 			return callback({responseCode: 500, responseCodeDesc: 'getCampaign must have a campaign id'});
@@ -190,7 +190,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		orderId = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!orderId) {
 			return callback({responseCode: 500, responseCodeDesc: 'getOrder must have an order id'});
@@ -211,7 +211,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		orderIds = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!orderIds || orderIds.length === 0) {
 			return callback({responseCode: 500, responseCodeDesc: 'getOrders must have order ids'});
@@ -240,7 +240,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!params || !params.campaign_id || !params.criteria || !params.start_date || !params.end_date) {
 			return callback({
@@ -274,7 +274,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!params || !params.campaign_id || !params.group_keys || !params.start_date || !params.end_date) {
 			return callback({
@@ -308,7 +308,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!params || !params.orderIds || !params.actions || !params.values) {
 			return callback({
@@ -353,7 +353,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		customerId = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!customerId) {
 			return callback({responseCode: 500, responseCodeDesc: 'getCustomer must have a customer id'});
@@ -374,7 +374,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!params || !params.campaign_id || !params.start_date || !params.end_date) {
 			return callback({
@@ -404,7 +404,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		productIds = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!productIds || productIds.length === 0) {
 			return callback({responseCode: 500, responseCodeDesc: 'getProducts must product ids'});
@@ -429,7 +429,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = this._parseOptions(args);
+		options = this.parseOptions(args);
 
 		if (!params || !params.campaign_id) {
 			return callback({
@@ -523,7 +523,7 @@ class Api extends EventEmitter {
 					result.responseCode = parseInt(body.response);
 					result.responseCodeDesc = self._membershipResponseCodes[body.response.toString()];
 				} else {
-					self.emit('error', {message: 'Something has gone terribly wrong', data: {body}});
+					self.emit('error', '_apiRequest', {message: 'Something has gone terribly wrong', data: {body}});
 					result.responseCode = 500;
 					result.responseCodeDesc = 'Something has gone terribly wrong';
 				}
@@ -541,7 +541,7 @@ class Api extends EventEmitter {
 					try {
 						result.body.data = JSON.parse(result.body.data);
 					} catch (ex) {
-						self.emit('error', {
+						self.emit('error', '_apiRequest', {
 							message: 'Failed to parse result.body.data',
 							data: {
 								requestParams,
@@ -555,16 +555,6 @@ class Api extends EventEmitter {
 
 				callback(result.body ? null : result, result);
 			});
-	}
-
-	/**
-	 * Returns an options object from an argument array
-	 * @param {Object[]} args
-	 * @returns {*|{}}
-	 * @private
-	 */
-	_parseOptions(args) {
-		return (args.length > 0 ? args.shift() : {}) || {};
 	}
 
 }

@@ -340,13 +340,14 @@ class Api extends Base {
 		this._apiRequest(
 			'membership',
 			'order_update',
-			options,
 			{
 				order_ids: params.orderIds,
 				sync_all: 0,
 				actions: params.actions,
 				values: params.values
-			}, callback);
+			},
+			options,
+			callback);
 	}
 
 	/**

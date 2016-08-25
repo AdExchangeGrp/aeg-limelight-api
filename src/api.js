@@ -152,7 +152,7 @@ class Api extends EventEmitter {
 
 		let args = Array.prototype.slice.call(arguments);
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		this._apiRequest('membership', 'campaign_find_active', {}, options, callback);
 	}
@@ -169,7 +169,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		campaignId = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!campaignId) {
 			return callback({responseCode: 500, responseCodeDesc: 'getCampaign must have a campaign id'});
@@ -190,7 +190,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		orderId = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!orderId) {
 			return callback({responseCode: 500, responseCodeDesc: 'getOrder must have an order id'});
@@ -211,7 +211,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		orderIds = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!orderIds || orderIds.length === 0) {
 			return callback({responseCode: 500, responseCodeDesc: 'getOrders must have order ids'});
@@ -240,7 +240,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!params || !params.campaign_id || !params.criteria || !params.start_date || !params.end_date) {
 			return callback({
@@ -274,7 +274,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!params || !params.campaign_id || !params.group_keys || !params.start_date || !params.end_date) {
 			return callback({
@@ -308,7 +308,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!params || !params.orderIds || !params.actions || !params.values) {
 			return callback({
@@ -353,7 +353,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		customerId = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!customerId) {
 			return callback({responseCode: 500, responseCodeDesc: 'getCustomer must have a customer id'});
@@ -374,7 +374,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!params || !params.campaign_id || !params.start_date || !params.end_date) {
 			return callback({
@@ -404,7 +404,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		productIds = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!productIds || productIds.length === 0) {
 			return callback({responseCode: 500, responseCodeDesc: 'getProducts must product ids'});
@@ -429,7 +429,7 @@ class Api extends EventEmitter {
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
 		callback = args.pop();
-		options = args.length > 0 ? args.shift() : null;
+		options = args.length > 0 ? args.shift() : {};
 
 		if (!params || !params.campaign_id) {
 			return callback({

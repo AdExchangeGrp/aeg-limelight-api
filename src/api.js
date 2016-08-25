@@ -7,8 +7,17 @@ import qs from 'querystring';
 import $ from 'stringformat';
 import {EventEmitter} from 'events';
 
+/**
+ * Limelight API wrapper
+ */
 class Api extends EventEmitter {
 
+	/**
+	 * Constructor
+	 * @param {string} user
+	 * @param {string} password
+	 * @param {string} domain
+	 */
 	constructor(user, password, domain) {
 		super();
 		this._user = user;
@@ -134,29 +143,75 @@ class Api extends EventEmitter {
 		};
 	}
 
-	findActiveCampaigns(callback) {
-		this.apiRequest('membership', 'campaign_find_active', {}, callback);
+	/**
+	 * Find all active campaigns
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 */
+	findActiveCampaigns(options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
+
+		this._apiRequest('membership', 'campaign_find_active', {}, options, callback);
 	}
 
-	getCampaign(campaignId, callback) {
+	/**
+	 * Gets a campaign
+	 * @param {number} campaignId
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	getCampaign(campaignId, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		campaignId = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
 
 		if (!campaignId) {
 			return callback({responseCode: 500, responseCodeDesc: 'getCampaign must have a campaign id'});
 		}
 
-		this.apiRequest('membership', 'campaign_view', {'campaign_id': campaignId}, callback);
+		this._apiRequest('membership', 'campaign_view', {'campaign_id': campaignId}, options, callback);
 	}
 
-	getOrder(orderId, callback) {
+	/**
+	 * Gets an order
+	 * @param {number} orderId
+	 * @param {object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	getOrder(orderId, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		orderId = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
 
 		if (!orderId) {
 			return callback({responseCode: 500, responseCodeDesc: 'getOrder must have an order id'});
 		}
 
-		this.apiRequest('membership', 'order_view', {'order_id': orderId}, callback);
+		this._apiRequest('membership', 'order_view', {'order_id': orderId}, options, callback);
 	}
 
-	getOrders(orderIds, callback) {
+	/**
+	 * Gets a set of orders
+	 * @param {string | number[]} orderIds
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	getOrders(orderIds, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		orderIds = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
 
 		if (!orderIds || orderIds.length === 0) {
 			return callback({responseCode: 500, responseCodeDesc: 'getOrders must have order ids'});
@@ -170,10 +225,22 @@ class Api extends EventEmitter {
 			orderIds = orderIds.join(',');
 		}
 
-		this.apiRequest('membership', 'order_view', {'order_id': orderIds}, callback);
+		this._apiRequest('membership', 'order_view', {'order_id': orderIds}, options, callback);
 	}
 
-	findOrders(params, callback) {
+	/**
+	 * Find orders
+	 * @param {Object} params
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	findOrders(params, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		params = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
 
 		if (!params || !params.campaign_id || !params.criteria || !params.start_date || !params.end_date) {
 			return callback({
@@ -186,7 +253,7 @@ class Api extends EventEmitter {
 			params.product_ids = params.product_ids.join(',');
 		}
 
-		this.apiRequest('membership', 'order_find', params, (err, result) => {
+		this._apiRequest('membership', 'order_find', params, options, (err, result) => {
 			if (err && err.responseCode === 333) {
 				return callback(null, result);
 			}
@@ -195,7 +262,19 @@ class Api extends EventEmitter {
 		});
 	}
 
-	findUpdatedOrders(params, callback) {
+	/**
+	 * Find updated orders
+	 * @param {Object} params
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	findUpdatedOrders(params, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		params = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
 
 		if (!params || !params.campaign_id || !params.group_keys || !params.start_date || !params.end_date) {
 			return callback({
@@ -208,7 +287,7 @@ class Api extends EventEmitter {
 			params.group_keys = params.group_keys.join(',');
 		}
 
-		this.apiRequest('membership', 'order_find_updated', params, (err, result) => {
+		this._apiRequest('membership', 'order_find_updated', params, options, (err, result) => {
 			if (err && err.responseCode === 333) {
 				return callback(null, result);
 			}
@@ -217,7 +296,20 @@ class Api extends EventEmitter {
 		});
 	}
 
-	updateOrders(params, callback) {
+	/**
+	 * Update orders
+	 * @param {Object} params
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	updateOrders(params, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		params = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
+
 		if (!params || !params.orderIds || !params.actions || !params.values) {
 			return callback({
 				responseCode: 500,
@@ -237,9 +329,10 @@ class Api extends EventEmitter {
 			params.values = params.values.join(',');
 		}
 
-		this.apiRequest(
+		this._apiRequest(
 			'membership',
 			'order_update',
+			options,
 			{
 				order_ids: params.orderIds,
 				sync_all: 0,
@@ -248,16 +341,40 @@ class Api extends EventEmitter {
 			}, callback);
 	}
 
-	getCustomer(customerId, callback) {
+	/**
+	 * Get a customer
+	 * @param {number} customerId
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	getCustomer(customerId, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		customerId = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
 
 		if (!customerId) {
 			return callback({responseCode: 500, responseCodeDesc: 'getCustomer must have a customer id'});
 		}
 
-		this.apiRequest('membership', 'customer_view', {'customer_id': customerId}, callback);
+		this._apiRequest('membership', 'customer_view', {'customer_id': customerId}, options, callback);
 	}
 
-	findCustomers(params, callback) {
+	/**
+	 * Find customers
+	 * @param {Object} params
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	findCustomers(params, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		params = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
 
 		if (!params || !params.campaign_id || !params.start_date || !params.end_date) {
 			return callback({
@@ -266,7 +383,7 @@ class Api extends EventEmitter {
 			});
 		}
 
-		this.apiRequest('membership', 'customer_find', params, (err, result) => {
+		this._apiRequest('membership', 'customer_find', params, options, (err, result) => {
 			if (err && err.responseCode === 604) {
 				return callback(null, result);
 			}
@@ -275,7 +392,19 @@ class Api extends EventEmitter {
 		});
 	}
 
-	getProducts(productIds, callback) {
+	/**
+	 * Gets a set of products
+	 * @param {string | number[]} productIds
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	getProducts(productIds, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		productIds = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
 
 		if (!productIds || productIds.length === 0) {
 			return callback({responseCode: 500, responseCodeDesc: 'getProducts must product ids'});
@@ -285,10 +414,22 @@ class Api extends EventEmitter {
 			productIds = productIds.join(',');
 		}
 
-		this.apiRequest('membership', 'product_index', {product_id: productIds}, callback);
+		this._apiRequest('membership', 'product_index', {product_id: productIds}, options, callback);
 	}
 
-	findShippingMethods(params, callback) {
+	/**
+	 *
+	 * @param {Object} params
+	 * @param {Object} [options]
+	 * @param {function} callback
+	 * @returns {*}
+	 */
+	findShippingMethods(params, options, callback) {
+
+		let args = Array.prototype.slice.call(arguments);
+		params = args.shift();
+		callback = args.pop();
+		options = args.length > 0 ? args.shift() : null;
 
 		if (!params || !params.campaign_id) {
 			return callback({
@@ -297,12 +438,21 @@ class Api extends EventEmitter {
 			});
 		}
 
-		this.apiRequest('membership', 'shipping_method_find', params, (err, result) => {
+		this._apiRequest('membership', 'shipping_method_find', params, options, (err, result) => {
 			callback(err, result);
 		});
 	}
 
-	composeApiCall(apiType, method, params) {
+	/**
+	 * Compose an API request
+	 * @param {string} apiType
+	 * @param {string} method
+	 * @param {Object} params
+	 * @param {Object} options
+	 * @returns {{url: (jQuery|HTMLElement), form: {username: (string|*), password: (string|*), method: *}, timeout: number}}
+	 * @private
+	 */
+	_composeApiCall(apiType, method, params, options) {
 
 		const form = {
 			username: this._user,
@@ -317,14 +467,23 @@ class Api extends EventEmitter {
 		return {
 			url: apiType === 'membership' ? $(this._conf.membershipApiUrl, this._domain) : $(this._conf.transactionApiUrl, this._domain),
 			form: form,
-			timeout: this._conf.timeout || 30000
+			timeout: options.timeout || this._conf.timeout || 30000
 		};
 	}
 
-	apiRequest(apiType, method, params, callback) {
+	/**
+	 * Submit an API request
+	 * @param {string} apiType
+	 * @param {string} method
+	 * @param {Object} params
+	 * @param {Object} options
+	 * @param {function} callback
+	 * @private
+	 */
+	_apiRequest(apiType, method, params, options, callback) {
 
 		const self = this,
-			requestParams = this.composeApiCall(apiType, method, params);
+			requestParams = this._composeApiCall(apiType, method, params, options);
 
 		request.post(
 			requestParams,
@@ -397,6 +556,7 @@ class Api extends EventEmitter {
 				callback(result.body ? null : result, result);
 			});
 	}
+
 }
 
 export {Api};

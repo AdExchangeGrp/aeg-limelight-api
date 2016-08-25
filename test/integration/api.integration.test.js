@@ -95,7 +95,23 @@ describe.skip('api domain mhioffers', () => {
 
 describe('api domain dvd-crm', ()=> {
 
-	let api = new Api('Snowball', '8KX2DjfxnXWtYp', 'www.dvd-crm.com');
+	let api = new Api('Snowball', '8KX2DjfxnXWtYp', 'www.dvd-crm.com')
+		.on('error', (err) => {
+			console.log(err);
+		});
+
+	describe('#validateCredentials()', ()=> {
+		it('should return without error', (done)=> {
+			api.validateCredentials((err, result)=> {
+				console.log(result);
+				if (!err) {
+					result.responseCode.should.be.equal(100);
+					result.responseCodeDesc.should.be.equal('Success');
+				}
+				done(err);
+			});
+		});
+	});
 
 	describe('#findActiveCampaigns()', ()=> {
 		it('should return without error', (done)=> {
@@ -215,7 +231,6 @@ describe.skip('api domain www.mytrackingcenter.com', ()=> {
 	it('should return without error', (done) => {
 		api.getOrder(725547, (err, result)=> {
 			if (!err) {
-				console.log(result);
 				result.responseCode.should.be.equal(100);
 				result.responseCodeDesc.should.be.equal('Success');
 			}

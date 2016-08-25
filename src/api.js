@@ -144,6 +144,14 @@ class Api extends Base {
 	}
 
 	/**
+	 * Validate the credentials
+	 * @param {function} callback
+	 */
+	validateCredentials(callback) {
+		this._apiRequest('membership', 'validate_credentials', {}, {}, callback);
+	}
+
+	/**
 	 * Find all active campaigns
 	 * @param {Object} [options]
 	 * @param {function} callback
@@ -522,6 +530,12 @@ class Api extends Base {
 				else if (body.response) {
 					result.responseCode = parseInt(body.response);
 					result.responseCodeDesc = self._membershipResponseCodes[body.response.toString()];
+				} else if (Object.keys(body).length > 0 && Object.keys(body)[0] === '100') {
+					result.responseCode = 100;
+					result.responseCodeDesc = 'Success';
+				} else if (Object.keys(body).length > 0 && Object.keys(body)[0] === '200') {
+					result.responseCode = 200;
+					result.responseCodeDesc = 'Unauthorized';
 				} else {
 					self.emit('error', '_apiRequest', {message: 'Something has gone terribly wrong', data: {body}});
 					result.responseCode = 500;

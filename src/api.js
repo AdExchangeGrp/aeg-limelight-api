@@ -526,8 +526,7 @@ class Api extends Base {
 							return self._membershipResponseCodes[code.toString()];
 						});
 					}
-				}
-				else if (body.response) {
+				} else if (body.response) {
 					result.responseCode = parseInt(body.response);
 					result.responseCodeDesc = self._membershipResponseCodes[body.response.toString()];
 				} else if (Object.keys(body).length > 0 && Object.keys(body)[0] === '100') {

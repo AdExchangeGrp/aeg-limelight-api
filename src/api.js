@@ -544,11 +544,21 @@ class Api extends Base {
 
 				//if its an array there are multiple operations involved, some might fail some not
 				if (_.isArray(result.responseCode)) {
-					result.body = body;
-				} else {
-					if (result.responseCode === 100) {
+
+					const errors = _.filter(result.responseCode, (code) => {
+						return code !== 343 && code !== 100;
+					});
+
+					if (!errors.length) {
 						result.body = body;
 					}
+
+				} else {
+
+					if (result.responseCode === 100 || result.responseCode === 343) {
+						result.body = body;
+					}
+
 				}
 
 				if (result.body && result.body.data) {

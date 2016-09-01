@@ -1,6 +1,6 @@
 {
   "name": "@adexchange/aeg-limelight-api",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "dependencies": {
     "@adexchange/aeg-common": {
       "version": "0.0.6",

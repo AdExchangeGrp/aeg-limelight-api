@@ -459,6 +459,12 @@ class Api extends Base {
 
 		return _responseHandler(body);
 
+		/**
+		 * Process the response
+		 * @param {Object} body
+		 * @returns {Promise.<LimelightApiResponseType>}
+		 * @private
+		 */
 		async function _responseHandler (body: Object) {
 
 			// filtering characters that potentially break JSON parsing since LL uses URL encoded strings

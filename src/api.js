@@ -175,7 +175,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async findActiveCampaigns (options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async findActiveCampaigns (options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		return this._apiRequest('membership', 'campaign_find_active', {}, options);
 
@@ -187,7 +187,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async getCampaign (campaignId: number, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async getCampaign (campaignId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!campaignId) {
 
@@ -205,7 +205,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async getOrder (orderId: number, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async getOrder (orderId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!orderId) {
 
@@ -223,7 +223,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async getOrders (orderIds: number[], options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async getOrders (orderIds: number[], options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!orderIds || !orderIds.length) {
 
@@ -247,7 +247,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async findOrders (params: Object, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async findOrders (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!params || !params.campaign_id || !params.criteria || !params.start_date || !params.end_date) {
 
@@ -271,7 +271,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async findUpdatedOrders (params: Object, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async findUpdatedOrders (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!params || !params.campaign_id || !params.group_keys || !params.start_date || !params.end_date) {
 
@@ -295,7 +295,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async updateOrders (params: Object, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async updateOrders (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!params || !params.orderIds || !params.actions || !params.values) {
 
@@ -340,7 +340,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async getCustomer (customerId: number, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async getCustomer (customerId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!customerId) {
 
@@ -358,7 +358,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async findCustomers (params: Object, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async findCustomers (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!params || !params.campaign_id || !params.start_date || !params.end_date) {
 
@@ -377,7 +377,7 @@ class Api extends Base {
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 * @returns {*}
 	 */
-	async getProducts (productIds: number[], options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async getProducts (productIds: number[], options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!productIds || !productIds.length) {
 
@@ -396,7 +396,7 @@ class Api extends Base {
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 * @returns {*}
 	 */
-	async findShippingMethods (params: Object, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async findShippingMethods (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		if (!params || !params.campaign_id) {
 
@@ -417,7 +417,7 @@ class Api extends Base {
 	 * @returns {{url: {string}, form: {username: (string|*), password: (string|*), method: *}, timeout: number}}
 	 * @private
 	 */
-	_composeApiCall (apiType: string, method: string, params: Object, options: LimelightApiOptionsType): ComposeApiCallResponseType {
+	_composeApiCall (apiType: string, method: string, params: Object, options: LimelightApiOptionsType = {}): ComposeApiCallResponseType {
 
 		const form: Object = {
 			username: this._user,
@@ -448,7 +448,7 @@ class Api extends Base {
 	 * @returns {Promise.<LimelightApiResponseType>}
 	 * @private
 	 */
-	async _apiRequest (apiType: string, method: string, params: Object, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
+	async _apiRequest (apiType: string, method: string, params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
 		const self: Api = this;
 

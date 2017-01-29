@@ -1,11 +1,9 @@
-'use strict';
-
 import config from 'config';
 import request from 'request';
 import _ from 'lodash';
 import qs from 'querystring';
 import $ from 'stringformat';
-import {Base} from '@adexchange/aeg-common';
+import { Base } from '@adexchange/aeg-common';
 
 /**
  * Limelight API wrapper
@@ -18,7 +16,8 @@ class Api extends Base {
 	 * @param {string} password
 	 * @param {string} domain
 	 */
-	constructor(user, password, domain) {
+	constructor (user, password, domain) {
+
 		super();
 		this._user = user;
 		this._password = password;
@@ -141,14 +140,17 @@ class Api extends Base {
 			'908': 'Payment was already approved',
 			'1000': 'SSL is required'
 		};
+
 	}
 
 	/**
 	 * Validate the credentials
 	 * @param {function} callback
 	 */
-	validateCredentials(callback) {
+	validateCredentials (callback) {
+
 		this._apiRequest('membership', 'validate_credentials', {}, {}, callback);
+
 	}
 
 	/**
@@ -156,13 +158,14 @@ class Api extends Base {
 	 * @param {Object} [options]
 	 * @param {function} callback
 	 */
-	findActiveCampaigns(options, callback) {
+	findActiveCampaigns (options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		callback = args.pop();
 		options = this.parseOptions(args);
 
 		this._apiRequest('membership', 'campaign_find_active', {}, options, callback);
+
 	}
 
 	/**
@@ -172,7 +175,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	getCampaign(campaignId, options, callback) {
+	getCampaign (campaignId, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		campaignId = args.shift();
@@ -180,10 +183,13 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!campaignId) {
+
 			return callback({responseCode: 500, responseCodeDesc: 'getCampaign must have a campaign id'});
+
 		}
 
 		this._apiRequest('membership', 'campaign_view', {'campaign_id': campaignId}, options, callback);
+
 	}
 
 	/**
@@ -193,7 +199,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	getOrder(orderId, options, callback) {
+	getOrder (orderId, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		orderId = args.shift();
@@ -201,10 +207,13 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!orderId) {
+
 			return callback({responseCode: 500, responseCodeDesc: 'getOrder must have an order id'});
+
 		}
 
 		this._apiRequest('membership', 'order_view', {'order_id': orderId}, options, callback);
+
 	}
 
 	/**
@@ -214,7 +223,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	getOrders(orderIds, options, callback) {
+	getOrders (orderIds, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		orderIds = args.shift();
@@ -222,18 +231,25 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!orderIds || orderIds.length === 0) {
+
 			return callback({responseCode: 500, responseCodeDesc: 'getOrders must have order ids'});
+
 		}
 
 		if (_.isArray(orderIds) && orderIds.length > 200) {
+
 			return callback({responseCode: 500, responseCodeDesc: 'getOrders cannot fetch greater than 200 orders'});
+
 		}
 
 		if (!_.isString(orderIds)) {
+
 			orderIds = orderIds.join(',');
+
 		}
 
 		this._apiRequest('membership', 'order_view', {'order_id': orderIds}, options, callback);
+
 	}
 
 	/**
@@ -243,7 +259,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	findOrders(params, options, callback) {
+	findOrders (params, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
@@ -251,23 +267,32 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!params || !params.campaign_id || !params.criteria || !params.start_date || !params.end_date) {
+
 			return callback({
 				responseCode: 500,
 				responseCodeDesc: 'findOrders requires params: campaign_id, criteria, start_date, end_date'
 			});
+
 		}
 
 		if (params.product_ids && !_.isString(params.product_ids)) {
+
 			params.product_ids = params.product_ids.join(',');
+
 		}
 
 		this._apiRequest('membership', 'order_find', params, options, (err, result) => {
+
 			if (err && err.responseCode === 333) {
+
 				return callback(null, result);
+
 			}
 
 			callback(err, result);
+
 		});
+
 	}
 
 	/**
@@ -277,7 +302,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	findUpdatedOrders(params, options, callback) {
+	findUpdatedOrders (params, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
@@ -285,23 +310,32 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!params || !params.campaign_id || !params.group_keys || !params.start_date || !params.end_date) {
+
 			return callback({
 				responseCode: 500,
 				responseCodeDesc: 'findUpdatedOrders requires params: campaign_id, group_keys, start_date, end_date'
 			});
+
 		}
 
 		if (!_.isString(params.group_keys)) {
+
 			params.group_keys = params.group_keys.join(',');
+
 		}
 
 		this._apiRequest('membership', 'order_find_updated', params, options, (err, result) => {
+
 			if (err && err.responseCode === 333) {
+
 				return callback(null, result);
+
 			}
 
 			callback(err, result);
+
 		});
+
 	}
 
 	/**
@@ -311,7 +345,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	updateOrders(params, options, callback) {
+	updateOrders (params, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
@@ -319,22 +353,30 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!params || !params.orderIds || !params.actions || !params.values) {
+
 			return callback({
 				responseCode: 500,
 				responseCodeDesc: 'updateOrders requires params: order_ids, tracking_number'
 			});
+
 		}
 
 		if (!_.isString(params.orderIds)) {
+
 			params.orderIds = params.orderIds.join(',');
+
 		}
 
 		if (!_.isString(params.actions)) {
+
 			params.actions = params.actions.join(',');
+
 		}
 
 		if (!_.isString(params.values)) {
+
 			params.values = params.values.join(',');
+
 		}
 
 		this._apiRequest(
@@ -348,6 +390,7 @@ class Api extends Base {
 			},
 			options,
 			callback);
+
 	}
 
 	/**
@@ -357,7 +400,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	getCustomer(customerId, options, callback) {
+	getCustomer (customerId, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		customerId = args.shift();
@@ -365,10 +408,13 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!customerId) {
+
 			return callback({responseCode: 500, responseCodeDesc: 'getCustomer must have a customer id'});
+
 		}
 
 		this._apiRequest('membership', 'customer_view', {'customer_id': customerId}, options, callback);
+
 	}
 
 	/**
@@ -378,7 +424,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	findCustomers(params, options, callback) {
+	findCustomers (params, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
@@ -386,19 +432,26 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!params || !params.campaign_id || !params.start_date || !params.end_date) {
+
 			return callback({
 				responseCode: 500,
 				responseCodeDesc: 'findCustomer requires params: campaign_id, start_date, end_date'
 			});
+
 		}
 
 		this._apiRequest('membership', 'customer_find', params, options, (err, result) => {
+
 			if (err && err.responseCode === 604) {
+
 				return callback(null, result);
+
 			}
 
 			callback(err, result);
+
 		});
+
 	}
 
 	/**
@@ -408,7 +461,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	getProducts(productIds, options, callback) {
+	getProducts (productIds, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		productIds = args.shift();
@@ -416,14 +469,19 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!productIds || productIds.length === 0) {
+
 			return callback({responseCode: 500, responseCodeDesc: 'getProducts must product ids'});
+
 		}
 
 		if (!_.isString(productIds)) {
+
 			productIds = productIds.join(',');
+
 		}
 
 		this._apiRequest('membership', 'product_index', {product_id: productIds}, options, callback);
+
 	}
 
 	/**
@@ -433,7 +491,7 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @returns {*}
 	 */
-	findShippingMethods(params, options, callback) {
+	findShippingMethods (params, options, callback) {
 
 		let args = Array.prototype.slice.call(arguments);
 		params = args.shift();
@@ -441,15 +499,20 @@ class Api extends Base {
 		options = this.parseOptions(args);
 
 		if (!params || !params.campaign_id) {
+
 			return callback({
 				responseCode: 500,
 				responseCodeDesc: 'findShippingMethods requires params: campaign_id'
 			});
+
 		}
 
 		this._apiRequest('membership', 'shipping_method_find', params, options, (err, result) => {
+
 			callback(err, result);
+
 		});
+
 	}
 
 	/**
@@ -458,10 +521,10 @@ class Api extends Base {
 	 * @param {string} method
 	 * @param {Object} params
 	 * @param {Object} options
-	 * @returns {{url: (jQuery|HTMLElement), form: {username: (string|*), password: (string|*), method: *}, timeout: number}}
+	 * @returns {{url: {string}, form: {username: (string|*), password: (string|*), method: *}, timeout: number}}
 	 * @private
 	 */
-	_composeApiCall(apiType, method, params, options) {
+	_composeApiCall (apiType, method, params, options) {
 
 		const form = {
 			username: this._user,
@@ -470,7 +533,9 @@ class Api extends Base {
 		};
 
 		if (params !== null) {
+
 			_.extend(form, params);
+
 		}
 
 		return {
@@ -478,6 +543,7 @@ class Api extends Base {
 			form: form,
 			timeout: options.timeout || this._conf.timeout || 30000
 		};
+
 	}
 
 	/**
@@ -489,25 +555,28 @@ class Api extends Base {
 	 * @param {function} callback
 	 * @private
 	 */
-	_apiRequest(apiType, method, params, options, callback) {
+	_apiRequest (apiType, method, params, options, callback) {
 
-		const self = this,
-			requestParams = this._composeApiCall(apiType, method, params, options);
+		const self = this;
+
+		const requestParams = this._composeApiCall(apiType, method, params, options);
 
 		request.post(
 			requestParams,
 			(err, response, body) => {
 
 				if (err) {
+
 					return callback(err);
+
 				}
 
-				//filtering characters that potentially break JSON parsing since LL uses URL encoded strings
+				// filtering characters that potentially break JSON parsing since LL uses URL encoded strings
 				body = body.replace(/%22|%00|%01|%02|%03|%04|%05|%06|%07|%08|%09|%0A|%0B|%0C|%0D|%0E|%0F|%10|%11|%12|%13|%14|%15|%16|%17|%18|%19|%1A|%1B|%1C|%1D|%1E|%1F/g, '');
 
 				body = qs.parse(body);
 
-				//so it appears LL really sucks, because it uses different response codes for different api calls
+				// so it appears LL really sucks, because it uses different response codes for different api calls
 
 				const result = {};
 
@@ -516,55 +585,82 @@ class Api extends Base {
 					const codes = body.response_code.split(',');
 
 					if (codes.length === 1) {
+
 						result.responseCode = parseInt(body.response_code);
 						result.responseCodeDesc = self._membershipResponseCodes[body.response_code.toString()];
+
 					} else {
-						//if its an array there are multiple operations involved
+
+						// if its an array there are multiple operations involved
 						result.responseCode = _.map(codes, (code) => {
+
 							return parseInt(code);
+
 						});
 						result.responseCodeDesc = _.map(codes, (code) => {
+
 							return self._membershipResponseCodes[code.toString()];
+
 						});
+
 					}
+
 				} else if (body.response) {
+
 					result.responseCode = parseInt(body.response);
 					result.responseCodeDesc = self._membershipResponseCodes[body.response.toString()];
+
 				} else if (Object.keys(body).length > 0 && Object.keys(body)[0] === '100') {
+
 					result.responseCode = 100;
 					result.responseCodeDesc = 'Success';
+
 				} else if (Object.keys(body).length > 0 && Object.keys(body)[0] === '200') {
+
 					result.responseCode = 200;
 					result.responseCodeDesc = 'Unauthorized';
+
 				} else {
+
 					self.emit('error', '_apiRequest', {message: 'Something has gone terribly wrong', data: {body}});
 					result.responseCode = 500;
 					result.responseCodeDesc = 'Something has gone terribly wrong';
+
 				}
 
-				//if its an array there are multiple operations involved, some might fail some not
+				// if its an array there are multiple operations involved, some might fail some not
 				if (_.isArray(result.responseCode)) {
 
 					const errors = _.filter(result.responseCode, (code) => {
+
 						return code !== 343 && code !== 100;
+
 					});
 
 					if (!errors.length) {
+
 						result.body = body;
+
 					}
 
 				} else {
 
 					if (result.responseCode === 100 || result.responseCode === 343) {
+
 						result.body = body;
+
 					}
 
 				}
 
 				if (result.body && result.body.data) {
+
 					try {
+
 						result.body.data = JSON.parse(result.body.data);
+
 					} catch (ex) {
+
 						self.emit('error', '_apiRequest', {
 							message: 'Failed to parse result.body.data',
 							data: {
@@ -574,14 +670,18 @@ class Api extends Base {
 							err: ex
 						});
 						return callback(ex);
+
 					}
+
 				}
 
 				callback(result.body ? null : result, result);
+
 			});
+
 	}
 
 }
 
-export {Api};
+export { Api };
 

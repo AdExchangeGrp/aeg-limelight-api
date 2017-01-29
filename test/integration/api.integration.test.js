@@ -156,7 +156,12 @@ describe('api domain dvd-crm', async () => {
 
 describe('api domain mhioffers', async () => {
 
-	const api = new Api('Ad Exchange Group', '4rTKYUWmbPhpW', 'www.globalvoffers.com');
+	const api = new Api('Ad Exchange Group', '4rTKYUWmbPhpW', 'www.globalvoffers.com')
+		.on('error', (err) => {
+
+			console.log(err);
+
+		});
 
 	describe('#getCampaign()', async () => {
 
@@ -287,47 +292,3 @@ describe('api domain mhioffers', async () => {
 	});
 
 });
-
-// describe.skip('api domain www.mytrackingcenter.com', () => {
-//
-// 	let api = new Api('ad.exchange', '7Jnb5ppn86PRnn', 'www.mytrackingcenter.com');
-//
-// 	it('should return without error', (done) => {
-//
-// 		api.getOrder(725547, (err, result) => {
-//
-// 			if (!err) {
-//
-// 				result.responseCode.should.be.equal(100);
-// 				result.responseCodeDesc.should.be.equal('Success');
-//
-// 			}
-// 			done(err);
-//
-// 		});
-//
-// 	});
-//
-// });
-//
-// describe.skip('api www.mytrackingcenter.com multiple operations', () => {
-//
-// 	let api = new Api('Push Innovation', 'd9qCrYAJTKVXhR', 'www.mytrackingcenter.com');
-//
-// 	it('should return without error', (done) => {
-//
-// 		api.updateOrders({
-// 			orderIds: '1373334,1373335',
-// 			actions: 'tracking_number,tracking_number',
-// 			values: '12345,12345'
-// 		}, (err, result) => {
-//
-// 			console.log(err);
-// 			console.log(result);
-// 			done(err);
-//
-// 		});
-//
-// 	});
-//
-// });

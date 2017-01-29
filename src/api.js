@@ -44,7 +44,7 @@ class Api extends Base {
 		this._conf = config.get('aeg-limelight-api');
 		this._membershipResponseCodes = new Map([
 			[100, 'Success'],
-			[200, 'Invalid login credentials'],
+			[200, 'Unauthorized'],
 			[320, 'Invalid Product Id'],
 			[321, 'Existing Product Category Id Not Found'],
 			[322, 'Invalid Category Id'],
@@ -159,6 +159,17 @@ class Api extends Base {
 			[908, 'Payment was already approved'],
 			[1000, 'SSL is required']
 		]);
+
+	}
+
+	/**
+	 * Get the description for a response code
+	 * @param {number} code
+	 * @returns {Map.<number, string>}
+	 */
+	membershipResponseCodeDesc (code: number): string {
+
+		return this._membershipResponseCodes.get(code);
 
 	}
 

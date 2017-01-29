@@ -10,13 +10,36 @@ describe('api domain dvd-crm', async () => {
 
 		});
 
+	const badApi = new Api('Snowball', '1', 'www.dvd-crm.com')
+		.on('error', (err) => {
+
+			console.log(err);
+
+		});
+
 	describe('#validateCredentials()', async () => {
 
 		it('should return without error', async () => {
 
 			const result = await api.validateCredentials();
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+
+		});
+
+		it('should error', async () => {
+
+			try {
+
+				const result = await badApi.validateCredentials();
+				should.not.exist(result);
+
+			} catch (ex) {
+
+				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(200);
+				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(200));
+
+			}
 
 		});
 
@@ -28,7 +51,7 @@ describe('api domain dvd-crm', async () => {
 
 			const result = await api.findActiveCampaigns();
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
 
 		});
 
@@ -40,7 +63,23 @@ describe('api domain dvd-crm', async () => {
 
 			const result = await api.getCampaign(34);
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+
+		});
+
+		it('should error', async () => {
+
+			try {
+
+				const result = await api.getCampaign(-1);
+				should.not.exist(result);
+
+			} catch (ex) {
+
+				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(400);
+				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(400));
+
+			}
 
 		});
 
@@ -60,7 +99,7 @@ describe('api domain dvd-crm', async () => {
 
 			// noinspection JSValidateTypes
 			(result.apiActionResults[0].responseCode === 333 || result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === 'Success' || result.apiActionResults[0].responseCodeDesc === 'No Orders Found').should.be.ok;
+			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(333) || result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
 
 		});
 
@@ -72,7 +111,7 @@ describe('api domain dvd-crm', async () => {
 
 			const result = await api.getOrder(10000);
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
 
 		});
 
@@ -84,7 +123,7 @@ describe('api domain dvd-crm', async () => {
 
 			const result = await api.getOrders([10000, 10018]);
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
 
 		});
 
@@ -102,7 +141,7 @@ describe('api domain dvd-crm', async () => {
 
 			// noinspection JSValidateTypes
 			(result.apiActionResults[0].responseCode === 604 || result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === 'Success' || result.apiActionResults[0].responseCodeDesc === 'No customers found').should.be.ok;
+			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(604) || result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
 
 		});
 
@@ -120,7 +159,7 @@ describe('api domain dvd-crm', async () => {
 			} catch (ex) {
 
 				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(603);
-				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal('Invalid customer Id supplied');
+				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(603));
 
 			}
 
@@ -134,7 +173,7 @@ describe('api domain dvd-crm', async () => {
 
 			const result = await api.getProducts([26]);
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
 
 		});
 
@@ -146,7 +185,7 @@ describe('api domain dvd-crm', async () => {
 
 			const result = await api.findShippingMethods({campaign_id: 'all', return_type: 'shipping_method_view'});
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
 
 		});
 
@@ -169,7 +208,7 @@ describe('api domain mhioffers', async () => {
 
 			const result = await api.getCampaign(77);
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
 
 		});
 
@@ -189,7 +228,7 @@ describe('api domain mhioffers', async () => {
 
 			// noinspection JSValidateTypes
 			(result.apiActionResults[0].responseCode === 333 || result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === 'Success' || result.apiActionResults[0].responseCodeDesc === 'No Orders Found').should.be.ok;
+			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(333) || result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
 
 		});
 
@@ -201,7 +240,7 @@ describe('api domain mhioffers', async () => {
 
 			const result = await api.getOrder(580395);
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
 
 		});
 
@@ -277,7 +316,7 @@ describe('api domain mhioffers', async () => {
 
 			// noinspection JSValidateTypes
 			(result.apiActionResults[0].responseCode === 333 || result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === 'Success' || result.apiActionResults[0].responseCodeDesc === 'No Orders Found').should.be.ok;
+			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(333) || result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
 
 		});
 
@@ -285,7 +324,7 @@ describe('api domain mhioffers', async () => {
 
 			const result = await api.getOrder(246059);
 			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
 
 		});
 

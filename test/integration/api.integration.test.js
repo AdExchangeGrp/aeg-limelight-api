@@ -159,6 +159,16 @@ describe('api domain dvd-crm', async () => {
 
 		});
 
+		it('should return without error with a bad id', async () => {
+
+			// the response may contain a 350 for a bad id, but it still passes
+			// client responsibility
+			const result = await api.getOrders([10000, -1]);
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+
+		});
+
 	});
 
 	describe('#findCustomers()', async () => {

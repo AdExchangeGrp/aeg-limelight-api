@@ -4,6 +4,11 @@ import Api from '../../src/api.js';
 describe('api domain dvd-crm', async () => {
 
 	const api = new Api('Snowball', '8KX2DjfxnXWtYp', 'www.dvd-crm.com')
+		.on('warn', (data) => {
+
+			console.log(data);
+
+		})
 		.on('error', (err) => {
 
 			console.log(err);
@@ -11,6 +16,11 @@ describe('api domain dvd-crm', async () => {
 		});
 
 	const badApi = new Api('Snowball', '1', 'www.dvd-crm.com')
+		.on('warn', (data) => {
+
+			console.log(data);
+
+		})
 		.on('error', (err) => {
 
 			console.log(err);
@@ -21,7 +31,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.validateCredentials();
+			const result = await api.validateCredentials({retries: 3});
 			result.apiActionResults[0].responseCode.should.be.equal(100);
 			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
 

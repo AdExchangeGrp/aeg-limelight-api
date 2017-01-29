@@ -7,7 +7,8 @@ import request from 'request-promise';
 import _ from 'lodash';
 import qs from 'querystring';
 import $ from 'stringformat';
-import { Base } from '@adexchange/aeg-common';
+import { Base, ControlFlow } from '@adexchange/aeg-common';
+import EventEmitter from 'events';
 
 type ComposeApiCallResponseType = {
 
@@ -26,6 +27,7 @@ class Api extends Base {
 	_domain: string;
 	_config: Object;
 	_conf: Object;
+	_eventEmitter: EventEmitter;
 	_membershipResponseCodes: Map<number, string>;
 
 	/**
@@ -42,6 +44,15 @@ class Api extends Base {
 		this._password = password;
 		this._domain = domain;
 		this._conf = config.get('aeg-limelight-api');
+		this._eventEmitter = new EventEmitter();
+
+		this._eventEmitter
+			.on('warn', (data) => {
+
+				this.emit('warn', '', data);
+
+			});
+
 		this._membershipResponseCodes = new Map([
 			[100, 'Success'],
 			[200, 'Unauthorized'],
@@ -169,17 +180,18 @@ class Api extends Base {
 	 */
 	membershipResponseCodeDesc (code: number): string {
 
-		return this._membershipResponseCodes.get(code);
+		return this._membershipResponseCodes.get(code) || 'Unspecified';
 
 	}
 
 	/**
 	 * Validate the credentials
+	 * @param {LimelightApiOptionsType} [options]
 	 *  @returns {Promise.<LimelightApiResponseType>}
 	 */
-	async validateCredentials (): Promise<LimelightApiResponseType> {
+	async validateCredentials (options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
 
-		return this._apiRequest('membership', 'validate_credentials', {}, {});
+		return this._apiRequest('membership', 'validate_credentials', {}, options);
 
 	}
 
@@ -466,7 +478,21 @@ class Api extends Base {
 		const self: Api = this;
 
 		const requestParams: ComposeApiCallResponseType = self._composeApiCall(apiType, method, params, options);
-		const body: Object = await request.post(requestParams);
+
+		const retries: number = options.retries || 1;
+		const retryDelay: number = options.retryDelay || 0;
+
+		const body: Object = await ControlFlow.retryWhilst(retries, retryDelay, (attempt) => {
+
+			if (attempt > 1) {
+
+				self.emit('warn', `_apiRequest: ${method}`, {message: 'retry failed', data: {attempt}});
+
+			}
+
+			return request.post(requestParams);
+
+		}, self._eventEmitter);
 
 		return _responseHandler(body);
 

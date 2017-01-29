@@ -2,6 +2,8 @@
 
 export type LimelightApiOptionsType = {
 
+	retries?: number,
+	retryDelay?: number,
 	timeout?: number,
 	errorCodeOverrides?: string[]
 

@@ -51,31 +51,12 @@ export default class LimelightApiError extends Error {
 	 */
 	constructor (responseCode: number, responseCodeDesc: string, innerError: ?Error, apiResponse: ?LimelightApiResponseType) {
 
-		super();
+		super(`limelight api error code ${responseCode} ${responseCodeDesc}`);
 
-		this.message = 'limelight api error';
 		this._responseCode = responseCode;
 		this._responseCodeDesc = responseCodeDesc;
 		this._innerError = innerError;
 		this._apiResponse = apiResponse;
-
-	}
-
-	/**
-	 * String override
-	 * @returns {*|string|String}
-	 */
-	toString (): string {
-
-		let response = super.toString();
-
-		if (this._innerError) {
-
-			response += this._innerError.toString();
-
-		}
-
-		return response;
 
 	}
 

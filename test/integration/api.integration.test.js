@@ -1,4 +1,4 @@
-require('should');
+import should from 'should';
 import Api from '../../src/api.js';
 
 describe('api domain dvd-crm', async () => {
@@ -15,9 +15,6 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.validateCredentials();
-
-			console.log(result);
-
 			result.responseCode.should.be.equal(100);
 			result.responseCodeDesc.should.be.equal('Success');
 
@@ -115,9 +112,17 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getCustomer(1);
-			result.responseCode.should.be.equal(603);
-			result.responseCodeDesc.should.be.equal('Invalid customer Id supplied');
+			try {
+
+				const result = await api.getCustomer(1);
+				should.not.exist(result);
+
+			} catch (ex) {
+
+				ex.responseCode.should.be.equal(603);
+				ex.responseCodeDesc.should.be.equal('Invalid customer Id supplied');
+
+			}
 
 		});
 

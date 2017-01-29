@@ -7,10 +7,17 @@ export type LimelightApiOptionsType = {
 
 }
 
-export type LimelightApiResponseType = {
+export type LimelightApiActionResultType = {
 
 	responseCode: number,
-	responseCodeDesc: string,
-	body: ?Object
+	responseCodeDesc: string
 
 }
+
+export type LimelightApiResponseType = {
+
+	apiActionResults: LimelightApiActionResultType[],
+	body?: ?Object
+
+}
+

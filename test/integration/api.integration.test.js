@@ -15,8 +15,8 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.validateCredentials();
-			result.responseCode.should.be.equal(100);
-			result.responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
 
 		});
 
@@ -27,8 +27,8 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.findActiveCampaigns();
-			result.responseCode.should.be.equal(100);
-			result.responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
 
 		});
 
@@ -39,8 +39,8 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.getCampaign(34);
-			result.responseCode.should.be.equal(100);
-			result.responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
 
 		});
 
@@ -59,8 +59,8 @@ describe('api domain dvd-crm', async () => {
 			});
 
 			// noinspection JSValidateTypes
-			(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
-			(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
+			(result.apiActionResults[0].responseCode === 333 || result.apiActionResults[0].responseCode === 100).should.be.ok;
+			(result.apiActionResults[0].responseCodeDesc === 'Success' || result.apiActionResults[0].responseCodeDesc === 'No Orders Found').should.be.ok;
 
 		});
 
@@ -71,8 +71,8 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.getOrder(10000);
-			result.responseCode.should.be.equal(100);
-			result.responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
 
 		});
 
@@ -83,8 +83,8 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.getOrders([10000, 10018]);
-			result.responseCode.should.be.equal(100);
-			result.responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
 
 		});
 
@@ -101,8 +101,8 @@ describe('api domain dvd-crm', async () => {
 			});
 
 			// noinspection JSValidateTypes
-			(result.responseCode === 604 || result.responseCode === 100).should.be.ok;
-			(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No customers found').should.be.ok;
+			(result.apiActionResults[0].responseCode === 604 || result.apiActionResults[0].responseCode === 100).should.be.ok;
+			(result.apiActionResults[0].responseCodeDesc === 'Success' || result.apiActionResults[0].responseCodeDesc === 'No customers found').should.be.ok;
 
 		});
 
@@ -119,8 +119,8 @@ describe('api domain dvd-crm', async () => {
 
 			} catch (ex) {
 
-				ex.responseCode.should.be.equal(603);
-				ex.responseCodeDesc.should.be.equal('Invalid customer Id supplied');
+				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(603);
+				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal('Invalid customer Id supplied');
 
 			}
 
@@ -133,8 +133,8 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.getProducts([26]);
-			result.responseCode.should.be.equal(100);
-			result.responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
 
 		});
 
@@ -145,8 +145,8 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.findShippingMethods({campaign_id: 'all', return_type: 'shipping_method_view'});
-			result.responseCode.should.be.equal(100);
-			result.responseCodeDesc.should.be.equal('Success');
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
 
 		});
 
@@ -154,139 +154,140 @@ describe('api domain dvd-crm', async () => {
 
 });
 
-// describe.skip('api domain mhioffers', () => {
-//
-// 	let api = new Api('Ad Exchange Group', '4rTKYUWmbPhpW', 'www.globalvoffers.com');
-//
-// 	describe('#getCampaign()', () => {
-//
-// 		it('should return without error', (done) => {
-//
-// 			api.getCampaign(77, (err, result) => {
-//
-// 				if (!err) {
-//
-// 					result.responseCode.should.be.equal(100);
-// 					result.responseCodeDesc.should.be.equal('Success');
-//
-// 				}
-// 				done(err);
-//
-// 			});
-//
-// 		});
-//
-// 	});
-//
-// 	describe('#findOrders()', () => {
-//
-// 		it('should return without error', (done) => {
-//
-// 			api.findOrders({
-// 				campaign_id: 77,
-// 				criteria: 'all',
-// 				start_date: '04/22/2015',
-// 				end_date: '04/26/2015',
-// 				customer_id: 63571
-// 			}, (err, result) => {
-//
-// 				// noinspection JSValidateTypes
-// 				(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
-// 				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
-// 				done(err);
-//
-// 			});
-//
-// 		});
-//
-// 	});
-//
-// 	describe('#getOrder()', () => {
-//
-// 		it('should return without error', (done) => {
-//
-// 			api.getOrder(580395, (err, result) => {
-//
-// 				if (!err) {
-//
-// 					result.responseCode.should.be.equal(100);
-// 					result.responseCodeDesc.should.be.equal('Success');
-//
-// 				}
-// 				done(err);
-//
-// 			});
-//
-// 		});
-//
-// 	});
-//
-// 	describe.skip('#updateOrders()', () => {
-//
-// 		it('should return without error', (done) => {
-//
-// 			api.updateOrders({
-// 				orderIds: '580383,580395',
-// 				actions: 'tracking_number,tracking_number',
-// 				values: '123457TEST,1234567TEST'
-// 			}, (err, result) => {
-//
-// 				if (!err) {
-//
-// 					// response code is 343 if the value is the same
-// 					result.responseCode.should.be.equal('100,100');
-// 					// this is undefined from the API with mutiple order updates
-// 					// result.responseCodeDesc.should.be.equal('Success');
-//
-// 				}
-// 				done(err);
-//
-// 			});
-//
-// 		});
-//
-// 	});
-//
-// 	describe('#findUpdatedOrders()', () => {
-//
-// 		it('should return without error', (done) => {
-//
-// 			api.findUpdatedOrders({
-// 				campaign_id: 14,
-// 				group_keys: 'refund',
-// 				start_date: '04/22/2015',
-// 				end_date: '04/23/2015'
-// 			}, (err, result) => {
-//
-// 				// noinspection JSValidateTypes
-// 				(result.responseCode === 333 || result.responseCode === 100).should.be.ok;
-// 				(result.responseCodeDesc === 'Success' || result.responseCodeDesc === 'No Orders Found').should.be.ok;
-// 				done(err);
-//
-// 			});
-//
-// 		});
-//
-// 		it('should return without error', (done) => {
-//
-// 			api.getOrder(246059, (err, result) => {
-//
-// 				if (!err) {
-//
-// 					result.responseCode.should.be.equal(100);
-// 					result.responseCodeDesc.should.be.equal('Success');
-//
-// 				}
-// 				done(err);
-//
-// 			});
-//
-// 		});
-//
-// 	});
-//
-// });
-//
+describe('api domain mhioffers', async () => {
+
+	const api = new Api('Ad Exchange Group', '4rTKYUWmbPhpW', 'www.globalvoffers.com');
+
+	describe('#getCampaign()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.getCampaign(77);
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+
+		});
+
+	});
+
+	describe('#findOrders()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.findOrders({
+				campaign_id: 77,
+				criteria: 'all',
+				start_date: '04/22/2015',
+				end_date: '04/26/2015',
+				customer_id: 63571
+			});
+
+			// noinspection JSValidateTypes
+			(result.apiActionResults[0].responseCode === 333 || result.apiActionResults[0].responseCode === 100).should.be.ok;
+			(result.apiActionResults[0].responseCodeDesc === 'Success' || result.apiActionResults[0].responseCodeDesc === 'No Orders Found').should.be.ok;
+
+		});
+
+	});
+
+	describe('#getOrder()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.getOrder(580395);
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+
+		});
+
+	});
+
+	describe('#updateOrders()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.updateOrders({
+				orderIds: '580383,580395',
+				actions: 'tracking_number,tracking_number',
+				values: '123457TEST,1234567TEST'
+			});
+
+			// response code is 343 if the value is the same
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[1].responseCode.should.be.equal(343);
+			// this is undefined from the API with mutiple order updates
+			// result.responseCodeDesc.should.be.equal('Success');
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.updateOrders({
+				orderIds: '580383,580395',
+				actions: 'tracking_number,tracking_number',
+				values: '123457TEST2,1234567TEST'
+			});
+
+			// response code is 343 if the value is the same
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[1].responseCode.should.be.equal(343);
+			// this is undefined from the API with mutiple order updates
+			// result.responseCodeDesc.should.be.equal('Success');
+
+		});
+
+		it('should error', async () => {
+
+			try {
+
+				const result = await api.updateOrders({
+					orderIds: '580383, -1',
+					actions: 'tracking_number,tracking_number',
+					values: '123457TEST2,1234567TEST'
+				});
+
+				should.not.exist(result);
+
+			} catch (ex) {
+
+				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(343);
+				ex.apiResponse.apiActionResults[1].responseCode.should.be.equal(350);
+
+			}
+
+		});
+
+	});
+
+	describe('#findUpdatedOrders()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.findUpdatedOrders({
+				campaign_id: 14,
+				group_keys: 'refund',
+				start_date: '04/22/2015',
+				end_date: '04/23/2015'
+			});
+
+			// noinspection JSValidateTypes
+			(result.apiActionResults[0].responseCode === 333 || result.apiActionResults[0].responseCode === 100).should.be.ok;
+			(result.apiActionResults[0].responseCodeDesc === 'Success' || result.apiActionResults[0].responseCodeDesc === 'No Orders Found').should.be.ok;
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getOrder(246059);
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal('Success');
+
+		});
+
+	});
+
+});
+
 // describe.skip('api domain www.mytrackingcenter.com', () => {
 //
 // 	let api = new Api('ad.exchange', '7Jnb5ppn86PRnn', 'www.mytrackingcenter.com');

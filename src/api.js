@@ -193,7 +193,7 @@ class Api extends Base {
 
 		if (!campaignId) {
 
-			throw new LimelightApiError(500, 'getCampaign must have a campaign id');
+			throw LimelightApiError.createWithOne(500, 'getCampaign must have a campaign id');
 
 		}
 
@@ -211,7 +211,7 @@ class Api extends Base {
 
 		if (!orderId) {
 
-			throw new LimelightApiError(500, 'getOrder must have an order id');
+			throw LimelightApiError.createWithOne(500, 'getOrder must have an order id');
 
 		}
 
@@ -229,13 +229,13 @@ class Api extends Base {
 
 		if (!orderIds || !orderIds.length) {
 
-			throw new LimelightApiError(500, 'getOrders must have order ids');
+			throw LimelightApiError.createWithOne(500, 'getOrders must have order ids');
 
 		}
 
 		if (orderIds.length > 200) {
 
-			throw new LimelightApiError(500, 'getOrders cannot fetch greater than 200 orders');
+			throw LimelightApiError.createWithOne(500, 'getOrders cannot fetch greater than 200 orders');
 
 		}
 
@@ -253,7 +253,7 @@ class Api extends Base {
 
 		if (!params || !params.campaign_id || !params.criteria || !params.start_date || !params.end_date) {
 
-			throw new LimelightApiError(500, 'findOrders requires params: campaign_id, criteria, start_date, end_date');
+			throw LimelightApiError.createWithOne(500, 'findOrders requires params: campaign_id, criteria, start_date, end_date');
 
 		}
 
@@ -277,7 +277,7 @@ class Api extends Base {
 
 		if (!params || !params.campaign_id || !params.group_keys || !params.start_date || !params.end_date) {
 
-			throw new LimelightApiError(500, 'findUpdatedOrders requires params: campaign_id, group_keys, start_date, end_date');
+			throw LimelightApiError.createWithOne(500, 'findUpdatedOrders requires params: campaign_id, group_keys, start_date, end_date');
 
 		}
 
@@ -301,7 +301,7 @@ class Api extends Base {
 
 		if (!params || !params.orderIds || !params.actions || !params.values) {
 
-			throw new LimelightApiError(500, 'updateOrders requires params: order_ids, tracking_number');
+			throw LimelightApiError.createWithOne(500, 'updateOrders requires params: order_ids, tracking_number');
 
 		}
 
@@ -332,7 +332,7 @@ class Api extends Base {
 				actions: params.actions,
 				values: params.values
 			},
-			options);
+			_.extend({errorCodeOverrides: [343]}, options));
 
 	}
 
@@ -346,7 +346,7 @@ class Api extends Base {
 
 		if (!customerId) {
 
-			throw new LimelightApiError(500, 'getCustomer must have a customer id');
+			throw LimelightApiError.createWithOne(500, 'getCustomer must have a customer id');
 
 		}
 
@@ -364,7 +364,7 @@ class Api extends Base {
 
 		if (!params || !params.campaign_id || !params.start_date || !params.end_date) {
 
-			throw new LimelightApiError(500, 'findCustomer requires params: campaign_id, start_date, end_date');
+			throw LimelightApiError.createWithOne(500, 'findCustomer requires params: campaign_id, start_date, end_date');
 
 		}
 
@@ -383,7 +383,7 @@ class Api extends Base {
 
 		if (!productIds || !productIds.length) {
 
-			throw new LimelightApiError(500, 'getProducts must product ids');
+			throw LimelightApiError.createWithOne(500, 'getProducts must product ids');
 
 		}
 
@@ -402,7 +402,7 @@ class Api extends Base {
 
 		if (!params || !params.campaign_id) {
 
-			throw new LimelightApiError(500, 'findShippingMethods requires params: campaign_id');
+			throw LimelightApiError.createWithOne(500, 'findShippingMethods requires params: campaign_id');
 
 		}
 
@@ -468,7 +468,7 @@ class Api extends Base {
 
 			// so it appears LL really sucks, because it uses different response codes for different api calls
 
-			const result: LimelightApiResponseType = {responseCode: 500, responseCodeDesc: 'Unspecified', body: null};
+			const results: LimelightApiResponseType = {apiActionResults: [], body: null};
 
 			if (body.response_code) {
 
@@ -476,79 +476,87 @@ class Api extends Base {
 
 				if (codes.length === 1) {
 
-					result.responseCode = parseInt(body.response_code);
-					result.responseCodeDesc = self._membershipResponseCodes.get(Number(body.response_code)) || 'Unspecified';
+					results.apiActionResults.push({
+						responseCode: parseInt(body.response_code),
+						responseCodeDesc: self._membershipResponseCodes.get(Number(body.response_code)) || 'Unspecified'
+					});
 
 				} else {
 
-					// if its an array there are multiple operations involved
-					result.responseCode = _.map(codes, (code) => {
+					results.apiActionResults.push(...(_.map(codes, (code) => {
 
-						return parseInt(code);
+						return {
+							responseCode: parseInt(code),
+							responseCodeDesc: self._membershipResponseCodes.get(Number(code)) || 'Unspecified'
+						};
 
-					});
-					result.responseCodeDesc = _.map(codes, (code) => {
-
-						return self._membershipResponseCodes.get(Number(code)) || 'Unspecified';
-
-					});
+					})));
 
 				}
 
 			} else if (body.response) {
 
-				result.responseCode = parseInt(body.response);
-				result.responseCodeDesc = self._membershipResponseCodes.get(Number(body.response)) || 'Unspecified';
+				results.apiActionResults.push({
+					responseCode: parseInt(body.response),
+					responseCodeDesc: self._membershipResponseCodes.get(Number(body.response)) || 'Unspecified'
+				});
 
 			} else if (Object.keys(body).length > 0 && Object.keys(body)[0] === '100') {
 
-				result.responseCode = 100;
-				result.responseCodeDesc = 'Success';
+				results.apiActionResults.push({
+					responseCode: 100,
+					responseCodeDesc: 'Success'
+				});
 
 			} else if (Object.keys(body).length > 0 && Object.keys(body)[0] === '200') {
 
-				result.responseCode = 200;
-				result.responseCodeDesc = 'Unauthorized';
+				results.apiActionResults.push({
+					responseCode: 200,
+					responseCodeDesc: 'Unauthorized'
+				});
 
 			} else {
 
 				self.emit('error', '_apiRequest', {message: 'Something has gone terribly wrong', data: {body}});
-				result.responseCode = 500;
-				result.responseCodeDesc = 'Something has gone terribly wrong';
+
+				results.apiActionResults.push({
+					responseCode: 500,
+					responseCodeDesc: 'Something has gone terribly wrong'
+				});
 
 			}
 
 			// if its an array there are multiple operations involved, some might fail some not
-			if (_.isArray(result.responseCode)) {
+			if (results.apiActionResults.length > 1) {
 
-				const errors = _.filter(result.responseCode, (code) => {
+				const errors = _.filter(results.apiActionResults, (r) => {
 
-					return code !== 343 && code !== 100;
+					return r.responseCode !== 343 && r.responseCode !== 100;
 
 				});
 
 				if (!errors.length) {
 
-					result.body = body;
+					results.body = body;
 
 				}
 
 			} else {
 
-				if (result.responseCode === 100 || result.responseCode === 343) {
+				if (results.apiActionResults[0].responseCode === 100 || results.apiActionResults[0].responseCode === 343) {
 
-					result.body = body;
+					results.body = body;
 
 				}
 
 			}
 
-			if (result.body && result.body.data) {
+			if (results.body && results.body.data) {
 
 				try {
 
 					// $FlowFixMe
-					result.body.data = JSON.parse(result.body.data);
+					results.body.data = JSON.parse(results.body.data);
 
 				} catch (ex) {
 
@@ -556,37 +564,43 @@ class Api extends Base {
 						message: 'Failed to parse result.body.data',
 						data: {
 							requestParams,
-							body: result.body.data
+							body: results.body.data
 						},
 						err: ex
 					});
 
-					throw new LimelightApiError(500, 'failed to parse result.body.data', ex);
+					LimelightApiError.createWithOne(500, 'failed to parse result.body.data', ex);
 
 				}
 
 			}
 
-			if (!result.body) {
+			if (!results.body) {
 
 				if (options && options.errorCodeOverrides) {
 
 					// not all codes are errors on all calls
-					if (!_.includes(options.errorCodeOverrides, result.responseCode)) {
+					const errors = _.filter(results.apiActionResults, (r) => {
 
-						throw new LimelightApiError(result.responseCode, result.responseCodeDesc, null, result);
+						return !_.includes(options.errorCodeOverrides, r.responseCode) && r.responseCode !== 100;
+
+					});
+
+					if (errors.length) {
+
+						throw LimelightApiError.createWithArray(results.apiActionResults);
 
 					}
 
 				} else {
 
-					throw new LimelightApiError(result.responseCode, result.responseCodeDesc, null, result);
+					throw LimelightApiError.createWithArray(results.apiActionResults);
 
 				}
 
 			}
 
-			return result;
+			return results;
 
 		}
 

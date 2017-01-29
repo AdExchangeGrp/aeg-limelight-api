@@ -474,7 +474,7 @@ class Api extends Base {
 
 			// so it appears LL really sucks, because it uses different response codes for different api calls
 
-			const results: LimelightApiResponseType = {apiActionResults: [], body: null};
+			const results: LimelightApiResponseType = {apiActionResults: [], body};
 
 			if (body.response_code) {
 
@@ -532,31 +532,6 @@ class Api extends Base {
 
 			}
 
-			// if its an array there are multiple operations involved, some might fail some not
-			if (results.apiActionResults.length > 1) {
-
-				const errors = _.filter(results.apiActionResults, (r) => {
-
-					return r.responseCode !== 343 && r.responseCode !== 100;
-
-				});
-
-				if (!errors.length) {
-
-					results.body = body;
-
-				}
-
-			} else {
-
-				if (results.apiActionResults[0].responseCode === 100 || results.apiActionResults[0].responseCode === 343) {
-
-					results.body = body;
-
-				}
-
-			}
-
 			if (results.body && results.body.data) {
 
 				try {
@@ -581,28 +556,23 @@ class Api extends Base {
 
 			}
 
-			if (!results.body) {
+			// not all codes are errors on all calls
+			if (_.filter(results.apiActionResults,
+					(r) => {
 
-				if (options && options.errorCodeOverrides) {
+						if (options && options.errorCodeOverrides) {
 
-					// not all codes are errors on all calls
-					const errors = _.filter(results.apiActionResults, (r) => {
+							return !_.includes(options.errorCodeOverrides, r.responseCode) && r.responseCode !== 100;
 
-						return !_.includes(options.errorCodeOverrides, r.responseCode) && r.responseCode !== 100;
+						} else {
 
-					});
+							return r.responseCode !== 100;
 
-					if (errors.length) {
+						}
 
-						throw LimelightApiError.createWithArray(results.apiActionResults);
+					}).length) {
 
-					}
-
-				} else {
-
-					throw LimelightApiError.createWithArray(results.apiActionResults);
-
-				}
+				throw LimelightApiError.createWithArray(results.apiActionResults);
 
 			}
 

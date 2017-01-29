@@ -1,5 +1,5 @@
 require('should');
-import { Api } from '../../src/api.js';
+import Api from '../../src/api.js';
 
 describe.skip('api domain mhioffers', () => {
 

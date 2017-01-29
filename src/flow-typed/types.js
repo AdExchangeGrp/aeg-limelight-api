@@ -2,7 +2,8 @@
 
 export type LimelightApiOptionsType = {
 
-	timeout?: number
+	timeout?: number,
+	errorCodeOverrides?: string[]
 
 }
 

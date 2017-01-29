@@ -9,6 +9,13 @@ import qs from 'querystring';
 import $ from 'stringformat';
 import { Base } from '@adexchange/aeg-common';
 
+type ComposeApiCallResponseType = {
+
+	url: string,
+	form: Object,
+	timeout: number
+}
+
 /**
  * Limelight API wrapper
  */
@@ -19,122 +26,122 @@ class Api extends Base {
 	_domain: string;
 	_config: Object;
 	_conf = config.get('aeg-limelight-api');
-	_membershipResponseCodes: Map<string, string> = new Map([
-		['100', 'Success'],
-		['200', 'Invalid login credentials'],
-		['320', 'Invalid Product Id'],
-		['321', 'Existing Product Category Id Not Found'],
-		['322', 'Invalid Category Id'],
-		['323', 'Digital Delivery and Digital URL must be paired together and digital URL must be a valid URL'],
-		['324', 'Invalid rebill_product or rebill_days value'],
-		['325', 'Length Does Not Meet Minimum'],
-		['326', 'URL is invalid'],
-		['327', 'Payment Type Invalid'],
-		['328', 'Expiration Date Invalid (Must be in the format of MMYY with no special characters)'],
-		['329', 'Credit card must be either 15 or 16 digits numeric only'],
-		['330', 'No Status Passed'],
-		['331', 'Invalid Criteria'],
-		['332', 'Start and end date are required'],
-		['333', 'No Orders Found'],
-		['334', 'Invalid Start Date format'],
-		['335', 'Invalid End Date format'],
-		['336', 'Wild Card Unsupported for this search criteria'],
-		['337', 'Last 4 or First 4 must be 4 characters exactly'],
-		['338', 'Timestamp invalid'],
-		['339', 'Total Amount must be numeric and non-negative'],
-		['340', 'Invalid country code'],
-		['341', 'Invalid state code'],
-		['342', 'Invalid Email Address'],
-		['343', 'Data Element Has Same Value As Value Passed No Update done (Information ONLY, but still a success)'],
-		['344', 'Invalid Number Format'],
-		['345', 'Must be a 1 or 0.  "1" being "On" or true. "0" being "Off" or false.'],
-		['346', 'Invalid date format. Use mm/dd/yyyy'],
-		['347', 'Invalid RMA reason'],
-		['348', 'Order is already flagged as RMA'],
-		['349', 'Order is not flagged as RMA'],
-		['350', 'Invalid order Id supplied'],
-		['351', 'Invalid status or action supplied'],
-		['352', 'Uneven Order/Status/Action Pairing'],
-		['353', 'Cannot stop recurring'],
-		['354', 'Cannot reset recurring'],
-		['355', 'Cannot start recurring'],
-		['356', 'Credit card has expired'],
-		['357', 'Exceeded number of batch orders to view'],
-		['360', 'Cannot stop upsell recurring'],
-		['370', 'Invalid amount supplied'],
-		['371', 'Invalid keep recurring flag supplied'],
-		['372', 'Refund amount exceeds current order total'],
-		['373', 'Cannot void a fully refunded order'],
-		['374', 'Cannot reprocess non-declined orders'],
-		['375', 'Cannot blacklist test payment method'],
-		['376', 'Invalid tracking number'],
-		['377', 'Cannot ship pending orders'],
-		['378', 'Order already shipped'],
-		['379', 'Order is fully refunded/voided'],
-		['380', 'Order is not valid for force bill'],
-		['381', 'Customer is blacklisted'],
-		['382', 'Invalid US state'],
-		['383', 'All military states must have a city of either "APO", "FPO". or "DPO"'],
-		['384', 'Invalid date mode'],
-		['385', 'Invalid billing cycle filter'],
-		['386', 'Order has already been returned'],
-		['387', 'Invalid return reason'],
-		['388', 'Rebill discount exceeds maximum for product'],
-		['389', 'Refund amount must be greater than 0'],
-		['390', 'Invalid number of days supplied'],
-		['400', 'Invalid campaign Id supplied'],
-		['401', 'Invalid subscription type'],
-		['402', 'Subscription type 3 requires subscription week and subscription day values'],
-		['403', 'Invalid subscription week value'],
-		['404', 'Invalid subscription day value'],
-		['405', 'Subscription type 3 required for subscription week and subscription day values'],
-		['406', 'Rebill days must be a value between 1 and 31 for subscription type 2'],
-		['407', 'Rebill days must be greater than 0 if subscription type is 1 or 2'],
-		['408', 'Rebill days is invalid unless type is 1 or 2'],
-		['409', 'Subscription type 0, other subscription fields invalid'],
-		['410', 'API user: (api_username) has reached the limit of requests per minute: (limit) for method: (method_name)'],
-		['411', 'Invalid subscription field'],
-		['412', 'Missing subscription field'],
-		['413', 'Product is not subscription based'],
-		['415', 'Invalid subscription value'],
-		['420', 'Campaign does not have fulfillment provider attached'],
-		['421', 'This order was placed on hold'],
-		['422', 'This order has not been sent to fulfillment yet'],
-		['423', 'Invalid SKU'],
-		['424', 'Fulfillment Error, provider did not specify'],
-		['425', 'This order has been sent to fulfillment but has not been shipped'],
-		['426', 'This order not eligible for offline payment  approval (incorrect status & payment type)'],
-		['430', 'Coupon Error: Invalid Promo Code'],
-		['431', 'Coupon Error: This promo code has expired'],
-		['432', 'Coupon Error: Product does not meet minimum purchase amount'],
-		['433', 'Coupon Error: Maximum use count has exceeded'],
-		['434', 'Coupon Error: Customer use count has exceeded its limit'],
-		['435', 'Invalid attribute found on product'],
-		['436', 'Invalid option found on attribute'],
-		['437', 'Invalid attribute combination; no variants matched for product'],
-		['438', 'Invalid attribute(s). Product does not have variants'],
-		['439', 'Product has variants; product attributes must be provided.'],
-		['500', 'Invalid customer Id supplied'],
-		['600', 'Invalid product Id supplied'],
-		['601', 'Invalid prospect Id supplied'],
-		['602', 'No prospects found'],
-		['603', 'Invalid customer Id supplied'],
-		['604', 'No customers found'],
-		['666', 'User does not have permission to use this method'],
-		['667', 'This user account is currently disabled'],
-		['700', 'Invalid method supplied'],
-		['701', 'Action not permitted by gateway'],
-		['702', 'Invalid gateway Id'],
-		['800', 'Transaction was declined'],
-		['901', 'Invalid return URL'],
-		['902', 'Invalid cancel URL'],
-		['903', 'Error retrieving alternative provider data'],
-		['904', 'Campaign does not support an alternative payment provider'],
-		['905', 'Product quantity/dynamic price does not match'],
-		['906', 'Invalid quantity'],
-		['907', 'Invalid shipping Id'],
-		['908', 'Payment was already approved'],
-		['1000', 'SSL is required']
+	_membershipResponseCodes: Map<number, string> = new Map([
+		[10, 'Success'],
+		[200, 'Invalid login credentials'],
+		[320, 'Invalid Product Id'],
+		[321, 'Existing Product Category Id Not Found'],
+		[322, 'Invalid Category Id'],
+		[323, 'Digital Delivery and Digital URL must be paired together and digital URL must be a valid URL'],
+		[324, 'Invalid rebill_product or rebill_days value'],
+		[325, 'Length Does Not Meet Minimum'],
+		[326, 'URL is invalid'],
+		[327, 'Payment Type Invalid'],
+		[328, 'Expiration Date Invalid (Must be in the format of MMYY with no special characters)'],
+		[329, 'Credit card must be either 15 or 16 digits numeric only'],
+		[330, 'No Status Passed'],
+		[331, 'Invalid Criteria'],
+		[332, 'Start and end date are required'],
+		[333, 'No Orders Found'],
+		[334, 'Invalid Start Date format'],
+		[335, 'Invalid End Date format'],
+		[336, 'Wild Card Unsupported for this search criteria'],
+		[337, 'Last 4 or First 4 must be 4 characters exactly'],
+		[338, 'Timestamp invalid'],
+		[339, 'Total Amount must be numeric and non-negative'],
+		[340, 'Invalid country code'],
+		[341, 'Invalid state code'],
+		[342, 'Invalid Email Address'],
+		[343, 'Data Element Has Same Value As Value Passed No Update done (Information ONLY, but still a success)'],
+		[344, 'Invalid Number Format'],
+		[345, 'Must be a 1 or 0.  "1" being "On" or true. "0" being "Off" or false.'],
+		[346, 'Invalid date format. Use mm/dd/yyyy'],
+		[347, 'Invalid RMA reason'],
+		[348, 'Order is already flagged as RMA'],
+		[349, 'Order is not flagged as RMA'],
+		[350, 'Invalid order Id supplied'],
+		[351, 'Invalid status or action supplied'],
+		[352, 'Uneven Order/Status/Action Pairing'],
+		[353, 'Cannot stop recurring'],
+		[354, 'Cannot reset recurring'],
+		[355, 'Cannot start recurring'],
+		[356, 'Credit card has expired'],
+		[357, 'Exceeded number of batch orders to view'],
+		[360, 'Cannot stop upsell recurring'],
+		[370, 'Invalid amount supplied'],
+		[371, 'Invalid keep recurring flag supplied'],
+		[372, 'Refund amount exceeds current order total'],
+		[373, 'Cannot void a fully refunded order'],
+		[374, 'Cannot reprocess non-declined orders'],
+		[375, 'Cannot blacklist test payment method'],
+		[376, 'Invalid tracking number'],
+		[377, 'Cannot ship pending orders'],
+		[378, 'Order already shipped'],
+		[379, 'Order is fully refunded/voided'],
+		[380, 'Order is not valid for force bill'],
+		[381, 'Customer is blacklisted'],
+		[382, 'Invalid US state'],
+		[383, 'All military states must have a city of either "APO", "FPO". or "DPO"'],
+		[384, 'Invalid date mode'],
+		[385, 'Invalid billing cycle filter'],
+		[386, 'Order has already been returned'],
+		[387, 'Invalid return reason'],
+		[388, 'Rebill discount exceeds maximum for product'],
+		[389, 'Refund amount must be greater than 0'],
+		[390, 'Invalid number of days supplied'],
+		[400, 'Invalid campaign Id supplied'],
+		[401, 'Invalid subscription type'],
+		[402, 'Subscription type 3 requires subscription week and subscription day values'],
+		[403, 'Invalid subscription week value'],
+		[404, 'Invalid subscription day value'],
+		[405, 'Subscription type 3 required for subscription week and subscription day values'],
+		[406, 'Rebill days must be a value between 1 and 31 for subscription type 2'],
+		[407, 'Rebill days must be greater than 0 if subscription type is 1 or 2'],
+		[408, 'Rebill days is invalid unless type is 1 or 2'],
+		[409, 'Subscription type 0, other subscription fields invalid'],
+		[410, 'API user: (api_username) has reached the limit of requests per minute: (limit) for method: (method_name)'],
+		[411, 'Invalid subscription field'],
+		[412, 'Missing subscription field'],
+		[413, 'Product is not subscription based'],
+		[415, 'Invalid subscription value'],
+		[420, 'Campaign does not have fulfillment provider attached'],
+		[421, 'This order was placed on hold'],
+		[422, 'This order has not been sent to fulfillment yet'],
+		[423, 'Invalid SKU'],
+		[424, 'Fulfillment Error, provider did not specify'],
+		[425, 'This order has been sent to fulfillment but has not been shipped'],
+		[426, 'This order not eligible for offline payment  approval (incorrect status & payment type)'],
+		[430, 'Coupon Error: Invalid Promo Code'],
+		[431, 'Coupon Error: This promo code has expired'],
+		[432, 'Coupon Error: Product does not meet minimum purchase amount'],
+		[433, 'Coupon Error: Maximum use count has exceeded'],
+		[434, 'Coupon Error: Customer use count has exceeded its limit'],
+		[435, 'Invalid attribute found on product'],
+		[436, 'Invalid option found on attribute'],
+		[437, 'Invalid attribute combination; no variants matched for product'],
+		[438, 'Invalid attribute(s). Product does not have variants'],
+		[439, 'Product has variants; product attributes must be provided.'],
+		[500, 'Invalid customer Id supplied'],
+		[600, 'Invalid product Id supplied'],
+		[601, 'Invalid prospect Id supplied'],
+		[602, 'No prospects found'],
+		[603, 'Invalid customer Id supplied'],
+		[604, 'No customers found'],
+		[666, 'User does not have permission to use this method'],
+		[667, 'This user account is currently disabled'],
+		[700, 'Invalid method supplied'],
+		[701, 'Action not permitted by gateway'],
+		[702, 'Invalid gateway Id'],
+		[800, 'Transaction was declined'],
+		[901, 'Invalid return URL'],
+		[902, 'Invalid cancel URL'],
+		[903, 'Error retrieving alternative provider data'],
+		[904, 'Campaign does not support an alternative payment provider'],
+		[905, 'Product quantity/dynamic price does not match'],
+		[906, 'Invalid quantity'],
+		[907, 'Invalid shipping Id'],
+		[908, 'Payment was already approved'],
+		[1000, 'SSL is required']
 	]);
 
 	/**
@@ -254,21 +261,7 @@ class Api extends Base {
 
 		}
 
-		try {
-
-			return this._apiRequest('membership', 'order_find', params, options);
-
-		} catch (ex) {
-
-			if (ex.responseCode !== 333) {
-
-				throw ex;
-
-			}
-
-			return ex.apiResponse;
-
-		}
+		return this._apiRequest('membership', 'order_find', params, _.extend({errorCodeOverrides: [333]}, options));
 
 	}
 
@@ -292,21 +285,7 @@ class Api extends Base {
 
 		}
 
-		try {
-
-			return this._apiRequest('membership', 'order_find_updated', params, options);
-
-		} catch (ex) {
-
-			if (ex.responseCode !== 333) {
-
-				throw ex;
-
-			}
-
-			return ex.apiResponse;
-
-		}
+		return this._apiRequest('membership', 'order_find_updated', params, _.extend({errorCodeOverrides: [333]}, options));
 
 	}
 
@@ -387,21 +366,7 @@ class Api extends Base {
 
 		}
 
-		try {
-
-			return this._apiRequest('membership', 'customer_find', params, options);
-
-		} catch (ex) {
-
-			if (ex.responseCode !== 604) {
-
-				throw ex;
-
-			}
-
-			return ex.apiResponse;
-
-		}
+		return this._apiRequest('membership', 'customer_find', params, _.extend({errorCodeOverrides: [604]}, options));
 
 	}
 
@@ -452,9 +417,9 @@ class Api extends Base {
 	 * @returns {{url: {string}, form: {username: (string|*), password: (string|*), method: *}, timeout: number}}
 	 * @private
 	 */
-	_composeApiCall (apiType: string, method: string, params: Object, options: LimelightApiOptionsType): Object {
+	_composeApiCall (apiType: string, method: string, params: Object, options: LimelightApiOptionsType): ComposeApiCallResponseType {
 
-		const form = {
+		const form: Object = {
 			username: this._user,
 			password: this._password,
 			method: method
@@ -485,10 +450,10 @@ class Api extends Base {
 	 */
 	async _apiRequest (apiType: string, method: string, params: Object, options: LimelightApiOptionsType): Promise<LimelightApiResponseType> {
 
-		const self = this;
+		const self: Api = this;
 
-		const requestParams = self._composeApiCall(apiType, method, params, options);
-		const body = await request.post(requestParams);
+		const requestParams: ComposeApiCallResponseType = self._composeApiCall(apiType, method, params, options);
+		const body: Object = await request.post(requestParams);
 		return _responseHandler(body);
 
 		async function _responseHandler (body: Object) {
@@ -500,16 +465,16 @@ class Api extends Base {
 
 			// so it appears LL really sucks, because it uses different response codes for different api calls
 
-			const result = {};
+			const result: LimelightApiResponseType = {responseCode: 500, responseCodeDesc: 'Unspecified', body: null};
 
 			if (body.response_code) {
 
-				const codes = body.response_code.split(',');
+				const codes: string[] = body.response_code.split(',');
 
 				if (codes.length === 1) {
 
 					result.responseCode = parseInt(body.response_code);
-					result.responseCodeDesc = self._membershipResponseCodes.get(body.response_code.toString()) || 'Unspecified';
+					result.responseCodeDesc = self._membershipResponseCodes.get(Number(body.response_code)) || 'Unspecified';
 
 				} else {
 
@@ -521,7 +486,7 @@ class Api extends Base {
 					});
 					result.responseCodeDesc = _.map(codes, (code) => {
 
-						return self._membershipResponseCodes.get(code.toString()) || 'Unspecified';
+						return self._membershipResponseCodes.get(Number(code)) || 'Unspecified';
 
 					});
 
@@ -530,7 +495,7 @@ class Api extends Base {
 			} else if (body.response) {
 
 				result.responseCode = parseInt(body.response);
-				result.responseCodeDesc = self._membershipResponseCodes.get(body.response.toString()) || 'Unspecified';
+				result.responseCodeDesc = self._membershipResponseCodes.get(Number(body.response)) || 'Unspecified';
 
 			} else if (Object.keys(body).length > 0 && Object.keys(body)[0] === '100') {
 
@@ -579,6 +544,7 @@ class Api extends Base {
 
 				try {
 
+					// $FlowFixMe
 					result.body.data = JSON.parse(result.body.data);
 
 				} catch (ex) {
@@ -600,7 +566,20 @@ class Api extends Base {
 
 			if (!result.body) {
 
-				throw new LimelightApiError(result.responseCode, result.responseCodeDesc, null, result);
+				if (options && options.errorCodeOverrides) {
+
+					// not all codes are errors on all calls
+					if (!_.includes(options.errorCodeOverrides, result.responseCode)) {
+
+						throw new LimelightApiError(result.responseCode, result.responseCodeDesc, null, result);
+
+					}
+
+				} else {
+
+					throw new LimelightApiError(result.responseCode, result.responseCodeDesc, null, result);
+
+				}
 
 			}
 

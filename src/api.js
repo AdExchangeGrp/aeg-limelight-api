@@ -486,7 +486,7 @@ class Api extends Base {
 
 			if (attempt > 1) {
 
-				self.emit('warn', `_apiRequest: ${method}`, {message: 'retry failed', data: {attempt}});
+				self.emit('warn', `_apiRequest: ${method}`, {message: 'retry failed', data: {attempt: attempt - 1}});
 
 			}
 

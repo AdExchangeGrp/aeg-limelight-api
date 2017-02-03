@@ -15,7 +15,7 @@
     "eslint": "eslint .",
     "eslint:watch": "npm run eslint && onchange \"**/*.js\" \".jshint*\" -- npm run eslint",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
-    "compile": "babel -d ./lib/ ./src/",
+    "compile": "babel -d ./lib/ ./src/ && mkdir -p ./tmp && pax -wrs '/\\.js$/\\.js\\.flow/g' ./src ./tmp && rsync -a ./tmp/src/ ./lib/ && rm -Rf ./tmp ",
     "build": "npm run eslint && npm run flow && npm run compile && istanbul cover _mocha -- --recursive --compilers js:babel-core/register --reporter mocha-junit-reporter test/unit",
     "patch": "git reset --hard HEAD && git clean -fd && npm run compile && npm version patch -m \"[ci skip] %s\" && git push origin master && git push origin master --tags && npm publish"
   },

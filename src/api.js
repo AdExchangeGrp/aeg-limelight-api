@@ -1,6 +1,30 @@
 // @flow
 
-import type { LimelightApiOptionsType, LimelightApiResponseType } from './flow-typed/types';
+import type {
+	OrderType,
+	LimelightApiOrderType,
+	CampaignType,
+	LimelightApiCampaignType,
+	LimelightApiOptionsType,
+	LimelightApiUpdateRequestType,
+	LimelightApiFindActiveCampaignsResponseType,
+	FindActiveCampaignsResponseType,
+	LimelightApiGetCampaignResponseType,
+	GetCampaignResponseType,
+	ShippingMethodResponseType,
+	GetProductsResponseType,
+	LimelightApiGetOrderResponseType,
+	GetOrderResponseType,
+	GetOrdersResponseSingleOrderType,
+	LimelightApiGetOrdersResponseType,
+	GetOrdersResponseType,
+	LimelightApiFindOrdersOptionsType,
+	LimelightApiFindOrdersResponseType,
+	FindOrdersResponseType,
+	LimelightApiFindCustomersResponseType,
+	FindCustomersResponseType,
+	ResponseType
+} from './flow-typed/types';
 import LimelightApiError from './limelight-api-error';
 import config from 'config';
 import request from 'request-promise';
@@ -10,7 +34,7 @@ import $ from 'stringformat';
 import { Base, ControlFlow } from '@adexchange/aeg-common';
 import EventEmitter from 'events';
 
-type ComposeApiCallResponseType = {
+declare type ComposeApiCallResponseType = {
 
 	url: string,
 	form: Object,
@@ -187,22 +211,47 @@ class Api extends Base {
 	/**
 	 * Validate the credentials
 	 * @param {LimelightApiOptionsType} [options]
-	 *  @returns {Promise.<LimelightApiResponseType>}
+	 *  @returns {Promise<boolean>}
 	 */
-	async validateCredentials (options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async validateCredentials (options: LimelightApiOptionsType = {}): Promise<boolean> {
 
-		return this._apiRequest('membership', 'validate_credentials', {}, options);
+		try {
+
+			await this._apiRequest('membership', 'validate_credentials', {}, options);
+			return true;
+
+		} catch (ex) {
+
+			if (ex.apiResponse.apiActionResults[0].responseCode === 200) {
+
+				return false;
+
+			} else {
+
+				throw ex;
+
+			}
+
+		}
 
 	}
 
 	/**
 	 * Find all active campaigns
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<LimelightApiFindActiveCampaignsResponseType>}
 	 */
-	async findActiveCampaigns (options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async findActiveCampaigns (options: LimelightApiOptionsType = {}): Promise<LimelightApiFindActiveCampaignsResponseType> {
 
-		return this._apiRequest('membership', 'campaign_find_active', {}, options);
+		const response: FindActiveCampaignsResponseType = await this._apiRequest('membership', 'campaign_find_active', {}, options);
+		const campaignIds = response.body.campaign_id.split(',');
+		const campaignNames = response.body.campaign_name.split(',');
+
+		return _.map(campaignIds, (id, i) => {
+
+			return {id: id, name: campaignNames[i]};
+
+		});
 
 	}
 
@@ -210,9 +259,9 @@ class Api extends Base {
 	 * Gets a campaign
 	 * @param {number} campaignId
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<LimelightApiGetCampaignResponseType>}
 	 */
-	async getCampaign (campaignId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async getCampaign (campaignId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiGetCampaignResponseType> {
 
 		if (!campaignId) {
 
@@ -220,7 +269,20 @@ class Api extends Base {
 
 		}
 
-		return this._apiRequest('membership', 'campaign_view', {'campaign_id': campaignId}, options);
+		try {
+
+			const response: GetCampaignResponseType = await this._apiRequest('membership', 'campaign_view', {'campaign_id': campaignId}, options);
+			return this._cleanseCampaign(response.body);
+
+		} catch (ex) {
+
+			if (ex.apiResponse.apiActionResults[0].responseCode !== 400) {
+
+				throw ex;
+
+			}
+
+		}
 
 	}
 
@@ -228,9 +290,9 @@ class Api extends Base {
 	 * Gets an order
 	 * @param {number} orderId
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<GetOrdersResponseType>}
 	 */
-	async getOrder (orderId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async getOrder (orderId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiGetOrderResponseType> {
 
 		if (!orderId) {
 
@@ -238,7 +300,13 @@ class Api extends Base {
 
 		}
 
-		return this._apiRequest('membership', 'order_view', {'order_id': orderId}, options);
+		const result: GetOrderResponseType = await this._apiRequest('membership', 'order_view', {'order_id': orderId}, _.extend({errorCodeOverrides: [350]}, options));
+
+		if (result.body.response_code === '100') {
+
+			return this._cleanseOrder(orderId, result.body);
+
+		}
 
 	}
 
@@ -246,9 +314,9 @@ class Api extends Base {
 	 * Gets a set of orders
 	 * @param {number[]} orderIds
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<LimelightApiGetOrdersResponseType>}
 	 */
-	async getOrders (orderIds: number[], options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async getOrders (orderIds: number[], options: LimelightApiOptionsType = {}): Promise<LimelightApiGetOrdersResponseType> {
 
 		if (!orderIds || !orderIds.length) {
 
@@ -262,31 +330,91 @@ class Api extends Base {
 
 		}
 
-		return this._apiRequest('membership', 'order_view', {'order_id': orderIds.join(',')}, options);
+		if (orderIds.length === 1) {
+
+			const result: GetOrdersResponseSingleOrderType = await this._apiRequest('membership', 'order_view', {'order_id': orderIds.join(',')}, _.extend({errorCodeOverrides: [350]}, options));
+
+			if (result.body) {
+
+				if (result.body.response_code !== '350') {
+
+					return [this._cleanseOrder(Number(orderIds[0]), result.body)];
+
+				} else {
+
+					return [];
+
+				}
+
+			}
+
+		} else {
+
+			const result: GetOrdersResponseType = await this._apiRequest('membership', 'order_view', {'order_id': orderIds.join(',')}, _.extend({errorCodeOverrides: [350]}, options));
+
+			if (result.body && result.body.data) {
+
+				const map = _.map(Object.keys(result.body.data), (key) => {
+
+					if (result.body.data[key].response_code !== '350') {
+
+						return this._cleanseOrder(Number(key), result.body.data[key]);
+
+					}
+
+				});
+
+				return _.filter(map, (m) => {
+
+					return m;
+
+				});
+
+			}
+
+		}
+
+		return [];
 
 	}
 
 	/**
 	 * Find orders
-	 * @param {Object} params
+	 * @param {number} campaignId
+	 * @param {string} criteria
+	 * @param {string} startDate
+	 * @param {string} endDate
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<FindOrdersResponseType>}
 	 */
-	async findOrders (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async findOrders (campaignId: number, criteria: string, startDate: string, endDate: string, options: LimelightApiFindOrdersOptionsType = {}): Promise<LimelightApiFindOrdersResponseType> {
 
-		if (!params || !params.campaign_id || !params.criteria || !params.start_date || !params.end_date) {
+		const params: {campaign_id: number, criteria: string, start_date: string, end_date: string, product_ids?: number[]} = {
+			campaign_id: campaignId,
+			criteria,
+			start_date: startDate,
+			end_date: endDate
+		};
 
-			throw LimelightApiError.createWithOne(500, 'findOrders requires params: campaign_id, criteria, start_date, end_date');
+		if (options.productIds) {
+
+			params.product_ids = options.productIds;
 
 		}
 
-		if (params.product_ids && !_.isString(params.product_ids)) {
+		const response: FindOrdersResponseType = await this._apiRequest('membership', 'order_find', params, _.extend({errorCodeOverrides: [333]}, options));
 
-			params.product_ids = params.product_ids.join(',');
+		if (response.apiActionResults[0].responseCode === 333) {
+
+			return [];
 
 		}
 
-		return this._apiRequest('membership', 'order_find', params, _.extend({errorCodeOverrides: [333]}, options));
+		return _.map(response.body.order_ids.split(','), (o) => {
+
+			return Number(o);
+
+		});
 
 	}
 
@@ -294,9 +422,9 @@ class Api extends Base {
 	 * Find updated orders
 	 * @param {Object} params
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<ResponseType>}
 	 */
-	async findUpdatedOrders (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async findUpdatedOrders (params: Object, options: LimelightApiOptionsType = {}): Promise<ResponseType> {
 
 		if (!params || !params.campaign_id || !params.group_keys || !params.start_date || !params.end_date) {
 
@@ -316,33 +444,15 @@ class Api extends Base {
 
 	/**
 	 * Update orders
-	 * @param {Object} params
+	 * @param {LimelightApiUpdateRequestType} params
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<ResponseType>}
 	 */
-	async updateOrders (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async updateOrders (params: LimelightApiUpdateRequestType, options: LimelightApiOptionsType = {}): Promise<ResponseType> {
 
 		if (!params || !params.orderIds || !params.actions || !params.values) {
 
 			throw LimelightApiError.createWithOne(500, 'updateOrders requires params: order_ids, tracking_number');
-
-		}
-
-		if (!_.isString(params.orderIds)) {
-
-			params.orderIds = params.orderIds.join(',');
-
-		}
-
-		if (!_.isString(params.actions)) {
-
-			params.actions = params.actions.join(',');
-
-		}
-
-		if (!_.isString(params.values)) {
-
-			params.values = params.values.join(',');
 
 		}
 
@@ -363,9 +473,9 @@ class Api extends Base {
 	 * Get a customer
 	 * @param {number} customerId
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<ResponseType>}
 	 */
-	async getCustomer (customerId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async getCustomer (customerId: number, options: LimelightApiOptionsType = {}): Promise<ResponseType> {
 
 		if (!customerId) {
 
@@ -379,19 +489,33 @@ class Api extends Base {
 
 	/**
 	 * Find customers
-	 * @param {Object} params
+	 * @param {Object} campaignId
+	 * @param {Object} startDate
+	 * @param {Object} endDate
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<LimelightApiFindCustomersResponseType>}
 	 */
-	async findCustomers (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async findCustomers (campaignId: number, startDate: string, endDate: string, options: LimelightApiOptionsType = {}): Promise<LimelightApiFindCustomersResponseType> {
 
-		if (!params || !params.campaign_id || !params.start_date || !params.end_date) {
+		const params = {
+			campaign_id: campaignId,
+			start_date: startDate,
+			end_date: endDate
+		};
 
-			throw LimelightApiError.createWithOne(500, 'findCustomer requires params: campaign_id, start_date, end_date');
+		const response: FindCustomersResponseType = await this._apiRequest('membership', 'customer_find', params, _.extend({errorCodeOverrides: [604]}, options));
+
+		if (response.apiActionResults[0].responseCode === 604) {
+
+			return [];
 
 		}
 
-		return this._apiRequest('membership', 'customer_find', params, _.extend({errorCodeOverrides: [604]}, options));
+		return _.map(response.body.customer_ids.split(','), (c) => {
+
+			return Number(c);
+
+		});
 
 	}
 
@@ -399,10 +523,10 @@ class Api extends Base {
 	 * Gets a set of products
 	 * @param {number[]} productIds
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<GetProductsResponseType>}
 	 * @returns {*}
 	 */
-	async getProducts (productIds: number[], options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async getProducts (productIds: number[], options: LimelightApiOptionsType = {}): Promise<GetProductsResponseType> {
 
 		if (!productIds || !productIds.length) {
 
@@ -418,10 +542,10 @@ class Api extends Base {
 	 * Gets the shipping methods
 	 * @param {Object} params
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<ShippingMethodResponseType>}
 	 * @returns {*}
 	 */
-	async findShippingMethods (params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async findShippingMethods (params: Object, options: LimelightApiOptionsType = {}): Promise<ShippingMethodResponseType> {
 
 		if (!params || !params.campaign_id) {
 
@@ -470,10 +594,10 @@ class Api extends Base {
 	 * @param {string} method
 	 * @param {Object} params
 	 * @param {LimelightApiOptionsType} options
-	 * @returns {Promise.<LimelightApiResponseType>}
+	 * @returns {Promise<ResponseType>}
 	 * @private
 	 */
-	async _apiRequest (apiType: string, method: string, params: Object, options: LimelightApiOptionsType = {}): Promise<LimelightApiResponseType> {
+	async _apiRequest (apiType: string, method: string, params: Object, options: LimelightApiOptionsType = {}): Promise<ResponseType> {
 
 		const self: Api = this;
 
@@ -482,7 +606,7 @@ class Api extends Base {
 		const retries: number = options.retries || 1;
 		const retryDelay: number = options.retryDelay || 0;
 
-		const body: Object = await ControlFlow.retryWhilst(retries, retryDelay, (attempt) => {
+		const body: string = await ControlFlow.retryWhilst(retries, retryDelay, (attempt) => {
 
 			if (attempt > 1) {
 
@@ -498,11 +622,11 @@ class Api extends Base {
 
 		/**
 		 * Process the response
-		 * @param {Object} body
-		 * @returns {Promise.<LimelightApiResponseType>}
+		 * @param {string} body
+		 * @returns {ResponseType}
 		 * @private
 		 */
-		async function _responseHandler (body: Object) {
+		function _responseHandler (body: string): ResponseType {
 
 			// filtering characters that potentially break JSON parsing since LL uses URL encoded strings
 			body = body.replace(/%22|%00|%01|%02|%03|%04|%05|%06|%07|%08|%09|%0A|%0B|%0C|%0D|%0E|%0F|%10|%11|%12|%13|%14|%15|%16|%17|%18|%19|%1A|%1B|%1C|%1D|%1E|%1F/g, '');
@@ -511,7 +635,7 @@ class Api extends Base {
 
 			// so it appears LL really sucks, because it uses different response codes for different api calls
 
-			const results: LimelightApiResponseType = {apiActionResults: [], body};
+			const results: ResponseType = {apiActionResults: [], body};
 
 			if (body.response_code) {
 
@@ -573,7 +697,6 @@ class Api extends Base {
 
 				try {
 
-					// $FlowFixMe
 					results.body.data = JSON.parse(results.body.data);
 
 				} catch (ex) {
@@ -616,6 +739,172 @@ class Api extends Base {
 			return results;
 
 		}
+
+	}
+
+	/**
+	 * Cleans up the order response
+	 * @param {number} orderId
+	 * @param {OrderType} order
+	 * @returns {LimelightApiOrderType}
+	 * @private
+	 */
+	_cleanseOrder (orderId: number, order: OrderType): LimelightApiOrderType {
+
+		return {
+			orderId: orderId,
+			acquisitionDate: order.acquisition_date,
+			ancestorId: order.ancestor_id,
+			affiliate: order.affiliate,
+			afid: order.afid,
+			sid: order.sid,
+			affid: order.affid,
+			c1: order.c1,
+			c2: order.c2,
+			c3: order.c3,
+			aid: order.aid,
+			opt: order.opt,
+			amountRefundedToDate: order.amount_refunded_to_date,
+			authId: order.auth_id,
+			billingCity: order.billing_city,
+			billingCountry: order.billing_country,
+			billingCycle: order.billing_cycle,
+			billingFirstName: order.billing_first_name,
+			billingLastName: order.billing_last_name,
+			billingPostcode: order.billing_postcode,
+			billingState: order.billing_state,
+			billingStateId: order.billing_state_id,
+			billingStreetAddress: order.billing_street_address,
+			billingStreetAddress2: order.billing_street_address2,
+			campaignId: order.campaign_id,
+			ccExpires: order.cc_expires,
+			ccFirst_6: order.cc_first_6,
+			ccLast_4: order.cc_last_4,
+			ccNumber: order.cc_number,
+			creditCardNumber: order.credit_card_number,
+			ccType: order.cc_type,
+			chargebackDate: order.chargeback_date,
+			checkAccountLast4: order.check_account_last_4,
+			checkRoutingLast4: order.check_routing_last_4,
+			checkSSNLast4: order.check_ssn_last_4,
+			checkTransitNum: order.check_transitnum,
+			childId: order.child_id,
+			clickId: order.click_id,
+			createdByUserName: order.created_by_user_name,
+			createdByEmployeeName: order.created_by_employee_name,
+			couponDiscountAmount: order.coupon_discount_amount,
+			customerId: order.customer_id,
+			customersTelephone: order.customers_telephone,
+			declineSalvageDiscountPercent: order.decline_salvage_discount_percent,
+			declineReason: order.decline_reason,
+			emailAddress: order.email_address,
+			firstName: order.first_name,
+			gatewayId: order.gateway_id,
+			gatewayDescriptor: order.gateway_descriptor,
+			holdDate: order.hold_date,
+			ipAddress: order.ip_address,
+			isBlacklisted: order.is_blacklisted,
+			isChargeback: order.is_chargeback,
+			isFraud: order.is_fraud,
+			isRecurring: order.is_recurring,
+			isRefund: order.is_refund,
+			isRma: order.is_rma,
+			isTestCC: order.is_test_cc,
+			isVoid: order.is_void,
+			lastName: order.last_name,
+			mainProductId: order.main_product_id,
+			mainProductQuantity: order.main_product_quantity,
+			nextSubscriptionProduct: order.next_subscription_product,
+			nextSubscriptionProductId: order.next_subscription_product_id,
+			onHold: order.on_hold,
+			onHoldBy: order.on_hold_by,
+			orderConfirmed: order.order_confirmed,
+			orderConfirmedDate: order.order_confirmed_date,
+			orderSalesTax: order.order_sales_tax,
+			orderSalesTaxAmount: order.order_sales_tax_amount,
+			orderStatus: order.order_status,
+			orderTotal: order.order_total,
+			parentId: order.parent_id,
+			prepaidMatch: order.prepaid_match,
+			preserveGateway: order.preserve_gateway,
+			processorId: order.processor_id,
+			rebillDiscountPercent: order.rebill_discount_percent,
+			recurringDate: order.recurring_date,
+			refundAmount: order.refund_amount,
+			refundDate: order.refund_date,
+			retryDate: order.retry_date,
+			rmaNumber: order.rma_number,
+			rmaReason: order.rma_reason,
+			shippingCity: order.shipping_city,
+			shippingCountry: order.shipping_country,
+			shipping_Date: order.shipping_date,
+			shippingFirstName: order.shipping_first_name,
+			shippingId: order.shipping_id,
+			shippingLastName: order.shipping_last_name,
+			shippingMethodName: order.shipping_method_name,
+			shippingPostcode: order.shipping_postcode,
+			shippingState: order.shipping_state,
+			shippingStateId: order.shipping_state_id,
+			shippingStreetAddress: order.shipping_street_address,
+			shippingStreetAddress2: order.shipping_street_address2,
+			subAffiliate: order.sub_affiliate,
+			timestamp: order.time_stamp,
+			trackingNumber: order.tracking_number,
+			transactionId: order.transaction_id,
+			upsellProductId: order.upsell_product_id,
+			upsellProductQuantity: order.upsell_product_quantity,
+			voidAmount: order.void_amount,
+			voidDate: order.void_date,
+			shippable: order.shippable,
+			products: _.map(order.products, (p) => {
+
+				return {
+					productId: p.product_id,
+					sku: p.sku,
+					price: p.price,
+					productQty: p.product_qty,
+					name: p.name,
+					onHold: p.on_hold,
+					isRecurring: p.is_recurring,
+					recurringDate: p.recurring_date,
+					subscriptionId: p.subscription_id,
+					nextSubscriptionProduct: p.next_subscription_product,
+					nextSubscriptionProductId: p.next_subscription_product_id
+				};
+
+			})
+		};
+
+	}
+
+	/**
+	 * Cleans up the campaign response
+	 * @param {CampaignType} campaign
+	 * @returns {LimelightApiCampaignType}
+	 * @private
+	 */
+	_cleanseCampaign (campaign: CampaignType): LimelightApiCampaignType {
+
+		return {
+			campaignName: campaign.campaign_name,
+			campaignDescription: campaign.campaign_description,
+			campaignType: campaign.campaign_type,
+			gatewayId: campaign.gateway_id,
+			isLoadBalanced: campaign.is_load_balanced,
+			loadBalanceProfile: campaign.load_balance_profile,
+			productId: campaign.product_id,
+			productName: campaign.product_name,
+			isUpsell: campaign.is_upsell,
+			shippingId: campaign.shipping_id,
+			shippingName: campaign.shipping_name,
+			shippingDescription: campaign.shipping_description,
+			shippingRecurringPrice: campaign.shipping_recurring_price,
+			shippingInitialPrice: campaign.shipping_initial_price,
+			countries: campaign.countries,
+			paymentName: campaign.payment_name,
+			successUrl1: campaign.success_url_1,
+			successUrl2: campaign.success_url_2
+		};
 
 	}
 

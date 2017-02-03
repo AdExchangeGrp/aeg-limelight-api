@@ -1,4 +1,5 @@
 import should from 'should';
+import _ from 'lodash';
 import Api from '../../src/api.js';
 
 describe('api domain dvd-crm', async () => {
@@ -27,179 +28,162 @@ describe('api domain dvd-crm', async () => {
 
 		});
 
-	describe('#validateCredentials()', async () => {
+	describe.skip('#validateCredentials()', async () => {
 
-		it('should return without error', async () => {
+		it('should return true', async () => {
 
 			const result = await api.validateCredentials({retries: 3});
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			result.should.be.ok;
 
 		});
 
-		it('should error', async () => {
+		it('should return false', async () => {
 
-			try {
-
-				const result = await badApi.validateCredentials();
-				should.not.exist(result);
-
-			} catch (ex) {
-
-				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(200);
-				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(200));
-
-			}
+			const result = await badApi.validateCredentials();
+			result.should.not.be.ok;
 
 		});
 
 	});
 
-	describe('#findActiveCampaigns()', async () => {
+	describe.skip('#findActiveCampaigns()', async () => {
 
 		it('should return without error', async () => {
 
 			const result = await api.findActiveCampaigns();
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			result.should.be.an.Array;
+
+			_.each(result, (r) => {
+
+				r.should.have.properties('id', 'name');
+
+			});
 
 		});
 
 	});
 
-	describe('#getCampaign()', async () => {
+	describe.skip('#getCampaign()', async () => {
 
 		it('should return without error', async () => {
 
 			const result = await api.getCampaign(34);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			should.exist(result);
 
 		});
 
 		it('should error', async () => {
 
-			try {
-
-				const result = await api.getCampaign(-1);
-				should.not.exist(result);
-
-			} catch (ex) {
-
-				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(400);
-				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(400));
-
-			}
+			const result = await api.getCampaign(-1);
+			should.not.exist(result);
 
 		});
 
 	});
 
-	describe('#findOrders()', async () => {
+	describe.skip('#findOrders()', async () => {
 
 		it('should not find orders', async () => {
 
-			const result = await api.findOrders({
-				campaign_id: 42,
-				criteria: 'all',
-				product_ids: [26],
-				start_date: '01/01/2013',
-				end_date: '02/01/2015'
-			});
-
-			// noinspection JSValidateTypes
-			(result.apiActionResults[0].responseCode === 333).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(333)).should.be.ok;
+			const result = await api.findOrders(42, 'all', '01/01/2013', '02/01/2015', {productIds: [26]});
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.equal(0);
 
 		});
 
 		it('should find orders', async () => {
 
-			const result = await api.findOrders({
-				campaign_id: 'all',
-				criteria: 'all',
-				product_ids: [26],
-				start_date: '01/01/2016',
-				end_date: '12/01/2016'
-			});
-
-			// noinspection JSValidateTypes
-			(result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
+			const result = await api.findOrders('all', 'all', '01/01/2013', '02/01/2015');
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
 		});
 
 	});
 
-	describe('#getOrder()', async () => {
+	describe.skip('#getOrder()', async () => {
 
 		it('should return without error', async () => {
 
 			const result = await api.getOrder(10000);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			should.exist(result);
+			result.orderId.should.be.equal(10000);
 
 		});
 
 		it('should error', async () => {
 
-			try {
-
-				const result = await api.getOrder(-1);
-				should.not.exist(result);
-
-			} catch (ex) {
-
-				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(350);
-				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(350));
-
-			}
+			const result = await api.getOrder(-1);
+			should.not.exist(result);
 
 		});
 
 	});
 
-	describe('#getOrders()', async () => {
+	describe.skip('#getOrders()', async () => {
 
 		it('should return without error', async () => {
 
 			const result = await api.getOrders([10000, 10018]);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			result.should.be.an.Array;
+			result.length.should.be.equal(2);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getOrders([10000]);
+			result.should.be.an.Array;
+			result.length.should.be.equal(1);
 
 		});
 
 		it('should return without error with a bad id', async () => {
 
-			// the response may contain a 350 for a bad id, but it still passes
-			// client responsibility
+			const result = await api.getOrders([-1]);
+			result.should.be.an.Array;
+			result.length.should.be.equal(0);
+
+		});
+
+		it('should return without error with a bad id', async () => {
+
 			const result = await api.getOrders([10000, -1]);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			result.should.be.an.Array;
+			result.length.should.be.equal(1);
+			should.exist(result[0]);
 
 		});
 
 	});
 
-	describe('#findCustomers()', async () => {
+	describe.skip('#findCustomers()', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findCustomers({
-				campaign_id: 42,
-				start_date: '01/01/2013',
-				end_date: '02/01/2015'
-			});
+			const result = await api.findCustomers(42, '01/01/2013', '02/01/2017');
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
-			// noinspection JSValidateTypes
-			(result.apiActionResults[0].responseCode === 604 || result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(604) || result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.findCustomers(42, '01/01/2013', '02/01/2013');
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.equal(0);
 
 		});
 
 	});
 
-	describe('#getCustomer()', async () => {
+	// todo
+
+	describe.skip('#getCustomer()', async () => {
 
 		it('should return without error', async () => {
 
@@ -219,7 +203,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#getProducts()', async () => {
+	describe.skip('#getProducts()', async () => {
 
 		it('should return without error', async () => {
 
@@ -231,7 +215,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#findShippingMethods()', async () => {
+	describe.skip('#findShippingMethods()', async () => {
 
 		it('should return without error', async () => {
 
@@ -245,7 +229,7 @@ describe('api domain dvd-crm', async () => {
 
 });
 
-describe('api domain mhioffers', async () => {
+describe.skip('api domain mhioffers', async () => {
 
 	const api = new Api('Ad Exchange Group', '4rTKYUWmbPhpW', 'www.globalvoffers.com')
 		.on('error', (err) => {
@@ -253,6 +237,19 @@ describe('api domain mhioffers', async () => {
 			console.log(err);
 
 		});
+
+	describe('#findActiveCampaigns()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.findActiveCampaigns();
+			console.log(result);
+			result.apiActionResults[0].responseCode.should.be.equal(100);
+			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+
+		});
+
+	});
 
 	describe('#getCampaign()', async () => {
 

@@ -1,8 +1,10 @@
-extends: standard
+extends:
+  - standard
+  - plugin:flowtype/recommended
 plugins:
   - standard
   - promise
-  - plugin:flowtype/recommended
+  - flowtype
 root: true
 parser: babel-eslint
 rules:

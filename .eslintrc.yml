@@ -2,6 +2,7 @@ extends: standard
 plugins:
   - standard
   - promise
+  - plugin:flowtype/recommended
 root: true
 parser: babel-eslint
 rules:

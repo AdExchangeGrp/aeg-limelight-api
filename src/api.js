@@ -5,6 +5,8 @@ import type {
 	LimelightApiOrderType,
 	CampaignType,
 	LimelightApiCampaignType,
+	CustomerType,
+	LimelightApiCustomerType,
 	LimelightApiOptionsType,
 	LimelightApiUpdateRequestType,
 	LimelightApiFindActiveCampaignsResponseType,
@@ -23,6 +25,8 @@ import type {
 	FindOrdersResponseType,
 	LimelightApiFindCustomersResponseType,
 	FindCustomersResponseType,
+	LimelightApiGetCustomerResponseType,
+	GetCustomerResponseType,
 	ResponseType
 } from './flow-typed/types';
 import LimelightApiError from './limelight-api-error';
@@ -300,11 +304,11 @@ class Api extends Base {
 
 		}
 
-		const result: GetOrderResponseType = await this._apiRequest('membership', 'order_view', {'order_id': orderId}, _.extend({errorCodeOverrides: [350]}, options));
+		const response: GetOrderResponseType = await this._apiRequest('membership', 'order_view', {'order_id': orderId}, _.extend({errorCodeOverrides: [350]}, options));
 
-		if (result.body.response_code === '100') {
+		if (response.body.response_code === '100') {
 
-			return this._cleanseOrder(orderId, result.body);
+			return this._cleanseOrder(orderId, response.body);
 
 		}
 
@@ -418,6 +422,7 @@ class Api extends Base {
 
 	}
 
+	// todo
 	/**
 	 * Find updated orders
 	 * @param {Object} params
@@ -442,6 +447,7 @@ class Api extends Base {
 
 	}
 
+	// todo
 	/**
 	 * Update orders
 	 * @param {LimelightApiUpdateRequestType} params
@@ -475,7 +481,7 @@ class Api extends Base {
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise<ResponseType>}
 	 */
-	async getCustomer (customerId: number, options: LimelightApiOptionsType = {}): Promise<ResponseType> {
+	async getCustomer (customerId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiGetCustomerResponseType> {
 
 		if (!customerId) {
 
@@ -483,7 +489,13 @@ class Api extends Base {
 
 		}
 
-		return this._apiRequest('membership', 'customer_view', {'customer_id': customerId}, options);
+		const response: GetCustomerResponseType = await this._apiRequest('membership', 'customer_view', {'customer_id': customerId}, _.extend({errorCodeOverrides: [603]}, options));
+
+		if (response.body.response_code === '100') {
+
+			return this._cleanseCustomer(customerId, response.body);
+
+		}
 
 	}
 
@@ -519,6 +531,7 @@ class Api extends Base {
 
 	}
 
+	// todo
 	/**
 	 * Gets a set of products
 	 * @param {number[]} productIds
@@ -538,6 +551,7 @@ class Api extends Base {
 
 	}
 
+	// todo
 	/**
 	 * Gets the shipping methods
 	 * @param {Object} params
@@ -904,6 +918,28 @@ class Api extends Base {
 			paymentName: campaign.payment_name,
 			successUrl1: campaign.success_url_1,
 			successUrl2: campaign.success_url_2
+		};
+
+	}
+
+	/**
+	 * Cleans up the customer response
+	 * @param {number} customerId
+	 * @param {CustomerType} customer
+	 * @returns {LimelightApiCustomerType}
+	 * @private
+	 */
+	_cleanseCustomer (customerId: number, customer: CustomerType): LimelightApiCustomerType {
+
+		return {
+			customerId,
+			firstName: customer.first_name,
+			lastName: customer.last_name,
+			email: customer.email,
+			phone: customer.phone,
+			dateCreated: customer.date_created,
+			orderCount: customer.order_count,
+			orderList: customer.order_list
 		};
 
 	}

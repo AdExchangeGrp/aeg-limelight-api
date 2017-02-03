@@ -151,6 +151,16 @@ export type CampaignType = {
 	success_url_2: string
 }
 
+export type CustomerType = {
+	first_name: string,
+	last_name: string,
+	email: string,
+	phone: string,
+	date_created: string,
+	order_count: string,
+	order_list: string
+}
+
 export type LimelightApiProductType = {
 	productId: string,
 	sku: string,
@@ -294,6 +304,17 @@ export type LimelightApiCampaignType = {
 	successUrl2: string
 }
 
+export type LimelightApiCustomerType = {
+	customerId: number,
+	firstName: string,
+	lastName: string,
+	email: string,
+	phone: string,
+	dateCreated: string,
+	orderCount: string,
+	orderList: string
+}
+
 /* requests */
 
 export type LimelightApiUpdateRequestType = {
@@ -430,3 +451,19 @@ export type FindOrdersResponseType = {
 }
 
 export type LimelightApiFindOrdersResponseType = number[];
+
+export type GetCustomerResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		first_name: string,
+		last_name: string,
+		email: string,
+		phone: string,
+		date_created: string,
+		order_count: string,
+		order_list: string
+	}
+}
+
+export type LimelightApiGetCustomerResponseType = ?LimelightApiCustomerType;

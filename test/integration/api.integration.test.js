@@ -167,6 +167,7 @@ describe('api domain dvd-crm', async () => {
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);
+			console.log(result);
 
 		});
 
@@ -181,27 +182,25 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	// todo
-
 	describe.skip('#getCustomer()', async () => {
 
 		it('should return without error', async () => {
 
-			try {
+			const result = await api.getCustomer(63545);
+			should.exist(result);
 
-				const result = await api.getCustomer(1);
-				should.not.exist(result);
+		});
 
-			} catch (ex) {
+		it('should return without error', async () => {
 
-				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(603);
-				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(603));
-
-			}
+			const result = await api.getCustomer(1);
+			should.not.exist(result);
 
 		});
 
 	});
+
+	// todo
 
 	describe.skip('#getProducts()', async () => {
 

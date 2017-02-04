@@ -5,6 +5,8 @@ import type {
 	LimelightApiOrderType,
 	CampaignType,
 	LimelightApiCampaignType,
+	ProductType,
+	LimelightApiProductType,
 	CustomerType,
 	LimelightApiCustomerType,
 	LimelightApiOptionsType,
@@ -14,6 +16,7 @@ import type {
 	LimelightApiGetCampaignResponseType,
 	GetCampaignResponseType,
 	ShippingMethodResponseType,
+	LimelightApiGetProductsResponseType,
 	GetProductsResponseType,
 	LimelightApiGetOrderResponseType,
 	GetOrderResponseType,
@@ -37,6 +40,7 @@ import qs from 'querystring';
 import $ from 'stringformat';
 import { Base, ControlFlow } from '@adexchange/aeg-common';
 import EventEmitter from 'events';
+import csv from 'fast-csv';
 
 declare type ComposeApiCallResponseType = {
 
@@ -531,7 +535,6 @@ class Api extends Base {
 
 	}
 
-	// todo
 	/**
 	 * Gets a set of products
 	 * @param {number[]} productIds
@@ -539,15 +542,23 @@ class Api extends Base {
 	 * @returns {Promise<GetProductsResponseType>}
 	 * @returns {*}
 	 */
-	async getProducts (productIds: number[], options: LimelightApiOptionsType = {}): Promise<GetProductsResponseType> {
+	async getProducts (productIds: number[], options: LimelightApiOptionsType = {}): Promise<LimelightApiGetProductsResponseType> {
 
 		if (!productIds || !productIds.length) {
 
-			throw LimelightApiError.createWithOne(500, 'getProducts must product ids');
+			throw LimelightApiError.createWithOne(500, 'getProducts requires product ids');
 
 		}
 
-		return this._apiRequest('membership', 'product_index', {product_id: productIds.join(',')}, options);
+		const response: GetProductsResponseType = await this._apiRequest('membership', 'product_index', {product_id: productIds.join(',')}, _.extend({errorCodeOverrides: [600]}, options));
+
+		if (response.body) {
+
+			return this._cleanseProducts(productIds, response.body);
+
+		}
+
+		return [];
 
 	}
 
@@ -941,6 +952,102 @@ class Api extends Base {
 			orderCount: customer.order_count,
 			orderList: customer.order_list
 		};
+
+	}
+
+	/**
+	 * Cleans up the product response
+	 * @param {number[]} productIds
+	 * @param {ProductType} product
+	 * @returns {LimelightApiProductType}
+	 * @private
+	 */
+	async _cleanseProducts (productIds: number[], product: ProductType): Promise<LimelightApiProductType[]> {
+
+		// const productName = await this._parseCsv(product.product_name);
+		// const productSku = await this._parseCsv(product.product_sku);
+		// const productPrice = await this._parseCsv(product.product_price);
+		// const productIsTrial = await this._parseCsv(product.product_is_trial);
+		// const productRebillProduct = await this._parseCsv(product.product_rebill_product);
+		// const productRebillDays = await this._parseCsv(product.product_rebill_days);
+		// const productMaxQuantity = await this._parseCsv(product.product_max_quantity);
+		// const preserveRecurringQuantity = await this._parseCsv(product.preserve_recurring_quantity);
+		// const subscriptionType = await this._parseCsv(product.subscription_type);
+		// const subscriptionWeek = await this._parseCsv(product.subscription_week);
+		// const subscriptionDay = await this._parseCsv(product.subscription_day);
+		// const costOfGoodsSold = await this._parseCsv(product.cost_of_goods_sold);
+
+		const responseCodes = await this._parseCsv(product.response_code);
+		const productIsShippable = await this._parseCsv(product.product_is_shippable);
+		const productCategoryName = await this._parseCsv(product.product_category_name);
+		const productDescription = await this._parseCsv(product.product_description);
+
+		const map = _.map(responseCodes, (code, i) => {
+
+			if (code === '100') {
+
+				return {
+					productId: productIds[i],
+					productCategoryName: productCategoryName[i],
+					productIsShippable: productIsShippable[i],
+					productDescription: productDescription[i]
+					// productName: productName[i],
+					// productSku: productSku[i],
+					// productPrice: productPrice[i],
+					// productIsTrial: productIsTrial[i],
+					// productRebillProduct: productRebillProduct[i],
+					// productRebillDays: productRebillDays[i],
+					// productMaxQuantity: productMaxQuantity[i],
+					// preserveRecurringQuantity: preserveRecurringQuantity[i],
+					// subscriptionType: subscriptionType[i],
+					// subscriptionWeek: subscriptionWeek[i],
+					// subscriptionDay: subscriptionDay[i],
+					// costOfGoodsSold: costOfGoodsSold[i]
+				};
+
+			}
+
+		});
+
+		return _.filter(map, (m) => {
+
+			return m;
+
+		});
+
+	}
+
+	/**
+	 * Parse a csv string
+	 * @param {string} csvString
+	 * @returns {Promise<string[]>}
+	 * @private
+	 */
+	async _parseCsv (csvString: string): Promise<string[]> {
+
+		let result: ?string[];
+
+		return new Promise((resolve, reject) => {
+
+			csv
+				.fromString(csvString, {ignoreEmpty: false})
+				.on('error', (ex) => {
+
+					reject(ex);
+
+				})
+				.on('data', (data) => {
+
+					result = data;
+
+				})
+				.on('end', () => {
+
+					resolve(result || []);
+
+				});
+
+		});
 
 	}
 

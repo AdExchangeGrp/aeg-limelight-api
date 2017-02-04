@@ -28,7 +28,7 @@ describe('api domain dvd-crm', async () => {
 
 		});
 
-	describe.skip('#validateCredentials()', async () => {
+	describe('#validateCredentials()', async () => {
 
 		it('should return true', async () => {
 
@@ -46,7 +46,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe.skip('#findActiveCampaigns()', async () => {
+	describe('#findActiveCampaigns()', async () => {
 
 		it('should return without error', async () => {
 
@@ -63,7 +63,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe.skip('#getCampaign()', async () => {
+	describe('#getCampaign()', async () => {
 
 		it('should return without error', async () => {
 
@@ -81,7 +81,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe.skip('#findOrders()', async () => {
+	describe('#findOrders()', async () => {
 
 		it('should not find orders', async () => {
 
@@ -103,7 +103,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe.skip('#getOrder()', async () => {
+	describe('#getOrder()', async () => {
 
 		it('should return without error', async () => {
 
@@ -122,7 +122,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe.skip('#getOrders()', async () => {
+	describe('#getOrders()', async () => {
 
 		it('should return without error', async () => {
 
@@ -159,7 +159,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe.skip('#findCustomers()', async () => {
+	describe('#findCustomers()', async () => {
 
 		it('should return without error', async () => {
 
@@ -167,7 +167,6 @@ describe('api domain dvd-crm', async () => {
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);
-			console.log(result);
 
 		});
 
@@ -182,7 +181,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe.skip('#getCustomer()', async () => {
+	describe('#getCustomer()', async () => {
 
 		it('should return without error', async () => {
 
@@ -200,19 +199,47 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	// todo
-
-	describe.skip('#getProducts()', async () => {
+	describe('#getProducts()', async () => {
 
 		it('should return without error', async () => {
 
 			const result = await api.getProducts([26]);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([26, 27]);
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([-1]);
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.equal(0);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([26, -1, 27]);
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
 		});
 
 	});
+
+	// todo
 
 	describe.skip('#findShippingMethods()', async () => {
 

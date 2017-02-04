@@ -7,7 +7,7 @@ export type LimelightApiOptionsType = {
 	errorCodeOverrides?: string[]
 }
 
-export type ProductType = {
+export type OrderProductType = {
 	product_id: string,
 	sku: string,
 	price: string,
@@ -19,6 +19,25 @@ export type ProductType = {
 	subscription_id: string,
 	next_subscription_product: string,
 	next_subscription_product_id: string
+}
+
+export type ProductType = {
+	response_code: string,
+	product_description: string,
+	product_category_name: string,
+	product_is_shippable: string
+	// product_name: string,
+	// product_sku: string,
+	// product_price: string,
+	// product_is_trial: string,
+	// product_rebill_product: string,
+	// product_rebill_days: string,
+	// product_max_quantity: string,
+	// preserve_recurring_quantity: string,
+	// subscription_type: string,
+	// subscription_week: string,
+	// subscription_day: string,
+	// cost_of_goods_sold: string
 }
 
 export type OrderType = {
@@ -126,7 +145,7 @@ export type OrderType = {
 	void_amount: string,
 	void_date: string,
 	shippable: string,
-	products: ProductType[]
+	products: OrderProductType[]
 }
 
 export type CampaignType = {
@@ -161,7 +180,7 @@ export type CustomerType = {
 	order_list: string
 }
 
-export type LimelightApiProductType = {
+export type LimelightApiOrderProductType = {
 	productId: string,
 	sku: string,
 	price: string,
@@ -173,6 +192,25 @@ export type LimelightApiProductType = {
 	subscriptionId: string,
 	nextSubscriptionProduct: string,
 	nextSubscriptionProductId: string
+}
+
+export type LimelightApiProductType = {
+	productId: number,
+	productIsShippable: string,
+	productDescription: string,
+	productCategoryName: string
+	// productName: string,
+	// productSku: string,
+	// productPrice: string,
+	// productIsTrial: string,
+	// productRebillProduct: string,
+	// productRebillDays: string,
+	// productMaxQuantity: string,
+	// preserveRecurringQuantity: string,
+	// subscriptionType: string,
+	// subscriptionWeek: string,
+	// subscriptionDay: string,
+	// costOfGoodsSold: string
 }
 
 export type LimelightApiOrderType = {
@@ -280,7 +318,7 @@ export type LimelightApiOrderType = {
 	voidAmount: string,
 	voidDate: string,
 	shippable: string,
-	products: LimelightApiProductType[]
+	products: LimelightApiOrderProductType[]
 }
 
 export type LimelightApiCampaignType = {
@@ -352,29 +390,6 @@ export type ShippingMethodResponseType = {
 				subscription_amount: string
 			}
 		}
-	}
-}
-
-export type GetProductsResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		product_name: string,
-		product_description: string,
-		product_sku: string,
-		product_price: string,
-		product_category_name: string,
-		vertical_name: string,
-		product_is_trial: string,
-		product_is_shippable: string,
-		product_rebill_product: string,
-		product_rebill_days: string,
-		product_max_quantity: string,
-		preserve_recurring_quantity: string,
-		subscription_type: string,
-		subscription_week: string,
-		subscription_day: string,
-		cost_of_goods_sold: string
 	}
 }
 
@@ -467,3 +482,10 @@ export type GetCustomerResponseType = {
 }
 
 export type LimelightApiGetCustomerResponseType = ?LimelightApiCustomerType;
+
+export type GetProductsResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: ProductType
+}
+
+export type LimelightApiGetProductsResponseType = LimelightApiProductType[];

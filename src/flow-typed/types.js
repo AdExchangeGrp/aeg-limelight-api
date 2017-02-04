@@ -375,11 +375,13 @@ export type LimelightApiShippingMethodType = {
 
 /* requests */
 
-export type LimelightApiUpdateRequestType = {
-	orderIds: string,
-	actions: string,
-	values: string
+export type LimelightApiOrderUpdateType = {
+	orderId: string,
+	action: string,
+	value: Object
 }
+
+export type LimelightApiUpdateOrdersRequestType = LimelightApiOrderUpdateType[];
 
 /* raw responses */
 
@@ -450,6 +452,7 @@ export type LimelightApiFindCustomersResponseType = number[];
 
 export type LimelightApiFindOrdersOptionsType = {
 	productIds?: number[],
+	customerId?: number,
 	retries?: number,
 	retryDelay?: number,
 	timeout?: number,
@@ -503,3 +506,5 @@ export type ShippingMethodResponseType = {
 }
 
 export type LimelightApiShippingMethodResponseType = LimelightApiShippingMethodType[];
+
+export type LimelightApiFindUpdatedOrdersResponseType = number[];

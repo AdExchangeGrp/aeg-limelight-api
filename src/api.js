@@ -12,7 +12,7 @@ import type {
 	CustomerType,
 	LimelightApiCustomerType,
 	LimelightApiOptionsType,
-	LimelightApiUpdateRequestType,
+	LimelightApiUpdateOrdersRequestType,
 	LimelightApiFindActiveCampaignsResponseType,
 	FindActiveCampaignsResponseType,
 	LimelightApiGetCampaignResponseType,
@@ -28,6 +28,7 @@ import type {
 	GetOrdersResponseType,
 	LimelightApiFindOrdersOptionsType,
 	LimelightApiFindOrdersResponseType,
+	LimelightApiFindUpdatedOrdersResponseType,
 	FindOrdersResponseType,
 	LimelightApiFindCustomersResponseType,
 	FindCustomersResponseType,
@@ -400,7 +401,7 @@ class Api extends Base {
 	 */
 	async findOrders (campaignId: number, criteria: string, startDate: string, endDate: string, options: LimelightApiFindOrdersOptionsType = {}): Promise<LimelightApiFindOrdersResponseType> {
 
-		const params: {campaign_id: number, criteria: string, start_date: string, end_date: string, product_ids?: number[]} = {
+		const params: {campaign_id: number, criteria: string, start_date: string, end_date: string, product_ids?: number[], customer_id?: number} = {
 			campaign_id: campaignId,
 			criteria,
 			start_date: startDate,
@@ -410,6 +411,12 @@ class Api extends Base {
 		if (options.productIds) {
 
 			params.product_ids = options.productIds;
+
+		}
+
+		if (options.customerId) {
+
+			params.customer_id = options.customerId;
 
 		}
 
@@ -429,56 +436,83 @@ class Api extends Base {
 
 	}
 
-	// todo
 	/**
 	 * Find updated orders
-	 * @param {Object} params
+	 * @param {number} campaignId
+	 * @param {string[]} groupKeys
+	 * @param {string} startDate
+	 * @param {string} endDate
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<ResponseType>}
+	 * @returns {Promise<LimelightApiFindUpdatedOrdersResponseType>}
 	 */
-	async findUpdatedOrders (params: Object, options: LimelightApiOptionsType = {}): Promise<ResponseType> {
+	async findUpdatedOrders (campaignId: number,
+	                         groupKeys: string[],
+	                         startDate: string,
+	                         endDate: string,
+	                         options: LimelightApiOptionsType = {}): Promise<LimelightApiFindUpdatedOrdersResponseType> {
 
-		if (!params || !params.campaign_id || !params.group_keys || !params.start_date || !params.end_date) {
+		if (!campaignId || !groupKeys || !groupKeys.length || !startDate || !endDate) {
 
-			throw LimelightApiError.createWithOne(500, 'findUpdatedOrders requires params: campaign_id, group_keys, start_date, end_date');
-
-		}
-
-		if (!_.isString(params.group_keys)) {
-
-			params.group_keys = params.group_keys.join(',');
+			throw LimelightApiError.createWithOne(500, 'findUpdatedOrders requires: campaignId, groupKeys, startDate, endDate');
 
 		}
 
-		return this._apiRequest('membership', 'order_find_updated', params, _.extend({errorCodeOverrides: [333]}, options));
+		const params: Object = {
+			campaign_id: campaignId,
+			group_keys: groupKeys.join(','),
+			start_date: startDate,
+			end_date: endDate
+		};
+
+		const response = await this._apiRequest('membership', 'order_find_updated', params, _.extend({errorCodeOverrides: [333]}, options));
+
+		if (response.apiActionResults[0].responseCode === 333) {
+
+			return [];
+
+		}
+
+		if (response.body && response.body.data) {
+
+			return _.map(Object.keys(response.body.data), (m) => {
+
+				return Number(m);
+
+			});
+
+		}
+
+		return [];
 
 	}
 
-	// todo
 	/**
 	 * Update orders
-	 * @param {LimelightApiUpdateRequestType} params
+	 * @param {LimelightApiUpdateOrdersRequestType} orderUpdates
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<ResponseType>}
+	 * @returns {Promise<void>}
 	 */
-	async updateOrders (params: LimelightApiUpdateRequestType, options: LimelightApiOptionsType = {}): Promise<ResponseType> {
+	async updateOrders (orderUpdates: LimelightApiUpdateOrdersRequestType, options: LimelightApiOptionsType = {}): Promise<void> {
 
-		if (!params || !params.orderIds || !params.actions || !params.values) {
+		if (!orderUpdates.length) {
 
-			throw LimelightApiError.createWithOne(500, 'updateOrders requires params: order_ids, tracking_number');
+			return;
 
 		}
 
-		return this._apiRequest(
+		const params = {
+			order_ids: _.map(orderUpdates, 'orderId').join(','),
+			sync_all: 0,
+			actions: _.map(orderUpdates, 'action').join(','),
+			values: _.map(orderUpdates, 'value').join(',')
+		};
+
+		// some feeback on 350 missing id might be helpful
+		await this._apiRequest(
 			'membership',
 			'order_update',
-			{
-				order_ids: params.orderIds,
-				sync_all: 0,
-				actions: params.actions,
-				values: params.values
-			},
-			_.extend({errorCodeOverrides: [343]}, options));
+			params,
+			_.extend({errorCodeOverrides: [343, 350]}, options));
 
 	}
 

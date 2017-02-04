@@ -284,7 +284,7 @@ class Api extends Base {
 		try {
 
 			const response: GetCampaignResponseType = await this._apiRequest('membership', 'campaign_view', {'campaign_id': campaignId}, options);
-			return this._cleanseCampaign(response.body);
+			return this._cleanseCampaign(campaignId, response.body);
 
 		} catch (ex) {
 
@@ -392,21 +392,75 @@ class Api extends Base {
 
 	/**
 	 * Find orders
-	 * @param {number} campaignId
-	 * @param {string} criteria
+	 * @param {string | number} campaignId - can be 'all' otherwise the campaign number
 	 * @param {string} startDate
 	 * @param {string} endDate
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<FindOrdersResponseType>}
+	 * @returns {Promise<LimelightApiFindOrdersResponseType>}
 	 */
-	async findOrders (campaignId: number, criteria: string, startDate: string, endDate: string, options: LimelightApiFindOrdersOptionsType = {}): Promise<LimelightApiFindOrdersResponseType> {
+	async findOrders (campaignId: string | number, startDate: string, endDate: string, options: LimelightApiFindOrdersOptionsType = {}): Promise<LimelightApiFindOrdersResponseType> {
 
-		const params: {campaign_id: number, criteria: string, start_date: string, end_date: string, product_ids?: number[], customer_id?: number} = {
+		if (!campaignId) {
+
+			throw LimelightApiError.createWithOne(500, 'findOrders must have a campaign id');
+
+		}
+
+		if (!startDate) {
+
+			throw LimelightApiError.createWithOne(500, 'findOrders must have a startDate');
+
+		}
+
+		if (!endDate) {
+
+			throw LimelightApiError.createWithOne(500, 'findOrders must have an endDate');
+
+		}
+
+		const params: {
+			campaign_id: string | number,
+			start_date: string,
+			end_date: string,
+			start_time?: string,
+			end_time?: string,
+			product_ids?: number[],
+			customer_id?: number,
+			search_type?: string,
+			criteria?: string
+		} = {
 			campaign_id: campaignId,
-			criteria,
 			start_date: startDate,
 			end_date: endDate
 		};
+
+		if (options.criteria) {
+
+			params.criteria = options.criteria;
+
+		} else {
+
+			params.criteria = 'all';
+
+		}
+
+		if (options.startTime) {
+
+			params.start_time = options.startTime;
+
+		}
+
+		if (options.endTime) {
+
+			params.end_time = options.endTime;
+
+		}
+
+		if (options.searchType) {
+
+			params.search_type = options.searchType;
+
+		}
 
 		if (options.productIds) {
 
@@ -438,22 +492,40 @@ class Api extends Base {
 
 	/**
 	 * Find updated orders
-	 * @param {number} campaignId
+	 * @param {string | number} campaignId
 	 * @param {string[]} groupKeys
 	 * @param {string} startDate
 	 * @param {string} endDate
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise<LimelightApiFindUpdatedOrdersResponseType>}
 	 */
-	async findUpdatedOrders (campaignId: number,
+	async findUpdatedOrders (campaignId: string | number,
 	                         groupKeys: string[],
 	                         startDate: string,
 	                         endDate: string,
 	                         options: LimelightApiOptionsType = {}): Promise<LimelightApiFindUpdatedOrdersResponseType> {
 
-		if (!campaignId || !groupKeys || !groupKeys.length || !startDate || !endDate) {
+		if (!campaignId) {
 
-			throw LimelightApiError.createWithOne(500, 'findUpdatedOrders requires: campaignId, groupKeys, startDate, endDate');
+			throw LimelightApiError.createWithOne(500, 'findUpdatedOrders must have a campaign id');
+
+		}
+
+		if (!groupKeys || !groupKeys.length) {
+
+			throw LimelightApiError.createWithOne(500, 'findUpdatedOrders must have groupKeys');
+
+		}
+
+		if (!startDate) {
+
+			throw LimelightApiError.createWithOne(500, 'findUpdatedOrders must have a startDate');
+
+		}
+
+		if (!endDate) {
+
+			throw LimelightApiError.createWithOne(500, 'findUpdatedOrders must have an endDate');
 
 		}
 
@@ -494,7 +566,7 @@ class Api extends Base {
 	 */
 	async updateOrders (orderUpdates: LimelightApiUpdateOrdersRequestType, options: LimelightApiOptionsType = {}): Promise<void> {
 
-		if (!orderUpdates.length) {
+		if (!orderUpdates || !orderUpdates.length) {
 
 			return;
 
@@ -520,7 +592,7 @@ class Api extends Base {
 	 * Get a customer
 	 * @param {number} customerId
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<ResponseType>}
+	 * @returns {Promise<LimelightApiGetCustomerResponseType>}
 	 */
 	async getCustomer (customerId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiGetCustomerResponseType> {
 
@@ -542,13 +614,31 @@ class Api extends Base {
 
 	/**
 	 * Find customers
-	 * @param {Object} campaignId
-	 * @param {Object} startDate
-	 * @param {Object} endDate
+	 * @param {number | string} campaignId
+	 * @param {string} startDate
+	 * @param {string} endDate
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise<LimelightApiFindCustomersResponseType>}
 	 */
-	async findCustomers (campaignId: number, startDate: string, endDate: string, options: LimelightApiOptionsType = {}): Promise<LimelightApiFindCustomersResponseType> {
+	async findCustomers (campaignId: number | string, startDate: string, endDate: string, options: LimelightApiOptionsType = {}): Promise<LimelightApiFindCustomersResponseType> {
+
+		if (!campaignId) {
+
+			throw LimelightApiError.createWithOne(500, 'findCustomers must have a campaign id');
+
+		}
+
+		if (!startDate) {
+
+			throw LimelightApiError.createWithOne(500, 'findCustomers must have a start date');
+
+		}
+
+		if (!endDate) {
+
+			throw LimelightApiError.createWithOne(500, 'findCustomers must have a end date');
+
+		}
 
 		const params = {
 			campaign_id: campaignId,
@@ -601,12 +691,18 @@ class Api extends Base {
 
 	/**
 	 * Gets the shipping methods
-	 * @param {string} campaignId
+	 * @param {string | number} campaignId
 	 * @param {LimelightApiOptionsType} [options]
 	 * @returns {Promise<LimelightApiShippingMethodResponseType>}
 	 * @returns {*}
 	 */
-	async findShippingMethods (campaignId: string, options: LimelightApiOptionsType = {}): Promise<LimelightApiShippingMethodResponseType> {
+	async findShippingMethods (campaignId: string | number, options: LimelightApiOptionsType = {}): Promise<LimelightApiShippingMethodResponseType> {
+
+		if (!campaignId) {
+
+			throw LimelightApiError.createWithOne(500, 'findShippingMethods must have a campaign id');
+
+		}
 
 		const params: Object = {
 			campaign_id: campaignId,
@@ -818,7 +914,7 @@ class Api extends Base {
 	_cleanseOrder (orderId: number, order: OrderType): LimelightApiOrderType {
 
 		return {
-			orderId: orderId,
+			id: orderId,
 			acquisitionDate: order.acquisition_date,
 			ancestorId: order.ancestor_id,
 			affiliate: order.affiliate,
@@ -844,8 +940,8 @@ class Api extends Base {
 			billingStreetAddress2: order.billing_street_address2,
 			campaignId: order.campaign_id,
 			ccExpires: order.cc_expires,
-			ccFirst_6: order.cc_first_6,
-			ccLast_4: order.cc_last_4,
+			ccFirst6: order.cc_first_6,
+			ccLast4: order.cc_last_4,
 			ccNumber: order.cc_number,
 			creditCardNumber: order.credit_card_number,
 			ccType: order.cc_type,
@@ -925,7 +1021,7 @@ class Api extends Base {
 			products: _.map(order.products, (p) => {
 
 				return {
-					productId: p.product_id,
+					id: p.product_id,
 					sku: p.sku,
 					price: p.price,
 					productQty: p.product_qty,
@@ -945,13 +1041,15 @@ class Api extends Base {
 
 	/**
 	 * Cleans up the campaign response
+	 * @param {number} id
 	 * @param {CampaignType} campaign
 	 * @returns {LimelightApiCampaignType}
 	 * @private
 	 */
-	_cleanseCampaign (campaign: CampaignType): LimelightApiCampaignType {
+	_cleanseCampaign (id: number, campaign: CampaignType): LimelightApiCampaignType {
 
 		return {
+			id,
 			campaignName: campaign.campaign_name,
 			campaignDescription: campaign.campaign_description,
 			campaignType: campaign.campaign_type,
@@ -976,15 +1074,15 @@ class Api extends Base {
 
 	/**
 	 * Cleans up the customer response
-	 * @param {number} customerId
+	 * @param {number} id
 	 * @param {CustomerType} customer
 	 * @returns {LimelightApiCustomerType}
 	 * @private
 	 */
-	_cleanseCustomer (customerId: number, customer: CustomerType): LimelightApiCustomerType {
+	_cleanseCustomer (id: number, customer: CustomerType): LimelightApiCustomerType {
 
 		return {
-			customerId,
+			id,
 			firstName: customer.first_name,
 			lastName: customer.last_name,
 			email: customer.email,
@@ -998,15 +1096,15 @@ class Api extends Base {
 
 	/**
 	 * Cleans up the shipping method response
-	 * @param {number} shippingMethodId
+	 * @param {number} id
 	 * @param {ShippingMethodType} shippingMethod
 	 * @returns {LimelightApiShippingMethodType}
 	 * @private
 	 */
-	_cleanseShippingInfo (shippingMethodId: number, shippingMethod: ShippingMethodType): LimelightApiShippingMethodType {
+	_cleanseShippingInfo (id: number, shippingMethod: ShippingMethodType): LimelightApiShippingMethodType {
 
 		return {
-			shippingMethodId,
+			id,
 			name: shippingMethod.name,
 			description: shippingMethod.description,
 			groupName: shippingMethod.group_name,
@@ -1026,13 +1124,13 @@ class Api extends Base {
 	 */
 	async _cleanseProducts (productIds: number[], product: ProductType): Promise<LimelightApiProductType[]> {
 
-		// const productName = await this._parseCsv(product.product_name);
-		// const productSku = await this._parseCsv(product.product_sku);
-		// const productPrice = await this._parseCsv(product.product_price);
-		// const productIsTrial = await this._parseCsv(product.product_is_trial);
-		// const productRebillProduct = await this._parseCsv(product.product_rebill_product);
-		// const productRebillDays = await this._parseCsv(product.product_rebill_days);
-		// const productMaxQuantity = await this._parseCsv(product.product_max_quantity);
+		// const name = await this._parseCsv(product.product_name);
+		// const sku = await this._parseCsv(product.product_sku);
+		// const price = await this._parseCsv(product.product_price);
+		// const isTrial = await this._parseCsv(product.product_is_trial);
+		// const rebillProduct = await this._parseCsv(product.product_rebill_product);
+		// const rebillDays = await this._parseCsv(product.product_rebill_days);
+		// const maxQuantity = await this._parseCsv(product.product_max_quantity);
 		// const preserveRecurringQuantity = await this._parseCsv(product.preserve_recurring_quantity);
 		// const subscriptionType = await this._parseCsv(product.subscription_type);
 		// const subscriptionWeek = await this._parseCsv(product.subscription_week);
@@ -1040,27 +1138,27 @@ class Api extends Base {
 		// const costOfGoodsSold = await this._parseCsv(product.cost_of_goods_sold);
 
 		const responseCodes = await this._parseCsv(product.response_code);
-		const productIsShippable = await this._parseCsv(product.product_is_shippable);
-		const productCategoryName = await this._parseCsv(product.product_category_name);
-		const productDescription = await this._parseCsv(product.product_description);
+		const isShippable = await this._parseCsv(product.product_is_shippable);
+		const categoryName = await this._parseCsv(product.product_category_name);
+		const description = await this._parseCsv(product.product_description);
 
 		const map = _.map(responseCodes, (code, i) => {
 
 			if (code === '100') {
 
 				return {
-					productId: productIds[i],
-					productCategoryName: productCategoryName[i],
-					productIsShippable: productIsShippable[i],
-					productDescription: productDescription[i]
-					// productName: productName[i],
-					// productSku: productSku[i],
-					// productPrice: productPrice[i],
-					// productIsTrial: productIsTrial[i],
-					// productRebillProduct: productRebillProduct[i],
-					// productRebillDays: productRebillDays[i],
-					// productMaxQuantity: productMaxQuantity[i],
-					// preserveRecurringQuantity: preserveRecurringQuantity[i],
+					id: productIds[i],
+					categoryName: categoryName[i],
+					isShippable: isShippable[i],
+					description: description[i]
+					// name: name[i],
+					// sku: sku[i],
+					// price: price[i],
+					// isTrial: isTrial[i],
+					// rebillProduct: rebillProduct[i],
+					// rebillDays: rebillDays[i],
+					// maxQuantity: maxQuantity[i],
+					// recurringQuantity: recurringQuantity[i],
 					// subscriptionType: subscriptionType[i],
 					// subscriptionWeek: subscriptionWeek[i],
 					// subscriptionDay: subscriptionDay[i],

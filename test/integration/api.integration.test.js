@@ -85,7 +85,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should not find orders', async () => {
 
-			const result = await api.findOrders(42, 'all', '01/01/2013', '02/01/2015', {productIds: [26]});
+			const result = await api.findOrders(42, '01/01/2013', '02/01/2015', {productIds: [26]});
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.equal(0);
@@ -94,7 +94,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should find orders', async () => {
 
-			const result = await api.findOrders('all', 'all', '01/01/2013', '02/01/2015');
+			const result = await api.findOrders('all', '01/01/2013', '02/01/2015');
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);
@@ -109,7 +109,7 @@ describe('api domain dvd-crm', async () => {
 
 			const result = await api.getOrder(10000);
 			should.exist(result);
-			result.orderId.should.be.equal(10000);
+			result.id.should.be.equal(10000);
 
 		});
 
@@ -295,7 +295,7 @@ describe('api domain mhioffers', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findOrders(77, 'all', '04/22/201', '04/26/2015', {customerId: 63571});
+			const result = await api.findOrders(77, '04/22/201', '04/26/2015', {customerId: 63571});
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);
@@ -310,7 +310,7 @@ describe('api domain mhioffers', async () => {
 
 			const result = await api.getOrder(580395);
 			should.exist(result);
-			result.orderId.should.be.equal(580395);
+			result.id.should.be.equal(580395);
 
 		});
 

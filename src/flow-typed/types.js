@@ -191,7 +191,7 @@ export type ShippingMethodType = {
 }
 
 export type LimelightApiOrderProductType = {
-	productId: string,
+	id: string,
 	sku: string,
 	price: string,
 	productQty: string,
@@ -205,18 +205,18 @@ export type LimelightApiOrderProductType = {
 }
 
 export type LimelightApiProductType = {
-	productId: number,
-	productIsShippable: string,
-	productDescription: string,
-	productCategoryName: string
-	// productName: string,
-	// productSku: string,
-	// productPrice: string,
-	// productIsTrial: string,
-	// productRebillProduct: string,
-	// productRebillDays: string,
-	// productMaxQuantity: string,
-	// preserveRecurringQuantity: string,
+	id: number,
+	isShippable: string,
+	description: string,
+	categoryName: string
+	// name: string,
+	// sku: string,
+	// price: string,
+	// isTrial: string,
+	// rebillProduct: string,
+	// rebillDays: string,
+	// maxQuantity: string,
+	// recurringQuantity: string,
 	// subscriptionType: string,
 	// subscriptionWeek: string,
 	// subscriptionDay: string,
@@ -224,7 +224,7 @@ export type LimelightApiProductType = {
 }
 
 export type LimelightApiOrderType = {
-	orderId: number,
+	id: number,
 	acquisitionDate: string,
 	ancestorId: string,
 	affiliate: string,
@@ -250,8 +250,8 @@ export type LimelightApiOrderType = {
 	billingStreetAddress2: string,
 	campaignId: string,
 	ccExpires: string,
-	ccFirst_6: string,
-	ccLast_4: string,
+	ccFirst6: string,
+	ccLast4: string,
 	ccNumber: string,
 	creditCardNumber: string,
 	ccType: string,
@@ -332,6 +332,7 @@ export type LimelightApiOrderType = {
 }
 
 export type LimelightApiCampaignType = {
+	id: number,
 	campaignName: string,
 	campaignDescription: string,
 	campaignType: string,
@@ -353,7 +354,7 @@ export type LimelightApiCampaignType = {
 }
 
 export type LimelightApiCustomerType = {
-	customerId: number,
+	id: number,
 	firstName: string,
 	lastName: string,
 	email: string,
@@ -364,7 +365,7 @@ export type LimelightApiCustomerType = {
 }
 
 export type LimelightApiShippingMethodType = {
-	shippingMethodId: number,
+	id: number,
 	name: string,
 	description: string,
 	groupName: string,
@@ -378,7 +379,7 @@ export type LimelightApiShippingMethodType = {
 export type LimelightApiOrderUpdateType = {
 	orderId: string,
 	action: string,
-	value: Object
+	value: string | number
 }
 
 export type LimelightApiUpdateOrdersRequestType = LimelightApiOrderUpdateType[];
@@ -453,6 +454,10 @@ export type LimelightApiFindCustomersResponseType = number[];
 export type LimelightApiFindOrdersOptionsType = {
 	productIds?: number[],
 	customerId?: number,
+	criteria?: string,
+	startTime?: string,
+	endTime?: string,
+	searchType?: string,
 	retries?: number,
 	retryDelay?: number,
 	timeout?: number,

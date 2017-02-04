@@ -28,7 +28,7 @@ describe('api domain dvd-crm', async () => {
 
 		});
 
-	describe('#validateCredentials()', async () => {
+	describe.skip('#validateCredentials()', async () => {
 
 		it('should return true', async () => {
 
@@ -46,7 +46,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#findActiveCampaigns()', async () => {
+	describe.skip('#findActiveCampaigns()', async () => {
 
 		it('should return without error', async () => {
 
@@ -63,7 +63,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#getCampaign()', async () => {
+	describe.skip('#getCampaign()', async () => {
 
 		it('should return without error', async () => {
 
@@ -81,7 +81,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#findOrders()', async () => {
+	describe.skip('#findOrders()', async () => {
 
 		it('should not find orders', async () => {
 
@@ -103,7 +103,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#getOrder()', async () => {
+	describe.skip('#getOrder()', async () => {
 
 		it('should return without error', async () => {
 
@@ -122,7 +122,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#getOrders()', async () => {
+	describe.skip('#getOrders()', async () => {
 
 		it('should return without error', async () => {
 
@@ -159,7 +159,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#findCustomers()', async () => {
+	describe.skip('#findCustomers()', async () => {
 
 		it('should return without error', async () => {
 
@@ -181,7 +181,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#getCustomer()', async () => {
+	describe.skip('#getCustomer()', async () => {
 
 		it('should return without error', async () => {
 
@@ -199,7 +199,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe('#getProducts()', async () => {
+	describe.skip('#getProducts()', async () => {
 
 		it('should return without error', async () => {
 
@@ -239,15 +239,14 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	// todo
-
-	describe.skip('#findShippingMethods()', async () => {
+	describe('#findShippingMethods()', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findShippingMethods({campaign_id: 'all', return_type: 'shipping_method_view'});
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			const result = await api.findShippingMethods('all');
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
 		});
 

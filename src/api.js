@@ -7,6 +7,8 @@ import type {
 	LimelightApiCampaignType,
 	ProductType,
 	LimelightApiProductType,
+	ShippingMethodType,
+	LimelightApiShippingMethodType,
 	CustomerType,
 	LimelightApiCustomerType,
 	LimelightApiOptionsType,
@@ -15,6 +17,7 @@ import type {
 	FindActiveCampaignsResponseType,
 	LimelightApiGetCampaignResponseType,
 	GetCampaignResponseType,
+	LimelightApiShippingMethodResponseType,
 	ShippingMethodResponseType,
 	LimelightApiGetProductsResponseType,
 	GetProductsResponseType,
@@ -562,23 +565,27 @@ class Api extends Base {
 
 	}
 
-	// todo
 	/**
 	 * Gets the shipping methods
-	 * @param {Object} params
+	 * @param {string} campaignId
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<ShippingMethodResponseType>}
+	 * @returns {Promise<LimelightApiShippingMethodResponseType>}
 	 * @returns {*}
 	 */
-	async findShippingMethods (params: Object, options: LimelightApiOptionsType = {}): Promise<ShippingMethodResponseType> {
+	async findShippingMethods (campaignId: string, options: LimelightApiOptionsType = {}): Promise<LimelightApiShippingMethodResponseType> {
 
-		if (!params || !params.campaign_id) {
+		const params: Object = {
+			campaign_id: campaignId,
+			return_type: 'shipping_method_view'
+		};
 
-			throw LimelightApiError.createWithOne(500, 'findShippingMethods requires params: campaign_id');
+		const response: ShippingMethodResponseType = await this._apiRequest('membership', 'shipping_method_find', params, options);
 
-		}
+		return _.map(Object.keys(response.body.data), (key) => {
 
-		return this._apiRequest('membership', 'shipping_method_find', params, options);
+			return this._cleanseShippingInfo(Number(key), response.body.data[key]);
+
+		});
 
 	}
 
@@ -951,6 +958,27 @@ class Api extends Base {
 			dateCreated: customer.date_created,
 			orderCount: customer.order_count,
 			orderList: customer.order_list
+		};
+
+	}
+
+	/**
+	 * Cleans up the shipping method response
+	 * @param {number} shippingMethodId
+	 * @param {ShippingMethodType} shippingMethod
+	 * @returns {LimelightApiShippingMethodType}
+	 * @private
+	 */
+	_cleanseShippingInfo (shippingMethodId: number, shippingMethod: ShippingMethodType): LimelightApiShippingMethodType {
+
+		return {
+			shippingMethodId,
+			name: shippingMethod.name,
+			description: shippingMethod.description,
+			groupName: shippingMethod.group_name,
+			code: shippingMethod.code,
+			initialAmount: shippingMethod.initial_amount,
+			subscriptionAmount: shippingMethod.subscription_amount
 		};
 
 	}

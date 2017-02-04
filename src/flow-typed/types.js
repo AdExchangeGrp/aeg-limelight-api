@@ -180,6 +180,16 @@ export type CustomerType = {
 	order_list: string
 }
 
+export type ShippingMethodType = {
+	response_code: string,
+	name: string,
+	description: string,
+	group_name: string,
+	code: string,
+	initial_amount: string,
+	subscription_amount: string
+}
+
 export type LimelightApiOrderProductType = {
 	productId: string,
 	sku: string,
@@ -353,6 +363,16 @@ export type LimelightApiCustomerType = {
 	orderList: string
 }
 
+export type LimelightApiShippingMethodType = {
+	shippingMethodId: number,
+	name: string,
+	description: string,
+	groupName: string,
+	code: string,
+	initialAmount: string,
+	subscriptionAmount: string
+}
+
 /* requests */
 
 export type LimelightApiUpdateRequestType = {
@@ -371,26 +391,6 @@ export type LimelightApiActionResultType = {
 export interface ResponseType {
 	apiActionResults: LimelightApiActionResultType[],
 	body: Object
-}
-
-export type ShippingMethodResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		total_shipping_methods: string,
-		shipping_ids: string,
-		data: {
-			[id: string]: {
-				response_code: string,
-				name: string,
-				description: string,
-				group_name: string,
-				code: string,
-				initial_amount: string,
-				subscription_amount: string
-			}
-		}
-	}
 }
 
 /* responses */
@@ -489,3 +489,17 @@ export type GetProductsResponseType = {
 }
 
 export type LimelightApiGetProductsResponseType = LimelightApiProductType[];
+
+export type ShippingMethodResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		total_shipping_methods: string,
+		shipping_ids: string,
+		data: {
+			[id: string]: ShippingMethodType
+		}
+	}
+}
+
+export type LimelightApiShippingMethodResponseType = LimelightApiShippingMethodType[];

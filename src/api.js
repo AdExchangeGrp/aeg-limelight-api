@@ -212,7 +212,7 @@ class Api extends Base {
 	/**
 	 * Get the description for a response code
 	 * @param {number} code
-	 * @returns {Map.<number, string>}
+	 * @returns {string}
 	 */
 	membershipResponseCodeDesc (code: number): string {
 
@@ -302,7 +302,7 @@ class Api extends Base {
 	 * Gets an order
 	 * @param {number} orderId
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<GetOrdersResponseType>}
+	 * @returns {Promise<LimelightApiGetOrderResponseType>}
 	 */
 	async getOrder (orderId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiGetOrderResponseType> {
 
@@ -395,7 +395,7 @@ class Api extends Base {
 	 * @param {string | number} campaignId - can be 'all' otherwise the campaign number
 	 * @param {string} startDate
 	 * @param {string} endDate
-	 * @param {LimelightApiOptionsType} [options]
+	 * @param {LimelightApiFindOrdersOptionsType} [options]
 	 * @returns {Promise<LimelightApiFindOrdersResponseType>}
 	 */
 	async findOrders (campaignId: string | number, startDate: string, endDate: string, options: LimelightApiFindOrdersOptionsType = {}): Promise<LimelightApiFindOrdersResponseType> {
@@ -666,7 +666,7 @@ class Api extends Base {
 	 * Gets a set of products
 	 * @param {number[]} productIds
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<GetProductsResponseType>}
+	 * @returns {Promise<LimelightApiGetProductsResponseType>}
 	 * @returns {*}
 	 */
 	async getProducts (productIds: number[], options: LimelightApiOptionsType = {}): Promise<LimelightApiGetProductsResponseType> {
@@ -1119,7 +1119,7 @@ class Api extends Base {
 	 * Cleans up the product response
 	 * @param {number[]} productIds
 	 * @param {ProductType} product
-	 * @returns {LimelightApiProductType}
+	 * @returns {Promise<LimelightApiProductType>}
 	 * @private
 	 */
 	async _cleanseProducts (productIds: number[], product: ProductType): Promise<LimelightApiProductType[]> {

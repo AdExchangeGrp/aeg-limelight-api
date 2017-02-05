@@ -1,4 +1,5 @@
 import should from 'should';
+import _ from 'lodash';
 import Api from '../../src/api.js';
 
 describe('api domain dvd-crm', async () => {
@@ -29,27 +30,17 @@ describe('api domain dvd-crm', async () => {
 
 	describe('#validateCredentials()', async () => {
 
-		it('should return without error', async () => {
+		it('should return true', async () => {
 
 			const result = await api.validateCredentials({retries: 3});
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			result.should.be.ok;
 
 		});
 
-		it('should error', async () => {
+		it('should return false', async () => {
 
-			try {
-
-				const result = await badApi.validateCredentials();
-				should.not.exist(result);
-
-			} catch (ex) {
-
-				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(200);
-				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(200));
-
-			}
+			const result = await badApi.validateCredentials();
+			result.should.not.be.ok;
 
 		});
 
@@ -60,8 +51,13 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.findActiveCampaigns();
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			result.should.be.an.Array;
+
+			_.each(result, (r) => {
+
+				r.should.have.properties('id', 'name');
+
+			});
 
 		});
 
@@ -72,24 +68,14 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.getCampaign(34);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			should.exist(result);
 
 		});
 
 		it('should error', async () => {
 
-			try {
-
-				const result = await api.getCampaign(-1);
-				should.not.exist(result);
-
-			} catch (ex) {
-
-				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(400);
-				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(400));
-
-			}
+			const result = await api.getCampaign(-1);
+			should.not.exist(result);
 
 		});
 
@@ -99,33 +85,19 @@ describe('api domain dvd-crm', async () => {
 
 		it('should not find orders', async () => {
 
-			const result = await api.findOrders({
-				campaign_id: 42,
-				criteria: 'all',
-				product_ids: [26],
-				start_date: '01/01/2013',
-				end_date: '02/01/2015'
-			});
-
-			// noinspection JSValidateTypes
-			(result.apiActionResults[0].responseCode === 333).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(333)).should.be.ok;
+			const result = await api.findOrders(42, '01/01/2013', '02/01/2015', {productIds: [26]});
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.equal(0);
 
 		});
 
 		it('should find orders', async () => {
 
-			const result = await api.findOrders({
-				campaign_id: 'all',
-				criteria: 'all',
-				product_ids: [26],
-				start_date: '01/01/2016',
-				end_date: '12/01/2016'
-			});
-
-			// noinspection JSValidateTypes
-			(result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
+			const result = await api.findOrders('all', '01/01/2013', '02/01/2015');
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
 		});
 
@@ -136,24 +108,15 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.getOrder(10000);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			should.exist(result);
+			result.id.should.be.equal(10000);
 
 		});
 
 		it('should error', async () => {
 
-			try {
-
-				const result = await api.getOrder(-1);
-				should.not.exist(result);
-
-			} catch (ex) {
-
-				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(350);
-				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(350));
-
-			}
+			const result = await api.getOrder(-1);
+			should.not.exist(result);
 
 		});
 
@@ -164,18 +127,33 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.getOrders([10000, 10018]);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			result.should.be.an.Array;
+			result.length.should.be.equal(2);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getOrders([10000]);
+			result.should.be.an.Array;
+			result.length.should.be.equal(1);
 
 		});
 
 		it('should return without error with a bad id', async () => {
 
-			// the response may contain a 350 for a bad id, but it still passes
-			// client responsibility
+			const result = await api.getOrders([-1]);
+			result.should.be.an.Array;
+			result.length.should.be.equal(0);
+
+		});
+
+		it('should return without error with a bad id', async () => {
+
 			const result = await api.getOrders([10000, -1]);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			result.should.be.an.Array;
+			result.length.should.be.equal(1);
+			should.exist(result[0]);
 
 		});
 
@@ -185,15 +163,19 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findCustomers({
-				campaign_id: 42,
-				start_date: '01/01/2013',
-				end_date: '02/01/2015'
-			});
+			const result = await api.findCustomers(42, '01/01/2013', '02/01/2017');
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
-			// noinspection JSValidateTypes
-			(result.apiActionResults[0].responseCode === 604 || result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(604) || result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.findCustomers(42, '01/01/2013', '02/01/2013');
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.equal(0);
 
 		});
 
@@ -203,17 +185,15 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			try {
+			const result = await api.getCustomer(63545);
+			should.exist(result);
 
-				const result = await api.getCustomer(1);
-				should.not.exist(result);
+		});
 
-			} catch (ex) {
+		it('should return without error', async () => {
 
-				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(603);
-				ex.apiResponse.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(603));
-
-			}
+			const result = await api.getCustomer(1);
+			should.not.exist(result);
 
 		});
 
@@ -224,8 +204,36 @@ describe('api domain dvd-crm', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.getProducts([26]);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([26, 27]);
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([-1]);
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.equal(0);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([26, -1, 27]);
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
 		});
 
@@ -235,9 +243,10 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findShippingMethods({campaign_id: 'all', return_type: 'shipping_method_view'});
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			const result = await api.findShippingMethods('all');
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
 		});
 
@@ -254,13 +263,29 @@ describe('api domain mhioffers', async () => {
 
 		});
 
+	describe('#findActiveCampaigns()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.findActiveCampaigns();
+			result.should.be.an.Array;
+
+			_.each(result, (r) => {
+
+				r.should.have.properties('id', 'name');
+
+			});
+
+		});
+
+	});
+
 	describe('#getCampaign()', async () => {
 
 		it('should return without error', async () => {
 
 			const result = await api.getCampaign(77);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			should.exist(result);
 
 		});
 
@@ -270,17 +295,10 @@ describe('api domain mhioffers', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findOrders({
-				campaign_id: 77,
-				criteria: 'all',
-				start_date: '04/22/2015',
-				end_date: '04/26/2015',
-				customer_id: 63571
-			});
-
-			// noinspection JSValidateTypes
-			(result.apiActionResults[0].responseCode === 333 || result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(333) || result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
+			const result = await api.findOrders(77, '04/22/201', '04/26/2015', {customerId: 63571});
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
 		});
 
@@ -291,8 +309,8 @@ describe('api domain mhioffers', async () => {
 		it('should return without error', async () => {
 
 			const result = await api.getOrder(580395);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			should.exist(result);
+			result.id.should.be.equal(580395);
 
 		});
 
@@ -302,54 +320,55 @@ describe('api domain mhioffers', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.updateOrders({
-				orderIds: '580383,580395',
-				actions: 'tracking_number,tracking_number',
-				values: '123457TEST,1234567TEST'
-			});
+			const params = [
+				{
+					orderId: 580383,
+					action: 'tracking_number',
+					value: '123457TEST'
+				}, {
+					orderId: 580395,
+					action: 'tracking_number',
+					value: '1234567TEST'
+				}
+			];
 
-			// response code is 343 if the value is the same
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[1].responseCode.should.be.equal(343);
-			// this is undefined from the API with mutiple order updates
-			// result.responseCodeDesc.should.be.equal('Success');
+			await api.updateOrders(params);
 
 		});
 
 		it('should return without error', async () => {
 
-			const result = await api.updateOrders({
-				orderIds: '580383,580395',
-				actions: 'tracking_number,tracking_number',
-				values: '123457TEST2,1234567TEST'
-			});
+			const params = [
+				{
+					orderId: 580383,
+					action: 'tracking_number',
+					value: '123457TEST2'
+				}, {
+					orderId: 580395,
+					action: 'tracking_number',
+					value: '1234567TEST'
+				}
+			];
 
-			// response code is 343 if the value is the same
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[1].responseCode.should.be.equal(343);
-			// this is undefined from the API with mutiple order updates
-			// result.responseCodeDesc.should.be.equal('Success');
+			await api.updateOrders(params);
 
 		});
 
 		it('should error', async () => {
 
-			try {
+			const params = [
+				{
+					orderId: 580383,
+					action: 'tracking_number',
+					value: '123457TEST2'
+				}, {
+					orderId: -1,
+					action: 'tracking_number',
+					value: '1234567TEST'
+				}
+			];
 
-				const result = await api.updateOrders({
-					orderIds: '580383, -1',
-					actions: 'tracking_number,tracking_number',
-					values: '123457TEST2,1234567TEST'
-				});
-
-				should.not.exist(result);
-
-			} catch (ex) {
-
-				ex.apiResponse.apiActionResults[0].responseCode.should.be.equal(343);
-				ex.apiResponse.apiActionResults[1].responseCode.should.be.equal(350);
-
-			}
+			await api.updateOrders(params);
 
 		});
 
@@ -359,24 +378,10 @@ describe('api domain mhioffers', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findUpdatedOrders({
-				campaign_id: 14,
-				group_keys: 'refund',
-				start_date: '04/22/2015',
-				end_date: '04/23/2015'
-			});
-
-			// noinspection JSValidateTypes
-			(result.apiActionResults[0].responseCode === 333 || result.apiActionResults[0].responseCode === 100).should.be.ok;
-			(result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(333) || result.apiActionResults[0].responseCodeDesc === api.membershipResponseCodeDesc(100)).should.be.ok;
-
-		});
-
-		it('should return without error', async () => {
-
-			const result = await api.getOrder(246059);
-			result.apiActionResults[0].responseCode.should.be.equal(100);
-			result.apiActionResults[0].responseCodeDesc.should.be.equal(api.membershipResponseCodeDesc(100));
+			const result = await api.findUpdatedOrders(489, ['chargeback'], '07/01/2016', '01/01/2017');
+			should.exist(result);
+			result.should.be.an.Array;
+			result.length.should.be.greaterThan(0);
 
 		});
 

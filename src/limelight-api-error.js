@@ -1,11 +1,11 @@
 // @flow
 
-import type { LimelightApiResponseType, LimelightApiActionResultType } from './flow-typed/types';
+import type { ActionResultType, ResponseType } from './flow-typed/types';
 import _ from 'lodash';
 
 export default class LimelightApiError extends Error {
 
-	_apiResponse: LimelightApiResponseType;
+	_apiResponse: ResponseType;
 
 	_innerError: ?Error;
 
@@ -13,7 +13,7 @@ export default class LimelightApiError extends Error {
 	 * Gets the raw api call response
 	 * @returns {?Object|*}
 	 */
-	get apiResponse (): LimelightApiResponseType {
+	get apiResponse (): ResponseType {
 
 		return this._apiResponse;
 
@@ -31,10 +31,10 @@ export default class LimelightApiError extends Error {
 
 	/**
 	 * Constructor
-	 * @param {LimelightApiResponseType} apiResponse
+	 * @param {ResponseType} apiResponse
 	 * @param {Error} [innerError]
 	 */
-	constructor (apiResponse: LimelightApiResponseType, innerError: ?Error) {
+	constructor (apiResponse: ResponseType, innerError: ?Error) {
 
 		const message = _.reduce(apiResponse.apiActionResults, (memo, r) => {
 
@@ -58,18 +58,18 @@ export default class LimelightApiError extends Error {
 	 */
 	static createWithOne (responseCode: number, responseCodeDesc: string) {
 
-		return new LimelightApiError({apiActionResults: [{responseCode, responseCodeDesc}]});
+		return new LimelightApiError({apiActionResults: [{responseCode, responseCodeDesc}], body: {}});
 
 	}
 
 	/**
 	 * Create an error from a single action result
-	 * @param {LimelightApiActionResultType[]} apiActionResults
+	 * @param {ActionResultType[]} apiActionResults
 	 * @returns {LimelightApiError}
 	 */
-	static createWithArray (apiActionResults: LimelightApiActionResultType[]) {
+	static createWithArray (apiActionResults: ActionResultType[]) {
 
-		return new LimelightApiError({apiActionResults: apiActionResults});
+		return new LimelightApiError({apiActionResults: apiActionResults, body: {}});
 
 	}
 

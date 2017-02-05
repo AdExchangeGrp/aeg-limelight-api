@@ -1,6 +1,6 @@
 // @flow
 
-import type { LimelightApiActionResultType, ResponseType } from './flow-typed/types';
+import type { ActionResultType, ResponseType } from './flow-typed/types';
 import _ from 'lodash';
 
 export default class LimelightApiError extends Error {
@@ -64,10 +64,10 @@ export default class LimelightApiError extends Error {
 
 	/**
 	 * Create an error from a single action result
-	 * @param {LimelightApiActionResultType[]} apiActionResults
+	 * @param {ActionResultType[]} apiActionResults
 	 * @returns {LimelightApiError}
 	 */
-	static createWithArray (apiActionResults: LimelightApiActionResultType[]) {
+	static createWithArray (apiActionResults: ActionResultType[]) {
 
 		return new LimelightApiError({apiActionResults: apiActionResults, body: {}});
 

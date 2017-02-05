@@ -1,11 +1,101 @@
 // @flow
 
-export type LimelightApiOptionsType = {
-	retries?: number,
-	retryDelay?: number,
-	timeout?: number,
-	errorCodeOverrides?: string[]
+/* limelight api raw responses */
+
+export type ActionResultType = {
+	responseCode: number,
+	responseCodeDesc: string
 }
+
+export interface ResponseType {
+	apiActionResults: ActionResultType[],
+	body: Object
+}
+
+export type FindActiveCampaignsResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		campaign_id: string,
+		campaign_name: string,
+	}
+}
+
+export type GetCampaignResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: CampaignType
+}
+
+export type GetOrderResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: OrderType
+}
+
+export type GetOrdersResponseSingleOrderType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: OrderType
+}
+
+export type GetOrdersResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		total_orders: string,
+		order_ids: string,
+		data: {[id: string]: OrderType}
+	}
+}
+
+export type FindCustomersResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		total_customers: string,
+		customer_ids: string
+	}
+}
+
+export type FindOrdersResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		total_orders: string,
+		order_ids: string
+	}
+}
+
+export type GetCustomerResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		first_name: string,
+		last_name: string,
+		email: string,
+		phone: string,
+		date_created: string,
+		order_count: string,
+		order_list: string
+	}
+}
+
+export type GetProductsResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: ProductType
+}
+
+export type ShippingMethodResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		total_shipping_methods: string,
+		shipping_ids: string,
+		data: {
+			[id: string]: ShippingMethodType
+		}
+	}
+}
+
+/* limelight api response types */
 
 export type OrderProductType = {
 	product_id: string,
@@ -189,6 +279,8 @@ export type ShippingMethodType = {
 	initial_amount: string,
 	subscription_amount: string
 }
+
+/* aeg api response types */
 
 export type LimelightApiOrderProductType = {
 	id: string,
@@ -374,82 +466,14 @@ export type LimelightApiShippingMethodType = {
 	subscriptionAmount: string
 }
 
-/* requests */
+/* aeg api requests */
 
-export type LimelightApiOrderUpdateType = {
-	orderId: string,
-	action: string,
-	value: string | number
+export type LimelightApiOptionsType = {
+	retries?: number,
+	retryDelay?: number,
+	timeout?: number,
+	errorCodeOverrides?: string[]
 }
-
-export type LimelightApiUpdateOrdersRequestType = LimelightApiOrderUpdateType[];
-
-/* raw responses */
-
-export type LimelightApiActionResultType = {
-	responseCode: number,
-	responseCodeDesc: string
-}
-
-export interface ResponseType {
-	apiActionResults: LimelightApiActionResultType[],
-	body: Object
-}
-
-/* responses */
-
-export type FindActiveCampaignsResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		campaign_id: string,
-		campaign_name: string,
-	}
-}
-
-export type LimelightApiFindActiveCampaignsResponseType = {id: string, name: string}[];
-
-export type GetCampaignResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: CampaignType
-}
-
-export type LimelightApiGetCampaignResponseType = ?LimelightApiCampaignType;
-
-export type GetOrderResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: OrderType
-}
-
-export type LimelightApiGetOrderResponseType = ?LimelightApiOrderType;
-
-export type GetOrdersResponseSingleOrderType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: OrderType
-}
-
-export type GetOrdersResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		total_orders: string,
-		order_ids: string,
-		data: {[id: string]: OrderType}
-	}
-}
-
-export type LimelightApiGetOrdersResponseType = LimelightApiOrderType[];
-
-export type FindCustomersResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		total_customers: string,
-		customer_ids: string
-	}
-}
-
-export type LimelightApiFindCustomersResponseType = number[];
 
 export type LimelightApiFindOrdersOptionsType = {
 	productIds?: number[],
@@ -464,51 +488,31 @@ export type LimelightApiFindOrdersOptionsType = {
 	errorCodeOverrides?: string[]
 }
 
-export type FindOrdersResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		total_orders: string,
-		order_ids: string
-	}
+export type LimelightApiOrderUpdateType = {
+	orderId: string,
+	action: string,
+	value: string | number
 }
+
+export type LimelightApiUpdateOrdersRequestType = LimelightApiOrderUpdateType[];
+
+/* aeg api responses */
+
+export type LimelightApiFindActiveCampaignsResponseType = {id: string, name: string}[];
+
+export type LimelightApiGetCampaignResponseType = ?LimelightApiCampaignType;
+
+export type LimelightApiGetOrderResponseType = ?LimelightApiOrderType;
+
+export type LimelightApiGetOrdersResponseType = LimelightApiOrderType[];
+
+export type LimelightApiFindCustomersResponseType = number[];
 
 export type LimelightApiFindOrdersResponseType = number[];
 
-export type GetCustomerResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		first_name: string,
-		last_name: string,
-		email: string,
-		phone: string,
-		date_created: string,
-		order_count: string,
-		order_list: string
-	}
-}
-
 export type LimelightApiGetCustomerResponseType = ?LimelightApiCustomerType;
 
-export type GetProductsResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: ProductType
-}
-
 export type LimelightApiGetProductsResponseType = LimelightApiProductType[];
-
-export type ShippingMethodResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		total_shipping_methods: string,
-		shipping_ids: string,
-		data: {
-			[id: string]: ShippingMethodType
-		}
-	}
-}
 
 export type LimelightApiShippingMethodResponseType = LimelightApiShippingMethodType[];
 

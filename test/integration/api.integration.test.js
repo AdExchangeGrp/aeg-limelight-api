@@ -332,7 +332,11 @@ describe('api domain mhioffers', async () => {
 				}
 			];
 
-			await api.updateOrders(params);
+			const result = await api.updateOrders(params);
+			result.should.be.an.Array;
+			result.length.should.be.equal(1);
+			result[0].orderId.should.be.equal(580395);
+			result[0].statusCode.should.be.equal(343);
 
 		});
 
@@ -368,7 +372,13 @@ describe('api domain mhioffers', async () => {
 				}
 			];
 
-			await api.updateOrders(params);
+			const result = await api.updateOrders(params);
+			result.should.be.an.Array;
+			result.length.should.be.equal(2);
+			result[0].orderId.should.be.equal(580383);
+			result[0].statusCode.should.be.equal(343);
+			result[1].orderId.should.be.equal(-1);
+			result[1].statusCode.should.be.equal(350);
 
 		});
 

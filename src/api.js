@@ -34,6 +34,7 @@ import type {
 	FindCustomersResponseType,
 	LimelightApiGetCustomerResponseType,
 	GetCustomerResponseType,
+	LimelightApiUpdateOrdersResponseType,
 	ResponseType
 } from './flow-typed/types';
 import LimelightApiError from './limelight-api-error';
@@ -562,13 +563,13 @@ class Api extends Base {
 	 * Update orders
 	 * @param {LimelightApiUpdateOrdersRequestType} orderUpdates
 	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<void>}
+	 * @returns {Promise<LimelightApiUpdateOrdersResponseType>}
 	 */
-	async updateOrders (orderUpdates: LimelightApiUpdateOrdersRequestType, options: LimelightApiOptionsType = {}): Promise<void> {
+	async updateOrders (orderUpdates: LimelightApiUpdateOrdersRequestType, options: LimelightApiOptionsType = {}): Promise<LimelightApiUpdateOrdersResponseType> {
 
 		if (!orderUpdates || !orderUpdates.length) {
 
-			return;
+			return [];
 
 		}
 
@@ -580,11 +581,24 @@ class Api extends Base {
 		};
 
 		// some feeback on 350 missing id might be helpful
-		await this._apiRequest(
+		const result = await this._apiRequest(
 			'membership',
 			'order_update',
 			params,
-			_.extend({errorCodeOverrides: [343, 350]}, options));
+			_.extend({errorCodeOverrides: [343, 350, 379]}, options));
+
+		return _.filter(_.map(result.apiActionResults, (result, i) => {
+
+			return {
+				orderId: Number(orderUpdates[i].orderId),
+				statusCode: Number(result.responseCode)
+			};
+
+		}), (f) => {
+
+			return f.statusCode !== 100;
+
+		});
 
 	}
 

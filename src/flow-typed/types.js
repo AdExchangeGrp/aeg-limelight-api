@@ -517,3 +517,10 @@ export type LimelightApiGetProductsResponseType = LimelightApiProductType[];
 export type LimelightApiShippingMethodResponseType = LimelightApiShippingMethodType[];
 
 export type LimelightApiFindUpdatedOrdersResponseType = number[];
+
+export type LimelightApiUpdateOrdersResult = {
+	orderId: number,
+	statusCode: number
+}
+
+export type LimelightApiUpdateOrdersResponseType = Array<LimelightApiUpdateOrdersResult>;

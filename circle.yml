@@ -4,8 +4,6 @@ machine:
 
 dependencies:
   pre:
-    - sudo apt-get update; sudo apt-get install pax
-    - npm install -g npm@3.8.6
     - echo //registry.npmjs.org/:_authToken=$NPM_TOKEN  >> ~/.npmrc
 
 test:
@@ -18,8 +16,8 @@ deployment:
   npm:
     branch: master
     commands:
-      - git config --global user.email "adexchangedevops@adexchangegrp.com"
-      - git config --global user.name "adexchangedevops"
+      - git config --global user.email $GIT_EMAIL
+      - git config --global user.name $GIT_USER
       - npm run patch
 
 general:

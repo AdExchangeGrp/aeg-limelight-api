@@ -1,6 +1,6 @@
 {
   "name": "@adexchange/aeg-limelight-api",
-  "version": "0.0.44",
+  "version": "0.0.45",
   "description": "Limelight API",
   "main": "./lib/index.js",
   "author": "Justin Durham",

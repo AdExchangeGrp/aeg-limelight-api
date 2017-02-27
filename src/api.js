@@ -235,7 +235,7 @@ class Api extends Base {
 
 		} catch (ex) {
 
-			if (ex.apiResponse.apiActionResults[0].responseCode === 200) {
+			if (ex instanceof LimelightApiError && ex.apiResponse.apiActionResults[0].responseCode === 200) {
 
 				return false;
 

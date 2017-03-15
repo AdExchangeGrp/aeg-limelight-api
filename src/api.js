@@ -39,7 +39,7 @@ import type {
     LimelightApiFindCustomersResponseType,
     LimelightApiGetCustomerResponseType,
     LimelightApiUpdateOrdersResponseType
-} from './flow-typed/api-types';
+} from './flow-typed/types';
 
 import LimelightApiError from './limelight-api-error';
 import config from 'config';

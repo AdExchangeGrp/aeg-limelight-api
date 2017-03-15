@@ -2,41 +2,45 @@
 
 import type {
 	OrderType,
-	LimelightApiOrderType,
 	CampaignType,
-	LimelightApiCampaignType,
 	ProductType,
-	LimelightApiProductType,
 	ShippingMethodType,
-	LimelightApiShippingMethodType,
 	CustomerType,
-	LimelightApiCustomerType,
-	LimelightApiOptionsType,
-	LimelightApiUpdateOrdersRequestType,
-	LimelightApiFindActiveCampaignsResponseType,
 	FindActiveCampaignsResponseType,
-	LimelightApiGetCampaignResponseType,
 	GetCampaignResponseType,
-	LimelightApiShippingMethodResponseType,
 	ShippingMethodResponseType,
-	LimelightApiGetProductsResponseType,
 	GetProductsResponseType,
-	LimelightApiGetOrderResponseType,
 	GetOrderResponseType,
 	GetOrdersResponseSingleOrderType,
-	LimelightApiGetOrdersResponseType,
 	GetOrdersResponseType,
-	LimelightApiFindOrdersOptionsType,
-	LimelightApiFindOrdersResponseType,
-	LimelightApiFindUpdatedOrdersResponseType,
 	FindOrdersResponseType,
-	LimelightApiFindCustomersResponseType,
 	FindCustomersResponseType,
-	LimelightApiGetCustomerResponseType,
 	GetCustomerResponseType,
-	LimelightApiUpdateOrdersResponseType,
 	ResponseType
-} from './flow-typed/types';
+} from './flow-typed/limelight-types';
+
+import type {
+    LimelightApiOrderType,
+    LimelightApiCampaignType,
+    LimelightApiProductType,
+    LimelightApiShippingMethodType,
+    LimelightApiCustomerType,
+    LimelightApiOptionsType,
+    LimelightApiUpdateOrdersRequestType,
+    LimelightApiFindActiveCampaignsResponseType,
+    LimelightApiGetCampaignResponseType,
+    LimelightApiShippingMethodResponseType,
+    LimelightApiGetProductsResponseType,
+    LimelightApiGetOrderResponseType,
+    LimelightApiGetOrdersResponseType,
+    LimelightApiFindOrdersOptionsType,
+    LimelightApiFindOrdersResponseType,
+    LimelightApiFindUpdatedOrdersResponseType,
+    LimelightApiFindCustomersResponseType,
+    LimelightApiGetCustomerResponseType,
+    LimelightApiUpdateOrdersResponseType
+} from './flow-typed/api-types';
+
 import LimelightApiError from './limelight-api-error';
 import config from 'config';
 import request from 'request-promise';

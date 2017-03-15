@@ -1,6 +1,6 @@
 // @flow
 
-import type { ActionResultType, ResponseType } from './flow-typed/types';
+import type { ActionResultType, ResponseType } from './flow-typed/limelight-types';
 import _ from 'lodash';
 
 export default class LimelightApiError extends Error {

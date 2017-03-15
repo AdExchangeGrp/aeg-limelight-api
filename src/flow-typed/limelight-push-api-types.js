@@ -82,7 +82,6 @@ export type PushAPIMetaType = {
 };
 
 export type PushAPIOrderType = {
-    created: string,
     statusChangeCode: string,
     domain: string,
     campaignId: number,

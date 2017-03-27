@@ -60,7 +60,7 @@ export type PushAPIPaymentType = {
     creditCardNumberFirst6: ?string,
     creditCardNumberLast4: ?string,
     creditCardExpires: ?string,
-    prepaidMath: ?boolean,
+    prepaidMatch: ?boolean,
     checkAccountLast4: ?string,
     checkRoutingLast4: ?string,
     checkSSNLast4: ?string,
@@ -82,7 +82,6 @@ export type PushAPIMetaType = {
 };
 
 export type PushAPIOrderType = {
-    created: string,
     statusChangeCode: string,
     domain: string,
     campaignId: number,

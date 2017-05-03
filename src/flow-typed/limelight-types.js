@@ -1,100 +1,5 @@
 // @flow
 
-/* limelight api raw responses */
-
-export type ActionResultType = {
-	responseCode: number,
-	responseCodeDesc: string
-}
-
-export interface ResponseType {
-	apiActionResults: ActionResultType[],
-	body: Object
-}
-
-export type FindActiveCampaignsResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		campaign_id: string,
-		campaign_name: string,
-	}
-}
-
-export type GetCampaignResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: CampaignType
-}
-
-export type GetOrderResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: OrderType
-}
-
-export type GetOrdersResponseSingleOrderType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: OrderType
-}
-
-export type GetOrdersResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		total_orders: string,
-		order_ids: string,
-		data: {[id: string]: OrderType}
-	}
-}
-
-export type FindCustomersResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		total_customers: string,
-		customer_ids: string
-	}
-}
-
-export type FindOrdersResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		total_orders: string,
-		order_ids: string
-	}
-}
-
-export type GetCustomerResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		first_name: string,
-		last_name: string,
-		email: string,
-		phone: string,
-		date_created: string,
-		order_count: string,
-		order_list: string
-	}
-}
-
-export type GetProductsResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: ProductType
-}
-
-export type ShippingMethodResponseType = {
-	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
-	body: {
-		response_code: string,
-		total_shipping_methods: string,
-		shipping_ids: string,
-		data: {
-			[id: string]: ShippingMethodType
-		}
-	}
-}
-
 /* limelight api response types */
 
 export type OrderProductType = {
@@ -278,4 +183,99 @@ export type ShippingMethodType = {
 	code: string,
 	initial_amount: string,
 	subscription_amount: string
+}
+
+/* limelight api raw responses */
+
+export type ActionResultType = {
+	responseCode: number,
+	responseCodeDesc: string
+}
+
+export interface ResponseType {
+	apiActionResults: ActionResultType[],
+	body: Object
+}
+
+export type FindActiveCampaignsResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		campaign_id: string,
+		campaign_name: string,
+	}
+}
+
+export type GetCampaignResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: CampaignType
+}
+
+export type GetOrderResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: OrderType
+}
+
+export type GetOrdersResponseSingleOrderType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: OrderType
+}
+
+export type GetOrdersResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		total_orders: string,
+		order_ids: string,
+		data: {[id: string]: OrderType}
+	}
+}
+
+export type FindCustomersResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		total_customers: string,
+		customer_ids: string
+	}
+}
+
+export type FindOrdersResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		total_orders: string,
+		order_ids: string
+	}
+}
+
+export type GetCustomerResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		first_name: string,
+		last_name: string,
+		email: string,
+		phone: string,
+		date_created: string,
+		order_count: string,
+		order_list: string
+	}
+}
+
+export type GetProductsResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: ProductType
+}
+
+export type ShippingMethodResponseType = {
+	apiActionResults: {responseCode: number, responseCodeDesc: string}[],
+	body: {
+		response_code: string,
+		total_shipping_methods: string,
+		shipping_ids: string,
+		data: {
+			[id: string]: ShippingMethodType
+		}
+	}
 }

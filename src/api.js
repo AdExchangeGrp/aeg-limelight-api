@@ -584,7 +584,7 @@ class Api extends Base {
 			values: _.map(orderUpdates, 'value').join(',')
 		};
 
-		// some feeback on 350 missing id might be helpful
+		// some feedback on 350 missing id might be helpful
 		const result = await this._apiRequest(
 			'membership',
 			'order_update',
@@ -1232,4 +1232,3 @@ class Api extends Base {
 }
 
 export default Api;
-

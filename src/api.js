@@ -1232,4 +1232,3 @@ class Api extends Base {
 }
 
 export default Api;
-

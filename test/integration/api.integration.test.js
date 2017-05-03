@@ -2,7 +2,7 @@ import should from 'should';
 import _ from 'lodash';
 import Api from '../../src/api.js';
 
-describe('api domain dvd-crm', async () => {
+describe('api domain globalvoffers.limelightcrm.com', async () => {
 
 	const api = new Api('Pushinnovation', 'nnu3HRCVTawf2e', 'globalvoffers.limelightcrm.com')
 		.on('warn', (data) => {
@@ -252,17 +252,17 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe.skip('#updateOrders()', async () => {
+	describe('#updateOrders()', async () => {
 
 		it('should return without error', async () => {
 
 			const params = [
 				{
-					orderId: 580383,
+					orderId: 10617,
 					action: 'tracking_number',
-					value: '123457TEST'
+					value: '9400111899561218198203'
 				}, {
-					orderId: 580395,
+					orderId: 99999999999,
 					action: 'tracking_number',
 					value: '1234567TEST'
 				}
@@ -270,8 +270,8 @@ describe('api domain dvd-crm', async () => {
 
 			const result = await api.updateOrders(params);
 			result.should.be.an.Array;
-			result.length.should.be.equal(1);
-			result[0].orderId.should.be.equal(580395);
+			result.length.should.be.equal(2);
+			result[0].orderId.should.be.equal(10617);
 			result[0].statusCode.should.be.equal(343);
 
 		});
@@ -280,11 +280,11 @@ describe('api domain dvd-crm', async () => {
 
 			const params = [
 				{
-					orderId: 580383,
+					orderId: 10617,
 					action: 'tracking_number',
-					value: '123457TEST2'
+					value: '9400111899561218198203'
 				}, {
-					orderId: 580395,
+					orderId: 99999999999,
 					action: 'tracking_number',
 					value: '1234567TEST'
 				}
@@ -298,9 +298,9 @@ describe('api domain dvd-crm', async () => {
 
 			const params = [
 				{
-					orderId: 580383,
+					orderId: 10617,
 					action: 'tracking_number',
-					value: '123457TEST2'
+					value: '9400111899561218198203'
 				}, {
 					orderId: -1,
 					action: 'tracking_number',
@@ -311,7 +311,7 @@ describe('api domain dvd-crm', async () => {
 			const result = await api.updateOrders(params);
 			result.should.be.an.Array;
 			result.length.should.be.equal(2);
-			result[0].orderId.should.be.equal(580383);
+			result[0].orderId.should.be.equal(10617);
 			result[0].statusCode.should.be.equal(343);
 			result[1].orderId.should.be.equal(-1);
 			result[1].statusCode.should.be.equal(350);
@@ -320,11 +320,11 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-	describe.skip('#findUpdatedOrders()', async () => {
+	describe('#findUpdatedOrders()', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findUpdatedOrders(489, ['chargeback'], '07/01/2016', '01/01/2017');
+			const result = await api.findUpdatedOrders(261, ['chargeback'], '07/01/2015', '01/01/2018');
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);

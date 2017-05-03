@@ -4,7 +4,7 @@ import Api from '../../src/api.js';
 
 describe('api domain dvd-crm', async () => {
 
-	const api = new Api('Snowball', '8KX2DjfxnXWtYp', 'www.dvd-crm.com')
+	const api = new Api('Pushinnovation', 'nnu3HRCVTawf2e', 'globalvoffers.limelightcrm.com')
 		.on('warn', (data) => {
 
 			console.log(data);
@@ -16,7 +16,7 @@ describe('api domain dvd-crm', async () => {
 
 		});
 
-	const badApi = new Api('Snowball', '1', 'www.dvd-crm.com')
+	const badApi = new Api('Pushinnovation', '1', 'globalvoffers.limelightcrm.com')
 		.on('warn', (data) => {
 
 			console.log(data);
@@ -67,7 +67,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getCampaign(34);
+			const result = await api.getCampaign(285);
 			should.exist(result);
 
 		});
@@ -85,7 +85,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should not find orders', async () => {
 
-			const result = await api.findOrders(42, '01/01/2013', '02/01/2015', {productIds: [26]});
+			const result = await api.findOrders(285, '01/01/2013', '02/01/2017', {productIds: [26]});
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.equal(0);
@@ -94,7 +94,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should find orders', async () => {
 
-			const result = await api.findOrders('all', '01/01/2013', '02/01/2015');
+			const result = await api.findOrders('all', '01/01/2013', '02/01/2017');
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);
@@ -107,9 +107,9 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getOrder(10000);
+			const result = await api.getOrder(10617);
 			should.exist(result);
-			result.id.should.be.equal(10000);
+			result.id.should.be.equal(10617);
 
 		});
 
@@ -126,7 +126,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getOrders([10000, 10018]);
+			const result = await api.getOrders([10617, 10615]);
 			result.should.be.an.Array;
 			result.length.should.be.equal(2);
 
@@ -134,7 +134,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getOrders([10000]);
+			const result = await api.getOrders([10617]);
 			result.should.be.an.Array;
 			result.length.should.be.equal(1);
 
@@ -150,7 +150,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error with a bad id', async () => {
 
-			const result = await api.getOrders([10000, -1]);
+			const result = await api.getOrders([10617, -1]);
 			result.should.be.an.Array;
 			result.length.should.be.equal(1);
 			should.exist(result[0]);
@@ -163,7 +163,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findCustomers(42, '01/01/2013', '02/01/2017');
+			const result = await api.findCustomers(79, '01/01/2013', '02/01/2017');
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);
@@ -172,7 +172,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findCustomers(42, '01/01/2013', '02/01/2013');
+			const result = await api.findCustomers(79, '01/01/2013', '02/01/2013');
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.equal(0);
@@ -192,7 +192,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getCustomer(1);
+			const result = await api.getCustomer(999999);
 			should.not.exist(result);
 
 		});
@@ -203,7 +203,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getProducts([26]);
+			const result = await api.getProducts([377]);
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);
@@ -212,7 +212,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getProducts([26, 27]);
+			const result = await api.getProducts([377, 27]);
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);
@@ -230,7 +230,7 @@ describe('api domain dvd-crm', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getProducts([26, -1, 27]);
+			const result = await api.getProducts([377, -1, 27]);
 			should.exist(result);
 			result.should.be.an.Array;
 			result.length.should.be.greaterThan(0);
@@ -252,71 +252,7 @@ describe('api domain dvd-crm', async () => {
 
 	});
 
-});
-
-describe('api domain mhioffers', async () => {
-
-	const api = new Api('Ad Exchange Group', '4rTKYUWmbPhpW', 'www.globalvoffers.com')
-		.on('error', (err) => {
-
-			console.log(err);
-
-		});
-
-	describe('#findActiveCampaigns()', async () => {
-
-		it('should return without error', async () => {
-
-			const result = await api.findActiveCampaigns();
-			result.should.be.an.Array;
-
-			_.each(result, (r) => {
-
-				r.should.have.properties('id', 'name');
-
-			});
-
-		});
-
-	});
-
-	describe('#getCampaign()', async () => {
-
-		it('should return without error', async () => {
-
-			const result = await api.getCampaign(77);
-			should.exist(result);
-
-		});
-
-	});
-
-	describe('#findOrders()', async () => {
-
-		it('should return without error', async () => {
-
-			const result = await api.findOrders(77, '04/22/201', '04/26/2015', {customerId: 63571});
-			should.exist(result);
-			result.should.be.an.Array;
-			result.length.should.be.greaterThan(0);
-
-		});
-
-	});
-
-	describe('#getOrder()', async () => {
-
-		it('should return without error', async () => {
-
-			const result = await api.getOrder(580395);
-			should.exist(result);
-			result.id.should.be.equal(580395);
-
-		});
-
-	});
-
-	describe('#updateOrders()', async () => {
+	describe.skip('#updateOrders()', async () => {
 
 		it('should return without error', async () => {
 
@@ -384,7 +320,7 @@ describe('api domain mhioffers', async () => {
 
 	});
 
-	describe('#findUpdatedOrders()', async () => {
+	describe.skip('#findUpdatedOrders()', async () => {
 
 		it('should return without error', async () => {
 

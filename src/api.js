@@ -890,7 +890,7 @@ class Api extends Base {
 						err: ex
 					});
 
-					throw LimelightApiError.createWithOne(500, 'failed to parse result.body.data', ex);
+					throw LimelightApiError.createWithOne(500, 'failed to parse result.body.data');
 
 				}
 

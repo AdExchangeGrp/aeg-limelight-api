@@ -1,12 +1,13 @@
 {
-  "name": "@adexchange/aeg-limelight-api",
+  "name": "@push_innovation/aeg-limelight-api",
   "version": "0.0.1",
   "description": "Limelight API",
   "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "author": "Ad Exchange Group",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AdExchangeGrp/aeg-limelight-api.git"
+    "url": "https://github.com/pushinnovation/aeg-limelight-api.git"
   },
   "license": "UNLICENSED",
   "scripts": {
@@ -52,7 +53,7 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
-    "@adexchange/aeg-common": "0.0.282",
+    "@push_innovation/aeg-common": "0.0.8",
     "@types/config": "0.0.32",
     "@types/lodash": "^4.14.76",
     "@types/request": "^2.0.3",

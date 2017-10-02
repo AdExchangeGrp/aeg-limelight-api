@@ -3,7 +3,7 @@ import * as config from 'config';
 import * as request from 'request-promise';
 import * as _ from 'lodash';
 import * as qs from 'querystring';
-import $ from 'stringformat';
+import * as $ from 'stringformat';
 import { Base, ControlFlow } from '@adexchange/aeg-common';
 import * as EventEmitter from 'events';
 import * as csv from 'fast-csv';

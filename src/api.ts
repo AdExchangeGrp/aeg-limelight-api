@@ -899,7 +899,7 @@ export default class Api extends Base {
 
 						if (options && options.errorCodeOverrides) {
 
-							return !_.includes<string>(options.errorCodeOverrides, String(r.responseCode)) && r.responseCode !== 100;
+							return !_.includes(options.errorCodeOverrides, r.responseCode) && r.responseCode !== 100;
 
 						} else {
 

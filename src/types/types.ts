@@ -190,7 +190,7 @@ export interface ILimelightApiOptionsType {
 	retries?: number;
 	retryDelay?: number;
 	timeout?: number;
-	errorCodeOverrides?: string[];
+	errorCodeOverrides?: number[];
 }
 
 export interface ILimelightApiFindOrdersOptionsType {

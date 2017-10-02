@@ -1,83 +1,59 @@
-// @flow
-
-import type {
-	OrderType,
-	CampaignType,
-	ProductType,
-	ShippingMethodType,
-	CustomerType,
-	FindActiveCampaignsResponseType,
-	GetCampaignResponseType,
-	ShippingMethodResponseType,
-	GetProductsResponseType,
-	GetOrderResponseType,
-	GetOrdersResponseSingleOrderType,
-	GetOrdersResponseType,
-	FindOrdersResponseType,
-	FindCustomersResponseType,
-	GetCustomerResponseType,
-	ResponseType
-} from './flow-typed/limelight-types';
-
-import type {
-    LimelightApiOrderType,
-    LimelightApiCampaignType,
-    LimelightApiProductType,
-    LimelightApiShippingMethodType,
-    LimelightApiCustomerType,
-    LimelightApiOptionsType,
-    LimelightApiUpdateOrdersRequestType,
-    LimelightApiFindActiveCampaignsResponseType,
-    LimelightApiGetCampaignResponseType,
-    LimelightApiShippingMethodResponseType,
-    LimelightApiGetProductsResponseType,
-    LimelightApiGetOrderResponseType,
-    LimelightApiGetOrdersResponseType,
-    LimelightApiFindOrdersOptionsType,
-    LimelightApiFindOrdersResponseType,
-    LimelightApiFindUpdatedOrdersResponseType,
-    LimelightApiFindCustomersResponseType,
-    LimelightApiGetCustomerResponseType,
-    LimelightApiUpdateOrdersResponseType
-} from './flow-typed/types';
-
 import LimelightApiError from './limelight-api-error';
-import config from 'config';
-import request from 'request-promise';
-import _ from 'lodash';
-import qs from 'querystring';
+import * as config from 'config';
+import * as request from 'request-promise';
+import * as _ from 'lodash';
+import * as qs from 'querystring';
 import $ from 'stringformat';
 import { Base, ControlFlow } from '@adexchange/aeg-common';
-import EventEmitter from 'events';
-import csv from 'fast-csv';
+import * as EventEmitter from 'events';
+import * as csv from 'fast-csv';
+import {
+	ILimelightApiCampaignType, ILimelightApiCustomerType,
+	ILimelightApiFindOrdersOptionsType,
+	ILimelightApiOptionsType, ILimelightApiOrderType, ILimelightApiProductType, ILimelightApiShippingMethodType,
+	LimelightApiFindActiveCampaignsResponseType,
+	LimelightApiFindCustomersResponseType,
+	LimelightApiFindOrdersResponseType,
+	LimelightApiFindUpdatedOrdersResponseType,
+	LimelightApiGetCampaignResponseType, LimelightApiGetCustomerResponseType, LimelightApiGetOrderResponseType,
+	LimelightApiGetOrdersResponseType, LimelightApiGetProductsResponseType, LimelightApiShippingMethodResponseType,
+	LimelightApiUpdateOrdersRequestType, LimelightApiUpdateOrdersResponseType
+} from './types/types';
+import {
+	ICampaignType, ICustomerType,
+	IFindActiveCampaignsResponseType, IFindCustomersResponseType, IFindOrdersResponseType, IGetCampaignResponseType,
+	IGetCustomerResponseType,
+	IGetOrderResponseType,
+	IGetOrdersResponseSingleOrderType, IGetOrdersResponseType, IGetProductsResponseType,
+	IOrderType, IProductType,
+	IResponseType, IShippingMethodResponseType, IShippingMethodType
+} from './types/limelight-types';
 
-declare type ComposeApiCallResponseType = {
+export interface IComposeApiCallResponseType {
 
-	url: string,
-	form: Object,
-	timeout: number
+	url: string;
+	form: any;
+	timeout: number;
 }
 
 /**
  * Limelight API wrapper
  */
-class Api extends Base {
+export default class Api extends Base {
 
-	_user: string;
-	_password: string;
-	_domain: string;
-	_config: Object;
-	_conf: Object;
-	_eventEmitter: EventEmitter;
-	_membershipResponseCodes: Map<number, string>;
+	private _user: string;
 
-	/**
-	 * Constructor
-	 * @param {string} user
-	 * @param {string} password
-	 * @param {string} domain
-	 */
-	constructor (user: string, password: string, domain: string): void {
+	private _password: string;
+
+	private _domain: string;
+
+	private _conf: any;
+
+	private _eventEmitter: EventEmitter;
+
+	private _membershipResponseCodes: Map<number, string>;
+
+	constructor (user: string, password: string, domain: string) {
 
 		super();
 
@@ -216,10 +192,8 @@ class Api extends Base {
 
 	/**
 	 * Get the description for a response code
-	 * @param {number} code
-	 * @returns {string}
 	 */
-	membershipResponseCodeDesc (code: number): string {
+	public membershipResponseCodeDesc (code: number): string {
 
 		return this._membershipResponseCodes.get(code) || 'Unspecified';
 
@@ -227,10 +201,8 @@ class Api extends Base {
 
 	/**
 	 * Validate the credentials
-	 * @param {LimelightApiOptionsType} [options]
-	 *  @returns {Promise<boolean>}
 	 */
-	async validateCredentials (options: LimelightApiOptionsType = {}): Promise<boolean> {
+	public async validateCredentials (options: ILimelightApiOptionsType = {}): Promise<boolean> {
 
 		try {
 
@@ -255,18 +227,20 @@ class Api extends Base {
 
 	/**
 	 * Find all active campaigns
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiFindActiveCampaignsResponseType>}
 	 */
-	async findActiveCampaigns (options: LimelightApiOptionsType = {}): Promise<LimelightApiFindActiveCampaignsResponseType> {
+	public async findActiveCampaigns (
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiFindActiveCampaignsResponseType> {
 
-		const response: FindActiveCampaignsResponseType = await this._apiRequest('membership', 'campaign_find_active', {}, options);
+		const response: IFindActiveCampaignsResponseType =
+			await this._apiRequest(
+				'membership',
+				'campaign_find_active', {}, options);
 		const campaignIds = response.body.campaign_id.split(',');
 		const campaignNames = response.body.campaign_name.split(',');
 
 		return _.map(campaignIds, (id, i) => {
 
-			return {id: id, name: campaignNames[i]};
+			return {id, name: campaignNames[i]};
 
 		});
 
@@ -274,11 +248,10 @@ class Api extends Base {
 
 	/**
 	 * Gets a campaign
-	 * @param {number} campaignId
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiGetCampaignResponseType>}
 	 */
-	async getCampaign (campaignId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiGetCampaignResponseType> {
+	public async getCampaign (
+		campaignId: number,
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiGetCampaignResponseType> {
 
 		if (!campaignId) {
 
@@ -288,7 +261,12 @@ class Api extends Base {
 
 		try {
 
-			const response: GetCampaignResponseType = await this._apiRequest('membership', 'campaign_view', {'campaign_id': campaignId}, options);
+			const response: IGetCampaignResponseType =
+				await this._apiRequest(
+					'membership',
+					'campaign_view',
+					{campaign_id: campaignId}, options);
+
 			return this._cleanseCampaign(campaignId, response.body);
 
 		} catch (ex) {
@@ -301,15 +279,16 @@ class Api extends Base {
 
 		}
 
+		return;
+
 	}
 
 	/**
 	 * Gets an order
-	 * @param {number} orderId
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiGetOrderResponseType>}
 	 */
-	async getOrder (orderId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiGetOrderResponseType> {
+	public async getOrder (
+		orderId: number,
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiGetOrderResponseType> {
 
 		if (!orderId) {
 
@@ -317,7 +296,11 @@ class Api extends Base {
 
 		}
 
-		const response: GetOrderResponseType = await this._apiRequest('membership', 'order_view', {'order_id': orderId}, _.extend({errorCodeOverrides: [350]}, options));
+		const response: IGetOrderResponseType =
+			await this._apiRequest(
+				'membership',
+				'order_view',
+				{order_id: orderId}, _.extend({errorCodeOverrides: [350]}, options));
 
 		if (response.body.response_code === '100') {
 
@@ -325,15 +308,16 @@ class Api extends Base {
 
 		}
 
+		return;
+
 	}
 
 	/**
 	 * Gets a set of orders
-	 * @param {number[]} orderIds
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiGetOrdersResponseType>}
 	 */
-	async getOrders (orderIds: number[], options: LimelightApiOptionsType = {}): Promise<LimelightApiGetOrdersResponseType> {
+	public async getOrders (
+		orderIds: number[],
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiGetOrdersResponseType> {
 
 		if (!orderIds || !orderIds.length) {
 
@@ -349,7 +333,11 @@ class Api extends Base {
 
 		if (orderIds.length === 1) {
 
-			const result: GetOrdersResponseSingleOrderType = await this._apiRequest('membership', 'order_view', {'order_id': orderIds.join(',')}, _.extend({errorCodeOverrides: [350]}, options));
+			const result: IGetOrdersResponseSingleOrderType =
+				await this._apiRequest(
+					'membership',
+					'order_view',
+					{order_id: orderIds.join(',')}, _.extend({errorCodeOverrides: [350]}, options));
 
 			if (result.body) {
 
@@ -367,7 +355,11 @@ class Api extends Base {
 
 		} else {
 
-			const result: GetOrdersResponseType = await this._apiRequest('membership', 'order_view', {'order_id': orderIds.join(',')}, _.extend({errorCodeOverrides: [350]}, options));
+			const result: IGetOrdersResponseType =
+				await this._apiRequest(
+					'membership',
+					'order_view',
+					{order_id: orderIds.join(',')}, _.extend({errorCodeOverrides: [350]}, options));
 
 			if (result.body && result.body.data) {
 
@@ -379,13 +371,15 @@ class Api extends Base {
 
 					}
 
+					return;
+
 				});
 
 				return _.filter(map, (m) => {
 
-					return m;
+					return m !== undefined;
 
-				});
+				}) as LimelightApiGetOrdersResponseType;
 
 			}
 
@@ -397,13 +391,12 @@ class Api extends Base {
 
 	/**
 	 * Find orders
-	 * @param {string | number} campaignId - can be 'all' otherwise the campaign number
-	 * @param {string} startDate
-	 * @param {string} endDate
-	 * @param {LimelightApiFindOrdersOptionsType} [options]
-	 * @returns {Promise<LimelightApiFindOrdersResponseType>}
 	 */
-	async findOrders (campaignId: string | number, startDate: string, endDate: string, options: LimelightApiFindOrdersOptionsType = {}): Promise<LimelightApiFindOrdersResponseType> {
+	public async findOrders (
+		campaignId: string | number,
+		startDate: string,
+		endDate: string,
+		options: ILimelightApiFindOrdersOptionsType = {}): Promise<LimelightApiFindOrdersResponseType> {
 
 		if (!campaignId) {
 
@@ -479,7 +472,10 @@ class Api extends Base {
 
 		}
 
-		const response: FindOrdersResponseType = await this._apiRequest('membership', 'order_find', params, _.extend({errorCodeOverrides: [333]}, options));
+		const response: IFindOrdersResponseType =
+			await this._apiRequest(
+				'membership',
+				'order_find', params, _.extend({errorCodeOverrides: [333]}, options));
 
 		if (response.apiActionResults[0].responseCode === 333) {
 
@@ -497,18 +493,13 @@ class Api extends Base {
 
 	/**
 	 * Find updated orders
-	 * @param {string | number} campaignId
-	 * @param {string[]} groupKeys
-	 * @param {string} startDate
-	 * @param {string} endDate
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiFindUpdatedOrdersResponseType>}
 	 */
-	async findUpdatedOrders (campaignId: string | number,
-	                         groupKeys: string[],
-	                         startDate: string,
-	                         endDate: string,
-	                         options: LimelightApiOptionsType = {}): Promise<LimelightApiFindUpdatedOrdersResponseType> {
+	public async findUpdatedOrders (
+		campaignId: string | number,
+		groupKeys: string[],
+		startDate: string,
+		endDate: string,
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiFindUpdatedOrdersResponseType> {
 
 		if (!campaignId) {
 
@@ -534,14 +525,17 @@ class Api extends Base {
 
 		}
 
-		const params: Object = {
+		const params = {
 			campaign_id: campaignId,
 			group_keys: groupKeys.join(','),
 			start_date: startDate,
 			end_date: endDate
 		};
 
-		const response = await this._apiRequest('membership', 'order_find_updated', params, _.extend({errorCodeOverrides: [333]}, options));
+		const response =
+			await this._apiRequest(
+				'membership',
+				'order_find_updated', params, _.extend({errorCodeOverrides: [333]}, options));
 
 		if (response.apiActionResults[0].responseCode === 333) {
 
@@ -565,11 +559,10 @@ class Api extends Base {
 
 	/**
 	 * Update orders
-	 * @param {LimelightApiUpdateOrdersRequestType} orderUpdates
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiUpdateOrdersResponseType>}
 	 */
-	async updateOrders (orderUpdates: LimelightApiUpdateOrdersRequestType, options: LimelightApiOptionsType = {}): Promise<LimelightApiUpdateOrdersResponseType> {
+	public async updateOrders (
+		orderUpdates: LimelightApiUpdateOrdersRequestType,
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiUpdateOrdersResponseType> {
 
 		if (!orderUpdates || !orderUpdates.length) {
 
@@ -591,11 +584,11 @@ class Api extends Base {
 			params,
 			_.extend({errorCodeOverrides: [343, 350, 379]}, options));
 
-		return _.filter(_.map(result.apiActionResults, (result, i) => {
+		return _.filter(_.map(result.apiActionResults, (innerResult, i) => {
 
 			return {
 				orderId: Number(orderUpdates[i].orderId),
-				statusCode: Number(result.responseCode)
+				statusCode: Number(innerResult.responseCode)
 			};
 
 		}), (f) => {
@@ -608,11 +601,10 @@ class Api extends Base {
 
 	/**
 	 * Get a customer
-	 * @param {number} customerId
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiGetCustomerResponseType>}
 	 */
-	async getCustomer (customerId: number, options: LimelightApiOptionsType = {}): Promise<LimelightApiGetCustomerResponseType> {
+	public async getCustomer (
+		customerId: number,
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiGetCustomerResponseType> {
 
 		if (!customerId) {
 
@@ -620,7 +612,11 @@ class Api extends Base {
 
 		}
 
-		const response: GetCustomerResponseType = await this._apiRequest('membership', 'customer_view', {'customer_id': customerId}, _.extend({errorCodeOverrides: [603]}, options));
+		const response: IGetCustomerResponseType =
+			await this._apiRequest(
+				'membership',
+				'customer_view',
+				{customer_id: customerId}, _.extend({errorCodeOverrides: [603]}, options));
 
 		if (response.body.response_code === '100') {
 
@@ -628,17 +624,18 @@ class Api extends Base {
 
 		}
 
+		return;
+
 	}
 
 	/**
 	 * Find customers
-	 * @param {number | string} campaignId
-	 * @param {string} startDate
-	 * @param {string} endDate
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiFindCustomersResponseType>}
 	 */
-	async findCustomers (campaignId: number | string, startDate: string, endDate: string, options: LimelightApiOptionsType = {}): Promise<LimelightApiFindCustomersResponseType> {
+	public async findCustomers (
+		campaignId: number | string,
+		startDate: string,
+		endDate: string,
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiFindCustomersResponseType> {
 
 		if (!campaignId) {
 
@@ -664,7 +661,11 @@ class Api extends Base {
 			end_date: endDate
 		};
 
-		const response: FindCustomersResponseType = await this._apiRequest('membership', 'customer_find', params, _.extend({errorCodeOverrides: [604]}, options));
+		const response: IFindCustomersResponseType =
+			await this._apiRequest(
+				'membership',
+				'customer_find',
+				params, _.extend({errorCodeOverrides: [604]}, options));
 
 		if (response.apiActionResults[0].responseCode === 604) {
 
@@ -682,12 +683,10 @@ class Api extends Base {
 
 	/**
 	 * Gets a set of products
-	 * @param {number[]} productIds
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiGetProductsResponseType>}
-	 * @returns {*}
 	 */
-	async getProducts (productIds: number[], options: LimelightApiOptionsType = {}): Promise<LimelightApiGetProductsResponseType> {
+	public async getProducts (
+		productIds: number[],
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiGetProductsResponseType> {
 
 		if (!productIds || !productIds.length) {
 
@@ -695,7 +694,11 @@ class Api extends Base {
 
 		}
 
-		const response: GetProductsResponseType = await this._apiRequest('membership', 'product_index', {product_id: productIds.join(',')}, _.extend({errorCodeOverrides: [600]}, options));
+		const response: IGetProductsResponseType =
+			await this._apiRequest(
+				'membership',
+				'product_index',
+				{product_id: productIds.join(',')}, _.extend({errorCodeOverrides: [600]}, options));
 
 		if (response.body) {
 
@@ -709,12 +712,10 @@ class Api extends Base {
 
 	/**
 	 * Gets the shipping methods
-	 * @param {string | number} campaignId
-	 * @param {LimelightApiOptionsType} [options]
-	 * @returns {Promise<LimelightApiShippingMethodResponseType>}
-	 * @returns {*}
 	 */
-	async findShippingMethods (campaignId: string | number, options: LimelightApiOptionsType = {}): Promise<LimelightApiShippingMethodResponseType> {
+	public async findShippingMethods (
+		campaignId: string | number,
+		options: ILimelightApiOptionsType = {}): Promise<LimelightApiShippingMethodResponseType> {
 
 		if (!campaignId) {
 
@@ -722,12 +723,13 @@ class Api extends Base {
 
 		}
 
-		const params: Object = {
+		const params = {
 			campaign_id: campaignId,
 			return_type: 'shipping_method_view'
 		};
 
-		const response: ShippingMethodResponseType = await this._apiRequest('membership', 'shipping_method_find', params, options);
+		const response: IShippingMethodResponseType =
+			await this._apiRequest('membership', 'shipping_method_find', params, options);
 
 		return _.map(Object.keys(response.body.data), (key) => {
 
@@ -739,19 +741,17 @@ class Api extends Base {
 
 	/**
 	 * Compose an API request
-	 * @param {string} apiType
-	 * @param {string} method
-	 * @param {Object} params
-	 * @param {LimelightApiOptionsType} options
-	 * @returns {{url: {string}, form: {username: (string|*), password: (string|*), method: *}, timeout: number}}
-	 * @private
 	 */
-	_composeApiCall (apiType: string, method: string, params: Object, options: LimelightApiOptionsType = {}): ComposeApiCallResponseType {
+	private _composeApiCall (
+		apiType: string,
+		method: string,
+		params: any,
+		options: ILimelightApiOptionsType = {}): IComposeApiCallResponseType {
 
-		const form: Object = {
+		const form = {
 			username: this._user,
 			password: this._password,
-			method: method
+			method
 		};
 
 		if (params !== null) {
@@ -761,8 +761,10 @@ class Api extends Base {
 		}
 
 		return {
-			url: apiType === 'membership' ? $(this._conf.membershipApiUrl, this._domain) : $(this._conf.transactionApiUrl, this._domain),
-			form: form,
+			url: apiType === 'membership'
+				? $(this._conf.membershipApiUrl, this._domain)
+				: $(this._conf.transactionApiUrl, this._domain),
+			form,
 			timeout: options.timeout || this._conf.timeout || 30000
 		};
 
@@ -770,43 +772,38 @@ class Api extends Base {
 
 	/**
 	 * Submit an API request
-	 * @param {string} apiType
-	 * @param {string} method
-	 * @param {Object} params
-	 * @param {LimelightApiOptionsType} options
-	 * @returns {Promise<ResponseType>}
-	 * @private
 	 */
-	async _apiRequest (apiType: string, method: string, params: Object, options: LimelightApiOptionsType = {}): Promise<ResponseType> {
+	private async _apiRequest (
+		apiType: string,
+		method: string,
+		params: any,
+		options: ILimelightApiOptionsType = {}): Promise<IResponseType> {
 
 		const self: Api = this;
 
-		const requestParams: ComposeApiCallResponseType = self._composeApiCall(apiType, method, params, options);
+		const requestParams: IComposeApiCallResponseType = self._composeApiCall(apiType, method, params, options);
 
 		const retries: number = options.retries || 1;
 		const retryDelay: number = options.retryDelay || 0;
 
-		const body: string = await ControlFlow.retryWhilst(retries, retryDelay, (attempt) => {
+		let body: any = await ControlFlow.retryWhilst<any>(retries, retryDelay, async (attempts) => {
 
-			if (attempt > 1) {
+			if (attempts > 1) {
 
-				self.emit('warn', `_apiRequest: ${method}`, {message: 'retry failed', data: {attempt: attempt - 1}});
+				self.emit('warn', `_apiRequest: ${method}`, {message: 'retry failed', data: {attempt: attempts - 1}});
 
 			}
 
-			return request.post(requestParams);
+			return await request.post(requestParams);
 
 		}, self._eventEmitter);
 
-		return _responseHandler(body);
+		return _responseHandler();
 
 		/**
 		 * Process the response
-		 * @param {string} body
-		 * @returns {ResponseType}
-		 * @private
 		 */
-		function _responseHandler (body: string): ResponseType {
+		function _responseHandler (): IResponseType {
 
 			// filtering characters that potentially break JSON parsing since LL uses URL encoded strings
 			body = body.replace(/%22|%00|%01|%02|%03|%04|%05|%06|%07|%08|%09|%0A|%0B|%0C|%0D|%0E|%0F|%10|%11|%12|%13|%14|%15|%16|%17|%18|%19|%1A|%1B|%1C|%1D|%1E|%1F/g, '');
@@ -815,7 +812,7 @@ class Api extends Base {
 
 			// so it appears LL really sucks, because it uses different response codes for different api calls
 
-			const results: ResponseType = {apiActionResults: [], body};
+			const results: IResponseType = {apiActionResults: [], body};
 
 			if (body.response_code) {
 
@@ -902,7 +899,7 @@ class Api extends Base {
 
 						if (options && options.errorCodeOverrides) {
 
-							return !_.includes(options.errorCodeOverrides, r.responseCode) && r.responseCode !== 100;
+							return !_.includes<string>(options.errorCodeOverrides, String(r.responseCode)) && r.responseCode !== 100;
 
 						} else {
 
@@ -924,12 +921,8 @@ class Api extends Base {
 
 	/**
 	 * Cleans up the order response
-	 * @param {number} orderId
-	 * @param {OrderType} order
-	 * @returns {LimelightApiOrderType}
-	 * @private
 	 */
-	_cleanseOrder (orderId: number, order: OrderType): LimelightApiOrderType {
+	private _cleanseOrder (orderId: number, order: IOrderType): ILimelightApiOrderType {
 
 		return {
 			id: orderId,
@@ -1059,12 +1052,8 @@ class Api extends Base {
 
 	/**
 	 * Cleans up the campaign response
-	 * @param {number} id
-	 * @param {CampaignType} campaign
-	 * @returns {LimelightApiCampaignType}
-	 * @private
 	 */
-	_cleanseCampaign (id: number, campaign: CampaignType): LimelightApiCampaignType {
+	private _cleanseCampaign (id: number, campaign: ICampaignType): ILimelightApiCampaignType {
 
 		return {
 			id,
@@ -1092,12 +1081,8 @@ class Api extends Base {
 
 	/**
 	 * Cleans up the customer response
-	 * @param {number} id
-	 * @param {CustomerType} customer
-	 * @returns {LimelightApiCustomerType}
-	 * @private
 	 */
-	_cleanseCustomer (id: number, customer: CustomerType): LimelightApiCustomerType {
+	private _cleanseCustomer (id: number, customer: ICustomerType): ILimelightApiCustomerType {
 
 		return {
 			id,
@@ -1114,12 +1099,8 @@ class Api extends Base {
 
 	/**
 	 * Cleans up the shipping method response
-	 * @param {number} id
-	 * @param {ShippingMethodType} shippingMethod
-	 * @returns {LimelightApiShippingMethodType}
-	 * @private
 	 */
-	_cleanseShippingInfo (id: number, shippingMethod: ShippingMethodType): LimelightApiShippingMethodType {
+	private _cleanseShippingInfo (id: number, shippingMethod: IShippingMethodType): ILimelightApiShippingMethodType {
 
 		return {
 			id,
@@ -1135,12 +1116,8 @@ class Api extends Base {
 
 	/**
 	 * Cleans up the product response
-	 * @param {number[]} productIds
-	 * @param {ProductType} product
-	 * @returns {Promise<LimelightApiProductType>}
-	 * @private
 	 */
-	async _cleanseProducts (productIds: number[], product: ProductType): Promise<LimelightApiProductType[]> {
+	private async _cleanseProducts (productIds: number[], product: IProductType): Promise<ILimelightApiProductType[]> {
 
 		// const name = await this._parseCsv(product.product_name);
 		// const sku = await this._parseCsv(product.product_sku);
@@ -1160,7 +1137,7 @@ class Api extends Base {
 		const categoryName = await this._parseCsv(product.product_category_name);
 		const description = await this._parseCsv(product.product_description);
 
-		const map = _.map(responseCodes, (code, i) => {
+		const map = _.map<string, ILimelightApiProductType | undefined>(responseCodes, (code, i) => {
 
 			if (code === '100') {
 
@@ -1185,27 +1162,26 @@ class Api extends Base {
 
 			}
 
+			return;
+
 		});
 
 		return _.filter(map, (m) => {
 
-			return m;
+			return m !== undefined;
 
-		});
+		}) as ILimelightApiProductType[];
 
 	}
 
 	/**
 	 * Parse a csv string
-	 * @param {string} csvString
-	 * @returns {Promise<string[]>}
-	 * @private
 	 */
-	async _parseCsv (csvString: string): Promise<string[]> {
+	private async _parseCsv (csvString: string): Promise<string[]> {
 
-		let result: ?string[];
+		let result: string[] | undefined;
 
-		return new Promise((resolve, reject) => {
+		return new Promise<string[]>((resolve, reject) => {
 
 			csv
 				.fromString(csvString, {ignoreEmpty: false})
@@ -1214,7 +1190,7 @@ class Api extends Base {
 					reject(ex);
 
 				})
-				.on('data', (data) => {
+				.on('data', (data: string[]) => {
 
 					result = data;
 
@@ -1230,5 +1206,3 @@ class Api extends Base {
 	}
 
 }
-
-export default Api;

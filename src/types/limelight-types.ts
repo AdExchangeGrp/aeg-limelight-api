@@ -2,7 +2,7 @@
 
 /* limelight api response types */
 
-export interface IOrderProductType {
+export interface IOrderProduct {
 	product_id: string;
 	sku: string;
 	price: string;
@@ -16,7 +16,7 @@ export interface IOrderProductType {
 	next_subscription_product_id: string;
 }
 
-export interface IProductType {
+export interface IProduct {
 	response_code: string;
 	product_description: string;
 	product_category_name: string;
@@ -35,7 +35,7 @@ export interface IProductType {
 	// cost_of_goods_sold: string
 }
 
-export interface IOrderType {
+export interface IOrder {
 	response_code: string;
 	acquisition_date: string;
 	ancestor_id: string;
@@ -140,10 +140,10 @@ export interface IOrderType {
 	void_amount: string;
 	void_date: string;
 	shippable: string;
-	products: IOrderProductType[];
+	products: IOrderProduct[];
 }
 
-export interface ICampaignType {
+export interface ICampaign {
 	response_code: string;
 	campaign_name: string;
 	campaign_description: string;
@@ -165,7 +165,7 @@ export interface ICampaignType {
 	success_url_2: string;
 }
 
-export interface ICustomerType {
+export interface ICustomer {
 	first_name: string;
 	last_name: string;
 	email: string;
@@ -175,7 +175,7 @@ export interface ICustomerType {
 	order_list: string;
 }
 
-export interface IShippingMethodType {
+export interface IShippingMethod {
 	response_code: string;
 	name: string;
 	description: string;
@@ -187,17 +187,17 @@ export interface IShippingMethodType {
 
 /* limelight api raw responses */
 
-export interface IActionResultType {
+export interface IActionResult {
 	responseCode: number;
 	responseCodeDesc: string;
 }
 
-export interface IResponseType {
-	apiActionResults: IActionResultType[];
+export interface IResponse {
+	apiActionResults: IActionResult[];
 	body: any;
 }
 
-export interface IFindActiveCampaignsResponseType {
+export interface IFindActiveCampaignsResponse {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
 	body: {
 		response_code: string;
@@ -206,32 +206,32 @@ export interface IFindActiveCampaignsResponseType {
 	};
 }
 
-export interface IGetCampaignResponseType {
+export interface IGetCampaignResponse {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
-	body: ICampaignType;
+	body: ICampaign;
 }
 
-export interface IGetOrderResponseType {
+export interface IGetOrderResponse {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
-	body: IOrderType;
+	body: IOrder;
 }
 
-export interface IGetOrdersResponseSingleOrderType {
+export interface IGetOrdersResponseSingleOrder {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
-	body: IOrderType;
+	body: IOrder;
 }
 
-export interface IGetOrdersResponseType {
+export interface IGetOrdersResponse {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
 	body: {
 		response_code: string;
 		total_orders: string;
 		order_ids: string;
-		data: { [key: string]: IOrderType };
+		data: { [key: string]: IOrder };
 	};
 }
 
-export interface IFindCustomersResponseType {
+export interface IFindCustomersResponse {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
 	body: {
 		response_code: string;
@@ -240,7 +240,7 @@ export interface IFindCustomersResponseType {
 	};
 }
 
-export interface IFindOrdersResponseType {
+export interface IFindOrdersResponse {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
 	body: {
 		response_code: string;
@@ -249,7 +249,7 @@ export interface IFindOrdersResponseType {
 	};
 }
 
-export interface IGetCustomerResponseType {
+export interface IGetCustomerResponse {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
 	body: {
 		response_code: string;
@@ -263,19 +263,19 @@ export interface IGetCustomerResponseType {
 	};
 }
 
-export interface IGetProductsResponseType {
+export interface IGetProductsResponse {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
-	body: IProductType;
+	body: IProduct;
 }
 
-export interface IShippingMethodResponseType {
+export interface IShippingMethodResponse {
 	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
 	body: {
 		response_code: string;
 		total_shipping_methods: string;
 		shipping_ids: string;
 		data: {
-			[key: string]: IShippingMethodType
+			[key: string]: IShippingMethod
 		}
 	};
 }

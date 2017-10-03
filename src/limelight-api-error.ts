@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { IActionResultType, IResponseType } from './types/limelight-types';
+import { IActionResult, IResponse } from './types/limelight-types';
 
 export default class LimelightApiError extends Error {
 
@@ -9,17 +9,17 @@ export default class LimelightApiError extends Error {
 
 	}
 
-	public static createWithArray (apiActionResults: IActionResultType[]) {
+	public static createWithArray (apiActionResults: IActionResult[]) {
 
 		return new LimelightApiError({apiActionResults, body: {}});
 
 	}
 
-	private _apiResponse: IResponseType;
+	private _apiResponse: IResponse;
 
 	private _innerError: Error | undefined;
 
-	get apiResponse (): IResponseType {
+	get apiResponse (): IResponse {
 
 		return this._apiResponse;
 
@@ -31,7 +31,7 @@ export default class LimelightApiError extends Error {
 
 	}
 
-	constructor (apiResponse: IResponseType, innerError?: Error | undefined) {
+	constructor (apiResponse: IResponse, innerError?: Error | undefined) {
 
 		const message = _.reduce(apiResponse.apiActionResults, (memo, r) => {
 

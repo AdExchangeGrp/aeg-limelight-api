@@ -1,6 +1,6 @@
 /* aeg api response types */
 
-export interface ILimelightApiOrderProductType {
+export interface ILimelightApiOrderProduct {
 	id: string;
 	sku: string;
 	price: string;
@@ -14,7 +14,7 @@ export interface ILimelightApiOrderProductType {
 	nextSubscriptionProductId: string;
 }
 
-export interface ILimelightApiProductType {
+export interface ILimelightApiProduct {
 	id: number;
 	isShippable: string;
 	description: string;
@@ -33,7 +33,7 @@ export interface ILimelightApiProductType {
 	// costOfGoodsSold: string
 }
 
-export interface ILimelightApiOrderType {
+export interface ILimelightApiOrder {
 	id: number;
 	acquisitionDate: string;
 	ancestorId: string;
@@ -138,10 +138,10 @@ export interface ILimelightApiOrderType {
 	voidAmount: string;
 	voidDate: string;
 	shippable: string;
-	products: ILimelightApiOrderProductType[];
+	products: ILimelightApiOrderProduct[];
 }
 
-export interface ILimelightApiCampaignType {
+export interface ILimelightApiCampaign {
 	id: number;
 	campaignName: string;
 	campaignDescription: string;
@@ -163,7 +163,7 @@ export interface ILimelightApiCampaignType {
 	successUrl2: string;
 }
 
-export interface ILimelightApiCustomerType {
+export interface ILimelightApiCustomer {
 	id: number;
 	firstName: string;
 	lastName: string;
@@ -174,7 +174,7 @@ export interface ILimelightApiCustomerType {
 	orderList: string;
 }
 
-export interface ILimelightApiShippingMethodType {
+export interface ILimelightApiShippingMethod {
 	id: number;
 	name: string;
 	description: string;
@@ -186,14 +186,14 @@ export interface ILimelightApiShippingMethodType {
 
 /* aeg api requests */
 
-export interface ILimelightApiOptionsType {
+export interface ILimelightApiOptions {
 	retries?: number;
 	retryDelay?: number;
 	timeout?: number;
 	errorCodeOverrides?: number[];
 }
 
-export interface ILimelightApiFindOrdersOptionsType {
+export interface ILimelightApiFindOrdersOptions {
 	productIds?: number[];
 	customerId?: number;
 	criteria?: string;
@@ -206,39 +206,39 @@ export interface ILimelightApiFindOrdersOptionsType {
 	errorCodeOverrides?: string[];
 }
 
-export interface ILimelightApiOrderUpdateType {
+export interface ILimelightApiOrderUpdate {
 	orderId: string;
 	action: string;
 	value: string | number;
 }
 
-export type LimelightApiUpdateOrdersRequestType = ILimelightApiOrderUpdateType[];
+export type LimelightApiUpdateOrdersRequest = ILimelightApiOrderUpdate[];
 
 /* aeg api responses */
 
-export type LimelightApiFindActiveCampaignsResponseType = Array<{ id: string, name: string }>;
+export type LimelightApiFindActiveCampaignsResponse = Array<{ id: string, name: string }>;
 
-export type LimelightApiGetCampaignResponseType = ILimelightApiCampaignType | undefined;
+export type LimelightApiGetCampaignResponse = ILimelightApiCampaign | undefined;
 
-export type LimelightApiGetOrderResponseType = ILimelightApiOrderType | undefined;
+export type LimelightApiGetOrderResponse = ILimelightApiOrder | undefined;
 
-export type LimelightApiGetOrdersResponseType = ILimelightApiOrderType[];
+export type LimelightApiGetOrdersResponse = ILimelightApiOrder[];
 
-export type LimelightApiFindCustomersResponseType = number[];
+export type LimelightApiFindCustomersResponse = number[];
 
-export type LimelightApiFindOrdersResponseType = number[];
+export type LimelightApiFindOrdersResponse = number[];
 
-export type LimelightApiGetCustomerResponseType = ILimelightApiCustomerType | undefined;
+export type LimelightApiGetCustomerResponse = ILimelightApiCustomer | undefined;
 
-export type LimelightApiGetProductsResponseType = ILimelightApiProductType[];
+export type LimelightApiGetProductsResponse = ILimelightApiProduct[];
 
-export type LimelightApiShippingMethodResponseType = ILimelightApiShippingMethodType[];
+export type LimelightApiShippingMethodResponse = ILimelightApiShippingMethod[];
 
-export type LimelightApiFindUpdatedOrdersResponseType = number[];
+export type LimelightApiFindUpdatedOrdersResponse = number[];
 
 export interface ILimelightApiUpdateOrdersResult {
 	orderId: number;
 	statusCode: number;
 }
 
-export type LimelightApiUpdateOrdersResponseType = ILimelightApiUpdateOrdersResult[];
+export type LimelightApiUpdateOrdersResponse = ILimelightApiUpdateOrdersResult[];

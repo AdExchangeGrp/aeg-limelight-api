@@ -393,7 +393,7 @@ export default class Api extends Base {
 
 				return _.filter(map, (m) => {
 
-					return m !== undefined;
+					return !!m;
 
 				}) as LimelightApiGetOrdersResponse;
 
@@ -1184,7 +1184,7 @@ export default class Api extends Base {
 
 		return _.filter(map, (m) => {
 
-			return m !== undefined;
+			return !!m;
 
 		}) as ILimelightApiProduct[];
 

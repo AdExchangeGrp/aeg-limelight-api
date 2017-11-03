@@ -47,7 +47,7 @@ import {
 
 export interface IComposeApiCallResponseType {
 
-	url: string;
+	uri: string;
 	form: any;
 	timeout: number;
 }
@@ -777,7 +777,7 @@ export default class Api extends Base {
 		}
 
 		return {
-			url: apiType === 'membership'
+			uri: apiType === 'membership'
 				? $(this._conf.membershipApiUrl, this._domain)
 				: $(this._conf.transactionApiUrl, this._domain),
 			form,

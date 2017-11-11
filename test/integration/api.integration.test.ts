@@ -334,3 +334,41 @@ describe('api domain globalvoffers.limelightcrm.com', async () => {
 	});
 
 });
+
+describe('api domain globalvoffers.limelightcrm.com', async () => {
+
+	const apiCrmOrderCenter = new Api('Push Innovation', 'XMDQNhSN8eEGbh', 'crm-ordercenter.limelightcrm.com')
+		.on('warn', (data) => {
+
+			console.log(data);
+
+		})
+		.on('error', (err) => {
+
+			console.log(err);
+
+		});
+
+	describe('#updateOrders()', async () => {
+
+		it('should return voided or refunded with override codes', async () => {
+
+			const params = [
+				{
+					orderId: '9288200',
+					action: 'tracking_number',
+					value: '9400111699000069577086'
+				}
+			];
+
+			const result = await apiCrmOrderCenter.updateOrders(params, {errorCodeOverrides: [378]});
+			should(result).be.an.Array;
+			should(result.length).be.equal(1);
+			should(result[0].orderId).be.equal(9288200);
+			should(result[0].statusCode).be.equal(379);
+
+		});
+
+	});
+
+});

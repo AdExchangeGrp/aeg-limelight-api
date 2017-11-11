@@ -316,7 +316,7 @@ export default class Api extends Base {
 			await this._apiRequest(
 				'membership',
 				'order_view',
-				{order_id: orderId}, _.extend({errorCodeOverrides: [350]}, options));
+				{order_id: orderId}, this._mergeOptions({errorCodeOverrides: [350]}, options));
 
 		if (response.body.response_code === '100') {
 
@@ -353,7 +353,7 @@ export default class Api extends Base {
 				await this._apiRequest(
 					'membership',
 					'order_view',
-					{order_id: orderIds.join(',')}, _.extend({errorCodeOverrides: [350]}, options));
+					{order_id: orderIds.join(',')}, this._mergeOptions({errorCodeOverrides: [350]}, options));
 
 			if (result.body) {
 
@@ -375,7 +375,7 @@ export default class Api extends Base {
 				await this._apiRequest(
 					'membership',
 					'order_view',
-					{order_id: orderIds.join(',')}, _.extend({errorCodeOverrides: [350]}, options));
+					{order_id: orderIds.join(',')}, this._mergeOptions({errorCodeOverrides: [350]}, options));
 
 			if (result.body && result.body.data) {
 
@@ -491,7 +491,7 @@ export default class Api extends Base {
 		const response: IFindOrdersResponse =
 			await this._apiRequest(
 				'membership',
-				'order_find', params, _.extend({errorCodeOverrides: [333]}, options));
+				'order_find', params, this._mergeOptions({errorCodeOverrides: [333]}, options));
 
 		if (response.apiActionResults[0].responseCode === 333) {
 
@@ -551,7 +551,7 @@ export default class Api extends Base {
 		const response =
 			await this._apiRequest(
 				'membership',
-				'order_find_updated', params, _.extend({errorCodeOverrides: [333]}, options));
+				'order_find_updated', params, this._mergeOptions({errorCodeOverrides: [333]}, options));
 
 		if (response.apiActionResults[0].responseCode === 333) {
 
@@ -598,7 +598,7 @@ export default class Api extends Base {
 			'membership',
 			'order_update',
 			params,
-			_.extend({errorCodeOverrides: [343, 350, 379]}, options));
+			this._mergeOptions({errorCodeOverrides: [343, 350, 379]}, options));
 
 		return _.filter(_.map(result.apiActionResults, (innerResult, i) => {
 
@@ -632,7 +632,7 @@ export default class Api extends Base {
 			await this._apiRequest(
 				'membership',
 				'customer_view',
-				{customer_id: customerId}, _.extend({errorCodeOverrides: [603]}, options));
+				{customer_id: customerId}, this._mergeOptions({errorCodeOverrides: [603]}, options));
 
 		if (response.body.response_code === '100') {
 
@@ -681,7 +681,7 @@ export default class Api extends Base {
 			await this._apiRequest(
 				'membership',
 				'customer_find',
-				params, _.extend({errorCodeOverrides: [604]}, options));
+				params, this._mergeOptions({errorCodeOverrides: [604]}, options));
 
 		if (response.apiActionResults[0].responseCode === 604) {
 
@@ -714,7 +714,7 @@ export default class Api extends Base {
 			await this._apiRequest(
 				'membership',
 				'product_index',
-				{product_id: productIds.join(',')}, _.extend({errorCodeOverrides: [600]}, options));
+				{product_id: productIds.join(',')}, this._mergeOptions({errorCodeOverrides: [600]}, options));
 
 		if (response.body) {
 
@@ -1218,6 +1218,21 @@ export default class Api extends Base {
 				});
 
 		});
+
+	}
+
+	/**
+	 * Combines API options
+	 */
+	private _mergeOptions (params: ILimelightApiOptions, options: ILimelightApiOptions): ILimelightApiOptions {
+
+		if (params.errorCodeOverrides && options.errorCodeOverrides) {
+
+			params.errorCodeOverrides = _.concat(params.errorCodeOverrides, options.errorCodeOverrides);
+
+		}
+
+		return _.extend(options, params);
 
 	}
 

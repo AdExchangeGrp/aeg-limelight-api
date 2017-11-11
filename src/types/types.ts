@@ -193,17 +193,13 @@ export interface ILimelightApiOptions {
 	errorCodeOverrides?: number[];
 }
 
-export interface ILimelightApiFindOrdersOptions {
+export interface ILimelightApiFindOrdersOptions extends ILimelightApiOptions {
 	productIds?: number[];
 	customerId?: number;
 	criteria?: string;
 	startTime?: string;
 	endTime?: string;
 	searchType?: string;
-	retries?: number;
-	retryDelay?: number;
-	timeout?: number;
-	errorCodeOverrides?: string[];
 }
 
 export interface ILimelightApiOrderUpdate {

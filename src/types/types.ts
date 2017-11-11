@@ -193,7 +193,7 @@ export interface ILimelightApiOptions {
 	errorCodeOverrides?: number[];
 }
 
-export interface ILimelightApiFindOrdersOptions extends ILimelightApiOptions{
+export interface ILimelightApiFindOrdersOptions extends ILimelightApiOptions {
 	productIds?: number[];
 	customerId?: number;
 	criteria?: string;

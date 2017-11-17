@@ -110,6 +110,7 @@ describe('api domain globalvoffers.limelightcrm.com', async () => {
 			const result = await api.getOrder(10617);
 			should.exist(result);
 			should(result!.id).be.equal(10617);
+			should(result!.products).be.an.Array;
 
 		});
 

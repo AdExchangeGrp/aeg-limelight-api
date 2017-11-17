@@ -347,57 +347,34 @@ export default class Api extends Base {
 
 		}
 
-		if (orderIds.length === 1) {
+		// yes, LL does not serialize the products array unless there is more than 1 order in the search
+		const ids = orderIds.length === 1 ? [...orderIds, -1] : orderIds;
 
-			const result: IGetOrdersResponseSingleOrder =
-				await this._apiRequest(
-					'membership',
-					'order_view',
-					{order_id: orderIds.join(',')}, this._mergeOptions({errorCodeOverrides: [350]}, options));
+		const result: IGetOrdersResponse =
+			await this._apiRequest(
+				'membership',
+				'order_view',
+				{order_id: ids.join(',')}, this._mergeOptions({errorCodeOverrides: [350]}, options));
 
-			if (result.body) {
+		if (result.body && result.body.data) {
 
-				if (result.body.response_code !== '350') {
+			const map = _.map(Object.keys(result.body.data), (key) => {
 
-					return [this._cleanseOrder(Number(orderIds[0]), result.body)];
+				if (result.body.data[key].response_code !== '350') {
 
-				} else {
-
-					return [];
+					return this._cleanseOrder(Number(key), result.body.data[key]);
 
 				}
 
-			}
+				return;
 
-		} else {
+			});
 
-			const result: IGetOrdersResponse =
-				await this._apiRequest(
-					'membership',
-					'order_view',
-					{order_id: orderIds.join(',')}, this._mergeOptions({errorCodeOverrides: [350]}, options));
+			return _.filter(map, (m) => {
 
-			if (result.body && result.body.data) {
+				return !!m;
 
-				const map = _.map(Object.keys(result.body.data), (key) => {
-
-					if (result.body.data[key].response_code !== '350') {
-
-						return this._cleanseOrder(Number(key), result.body.data[key]);
-
-					}
-
-					return;
-
-				});
-
-				return _.filter(map, (m) => {
-
-					return !!m;
-
-				}) as LimelightApiGetOrdersResponse;
-
-			}
+			}) as LimelightApiGetOrdersResponse;
 
 		}
 

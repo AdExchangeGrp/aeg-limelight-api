@@ -129,6 +129,7 @@ describe('api domain globalvoffers.limelightcrm.com', async () => {
 			const result = await api.getOrders([10617, 10615]);
 			should(result).be.an.Array;
 			should(result.length).be.equal(2);
+			should(result[0].products).be.an.Array;
 
 		});
 
@@ -137,6 +138,7 @@ describe('api domain globalvoffers.limelightcrm.com', async () => {
 			const result = await api.getOrders([10617]);
 			should(result).be.an.Array;
 			should(result.length).be.equal(1);
+			should(result[0].products).be.an.Array;
 
 		});
 

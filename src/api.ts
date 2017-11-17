@@ -13,6 +13,7 @@ import {
 	ILimelightApiFindOrdersOptions,
 	ILimelightApiOptions,
 	ILimelightApiOrder,
+	ILimelightApiOrderProduct,
 	ILimelightApiProduct,
 	ILimelightApiShippingMethod,
 	LimelightApiFindActiveCampaignsResponse,
@@ -37,7 +38,6 @@ import {
 	IGetCampaignResponse,
 	IGetCustomerResponse,
 	IGetOrderResponse,
-	IGetOrdersResponseSingleOrder,
 	IGetOrdersResponse,
 	IGetProductsResponse,
 	IOrder,
@@ -347,57 +347,34 @@ export default class Api extends Base {
 
 		}
 
-		if (orderIds.length === 1) {
+		// yes, LL does not serialize the products array unless there is more than 1 order in the search
+		const ids = orderIds.length === 1 ? [...orderIds, -1] : orderIds;
 
-			const result: IGetOrdersResponseSingleOrder =
-				await this._apiRequest(
-					'membership',
-					'order_view',
-					{order_id: orderIds.join(',')}, this._mergeOptions({errorCodeOverrides: [350]}, options));
+		const result: IGetOrdersResponse =
+			await this._apiRequest(
+				'membership',
+				'order_view',
+				{order_id: ids.join(',')}, this._mergeOptions({errorCodeOverrides: [350]}, options));
 
-			if (result.body) {
+		if (result.body && result.body.data) {
 
-				if (result.body.response_code !== '350') {
+			const map = _.map(Object.keys(result.body.data), (key) => {
 
-					return [this._cleanseOrder(Number(orderIds[0]), result.body)];
+				if (result.body.data[key].response_code !== '350') {
 
-				} else {
-
-					return [];
+					return this._cleanseOrder(Number(key), result.body.data[key]);
 
 				}
 
-			}
+				return;
 
-		} else {
+			});
 
-			const result: IGetOrdersResponse =
-				await this._apiRequest(
-					'membership',
-					'order_view',
-					{order_id: orderIds.join(',')}, this._mergeOptions({errorCodeOverrides: [350]}, options));
+			return _.filter(map, (m) => {
 
-			if (result.body && result.body.data) {
+				return !!m;
 
-				const map = _.map(Object.keys(result.body.data), (key) => {
-
-					if (result.body.data[key].response_code !== '350') {
-
-						return this._cleanseOrder(Number(key), result.body.data[key]);
-
-					}
-
-					return;
-
-				});
-
-				return _.filter(map, (m) => {
-
-					return !!m;
-
-				}) as LimelightApiGetOrdersResponse;
-
-			}
+			}) as LimelightApiGetOrdersResponse;
 
 		}
 
@@ -1045,24 +1022,62 @@ export default class Api extends Base {
 			voidAmount: order.void_amount,
 			voidDate: order.void_date,
 			shippable: order.shippable,
-			products: _.map(order.products, (p) => {
-
-				return {
-					id: p.product_id,
-					sku: p.sku,
-					price: p.price,
-					productQty: p.product_qty,
-					name: p.name,
-					onHold: p.on_hold,
-					isRecurring: p.is_recurring,
-					recurringDate: p.recurring_date,
-					subscriptionId: p.subscription_id,
-					nextSubscriptionProduct: p.next_subscription_product,
-					nextSubscriptionProductId: p.next_subscription_product_id
-				};
-
-			})
+			products: resolveProducts(order)
 		};
+
+		function resolveProducts (body: any): ILimelightApiOrderProduct[] {
+
+			if (body.products) {
+
+				return _.map<any, ILimelightApiOrderProduct>(body.products, (p) => {
+
+					return {
+						id: p.product_id,
+						sku: p.sku,
+						price: p.price,
+						productQty: p.product_qty,
+						name: p.name,
+						onHold: p.on_hold,
+						isRecurring: p.is_recurring,
+						recurringDate: p.recurring_date,
+						subscriptionId: p.subscription_id,
+						nextSubscriptionProduct: p.next_subscription_product,
+						nextSubscriptionProductId: p.next_subscription_product_id
+					};
+
+				});
+
+			} else {
+
+				const result: ILimelightApiOrderProduct[] = [];
+
+				let i = 0;
+
+				while (body[`products[${i}][product_id]`]) {
+
+					result.push({
+						id: body[`products[${i}][product_id]`],
+						sku: body[`products[${i}][sku]`],
+						price: body[`products[${i}][price]`],
+						productQty: body[`products[${i}][product_qty]`],
+						name: body[`products[${i}][name]`],
+						onHold: body[`products[${i}][on_hold]`],
+						isRecurring: body[`products[${i}][is_recurring]`],
+						recurringDate: body[`products[${i}][recurring_date]`],
+						subscriptionId: body[`products[${i}][subscription_id]`],
+						nextSubscriptionProduct: body[`products[${i}][next_subscription_product]`],
+						nextSubscriptionProductId: body[`products[${i}][next_subscription_product_id]`]
+					});
+
+					i++;
+
+				}
+
+				return result;
+
+			}
+
+		}
 
 	}
 

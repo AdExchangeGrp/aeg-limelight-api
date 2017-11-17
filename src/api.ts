@@ -12,7 +12,7 @@ import {
 	ILimelightApiCustomer,
 	ILimelightApiFindOrdersOptions,
 	ILimelightApiOptions,
-	ILimelightApiOrder,
+	ILimelightApiOrder, ILimelightApiOrderProduct,
 	ILimelightApiProduct,
 	ILimelightApiShippingMethod,
 	LimelightApiFindActiveCampaignsResponse,
@@ -37,7 +37,6 @@ import {
 	IGetCampaignResponse,
 	IGetCustomerResponse,
 	IGetOrderResponse,
-	IGetOrdersResponseSingleOrder,
 	IGetOrdersResponse,
 	IGetProductsResponse,
 	IOrder,
@@ -1022,24 +1021,62 @@ export default class Api extends Base {
 			voidAmount: order.void_amount,
 			voidDate: order.void_date,
 			shippable: order.shippable,
-			products: _.map(order.products, (p) => {
-
-				return {
-					id: p.product_id,
-					sku: p.sku,
-					price: p.price,
-					productQty: p.product_qty,
-					name: p.name,
-					onHold: p.on_hold,
-					isRecurring: p.is_recurring,
-					recurringDate: p.recurring_date,
-					subscriptionId: p.subscription_id,
-					nextSubscriptionProduct: p.next_subscription_product,
-					nextSubscriptionProductId: p.next_subscription_product_id
-				};
-
-			})
+			products: resolveProducts(order)
 		};
+
+		function resolveProducts (body: any): ILimelightApiOrderProduct[] {
+
+			if (body.products) {
+
+				return _.map<any, ILimelightApiOrderProduct>(body.products, (p) => {
+
+					return {
+						id: p.product_id,
+						sku: p.sku,
+						price: p.price,
+						productQty: p.product_qty,
+						name: p.name,
+						onHold: p.on_hold,
+						isRecurring: p.is_recurring,
+						recurringDate: p.recurring_date,
+						subscriptionId: p.subscription_id,
+						nextSubscriptionProduct: p.next_subscription_product,
+						nextSubscriptionProductId: p.next_subscription_product_id
+					};
+
+				});
+
+			} else {
+
+				const result: ILimelightApiOrderProduct[] = [];
+
+				let i = 0;
+
+				while (body[`products[${i}][product_id]`]) {
+
+					result.push({
+						id: body[`products[${i}][product_id]`],
+						sku: body[`products[${i}][sku]`],
+						price: body[`products[${i}][price]`],
+						productQty: body[`products[${i}][product_qty]`],
+						name: body[`products[${i}][name]`],
+						onHold: body[`products[${i}][on_hold]`],
+						isRecurring: body[`products[${i}][is_recurring]`],
+						recurringDate: body[`products[${i}][recurring_date]`],
+						subscriptionId: body[`products[${i}][subscription_id]`],
+						nextSubscriptionProduct: body[`products[${i}][next_subscription_product]`],
+						nextSubscriptionProductId: body[`products[${i}][next_subscription_product_id]`]
+					});
+
+					i++;
+
+				}
+
+				return result;
+
+			}
+
+		}
 
 	}
 

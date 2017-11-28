@@ -7,6 +7,8 @@ import * as $ from 'stringformat';
 import { Base, ControlFlow } from '@push_innovation/aeg-common';
 import * as EventEmitter from 'events';
 import * as csv from 'fast-csv';
+import * as BBPromise from 'bluebird';
+import * as moment from 'moment';
 import {
 	ILimelightApiCampaign,
 	ILimelightApiCustomer,
@@ -69,6 +71,59 @@ export default class Api extends Base {
 
 	private _membershipResponseCodes: Map<number, string>;
 
+	private _validateCredentialsThrottle: (
+		options?: ILimelightApiOptions) => Promise<boolean>;
+
+	private _findActiveCampaignsThrottle: (
+		options?: ILimelightApiOptions) => Promise<LimelightApiFindActiveCampaignsResponse>;
+
+	private _getCampaignThrottle: (
+		campaignId: number,
+		options?: ILimelightApiOptions) => Promise<LimelightApiGetCampaignResponse>;
+
+	private _getOrderThrottle: (
+		orderId: number,
+		options?: ILimelightApiOptions) => Promise<LimelightApiGetOrderResponse>;
+
+	private _getOrdersThrottle: (
+		orderIds: number[],
+		options?: ILimelightApiOptions) => Promise<LimelightApiGetOrdersResponse>;
+
+	private _findOrdersThrottle: (
+		campaignId: string | number,
+		startDate: string,
+		endDate: string,
+		options?: ILimelightApiFindOrdersOptions) => Promise<LimelightApiFindOrdersResponse>;
+
+	private _findUpdatedOrdersThrottle: (
+		campaignId: string | number,
+		groupKeys: string[],
+		startDate: string,
+		endDate: string,
+		options?: ILimelightApiOptions) => Promise<LimelightApiFindUpdatedOrdersResponse>;
+
+	private _updateOrdersThrottle: (
+		orderUpdates: LimelightApiUpdateOrdersRequest,
+		options?: ILimelightApiOptions) => Promise<LimelightApiUpdateOrdersResponse>;
+
+	private _getCustomerThrottle: (
+		customerId: number,
+		options?: ILimelightApiOptions) => Promise<LimelightApiGetCustomerResponse>;
+
+	private _findCustomersThrottle: (
+		campaignId: number | string,
+		startDate: string,
+		endDate: string,
+		options?: ILimelightApiOptions) => Promise<LimelightApiFindCustomersResponse>;
+
+	private _getProductsThrottle: (
+		productIds: number[],
+		options?: ILimelightApiOptions) => Promise<LimelightApiGetProductsResponse>;
+
+	private _findShippingMethodsThrottle: (
+		campaignId: string | number,
+		options?: ILimelightApiOptions) => Promise<LimelightApiShippingMethodResponse>;
+
 	constructor (user: string, password: string, domain: string) {
 
 		super();
@@ -78,6 +133,18 @@ export default class Api extends Base {
 		this._domain = domain;
 		this._conf = config.get('aeg-limelight-api');
 		this._eventEmitter = new EventEmitter();
+		this._validateCredentialsThrottle = this._sequential(this._validateCredentials.bind(this));
+		this._findActiveCampaignsThrottle = this._sequential(this._findActiveCampaigns.bind(this));
+		this._getCampaignThrottle = this._sequential(this._getCampaign.bind(this));
+		this._getOrderThrottle = this._sequential(this._getOrder.bind(this));
+		this._getOrdersThrottle = this._sequential(this._getOrders.bind(this));
+		this._findOrdersThrottle = this._sequential(this._findOrders.bind(this));
+		this._findUpdatedOrdersThrottle = this._sequential(this._findUpdatedOrders.bind(this));
+		this._updateOrdersThrottle = this._sequential(this._updateOrders.bind(this));
+		this._getCustomerThrottle = this._sequential(this._getCustomer.bind(this));
+		this._findCustomersThrottle = this._sequential(this._findCustomers.bind(this));
+		this._getProductsThrottle = this._sequential(this._getProducts.bind(this));
+		this._findShippingMethodsThrottle = this._sequential(this._findShippingMethods.bind(this));
 
 		this._eventEmitter
 			.on('warn', (data) => {
@@ -206,19 +273,113 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Get the description for a response code
-	 */
 	public membershipResponseCodeDesc (code: number): string {
 
 		return this._membershipResponseCodes.get(code) || 'Unspecified';
 
 	}
 
-	/**
-	 * Validate the credentials
-	 */
 	public async validateCredentials (options: ILimelightApiOptions = {}): Promise<boolean> {
+
+		return this._validateCredentialsThrottle(options);
+
+	}
+
+	public async findActiveCampaigns (
+		options: ILimelightApiOptions = {}): Promise<LimelightApiFindActiveCampaignsResponse> {
+
+		return this._findActiveCampaignsThrottle(options);
+
+	}
+
+	public async getCampaign (
+		campaignId: number,
+		options: ILimelightApiOptions = {}): Promise<LimelightApiGetCampaignResponse> {
+
+		return this._getCampaignThrottle(campaignId, options);
+
+	}
+
+	public async getOrder (
+		orderId: number,
+		options: ILimelightApiOptions = {}): Promise<LimelightApiGetOrderResponse> {
+
+		return this._getOrderThrottle(orderId, options);
+
+	}
+
+	public async getOrders (
+		orderIds: number[],
+		options: ILimelightApiOptions = {}): Promise<LimelightApiGetOrdersResponse> {
+
+		return this._getOrdersThrottle(orderIds, options);
+
+	}
+
+	public async findOrders (
+		campaignId: string | number,
+		startDate: string,
+		endDate: string,
+		options: ILimelightApiFindOrdersOptions = {}): Promise<LimelightApiFindOrdersResponse> {
+
+		return this._findOrdersThrottle(campaignId, startDate, endDate, options);
+
+	}
+
+	public async findUpdatedOrders (
+		campaignId: string | number,
+		groupKeys: string[],
+		startDate: string,
+		endDate: string,
+		options: ILimelightApiOptions = {}): Promise<LimelightApiFindUpdatedOrdersResponse> {
+
+		return this._findUpdatedOrdersThrottle(campaignId, groupKeys, startDate, endDate, options);
+
+	}
+
+	public async updateOrders (
+		orderUpdates: LimelightApiUpdateOrdersRequest,
+		options: ILimelightApiOptions = {}): Promise<LimelightApiUpdateOrdersResponse> {
+
+		return this._updateOrdersThrottle(orderUpdates, options);
+
+	}
+
+	public async getCustomer (
+		customerId: number,
+		options: ILimelightApiOptions = {}): Promise<LimelightApiGetCustomerResponse> {
+
+		return this._getCustomerThrottle(customerId, options);
+
+	}
+
+	public async findCustomers (
+		campaignId: number | string,
+		startDate: string,
+		endDate: string,
+		options: ILimelightApiOptions = {}): Promise<LimelightApiFindCustomersResponse> {
+
+		return this._findCustomersThrottle(campaignId, startDate, endDate, options);
+
+	}
+
+	public async getProducts (
+		productIds: number[],
+		options: ILimelightApiOptions = {}): Promise<LimelightApiGetProductsResponse> {
+
+		return this._getProductsThrottle(productIds, options);
+
+	}
+
+	public async findShippingMethods (
+		campaignId: string | number,
+		options: ILimelightApiOptions = {}): Promise<LimelightApiShippingMethodResponse> {
+
+		return this._findShippingMethodsThrottle(campaignId, options);
+
+	}
+
+	private async _validateCredentials (options: ILimelightApiOptions = {}): Promise<boolean> {
 
 		try {
 
@@ -241,10 +402,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Find all active campaigns
-	 */
-	public async findActiveCampaigns (
+	private async _findActiveCampaigns (
 		options: ILimelightApiOptions = {}): Promise<LimelightApiFindActiveCampaignsResponse> {
 
 		const response: IFindActiveCampaignsResponse =
@@ -262,10 +420,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Gets a campaign
-	 */
-	public async getCampaign (
+	private async _getCampaign (
 		campaignId: number,
 		options: ILimelightApiOptions = {}): Promise<LimelightApiGetCampaignResponse> {
 
@@ -299,10 +454,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Gets an order
-	 */
-	public async getOrder (
+	private async _getOrder (
 		orderId: number,
 		options: ILimelightApiOptions = {}): Promise<LimelightApiGetOrderResponse> {
 
@@ -328,10 +480,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Gets a set of orders
-	 */
-	public async getOrders (
+	private async _getOrders (
 		orderIds: number[],
 		options: ILimelightApiOptions = {}): Promise<LimelightApiGetOrdersResponse> {
 
@@ -382,10 +531,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Find orders
-	 */
-	public async findOrders (
+	private async _findOrders (
 		campaignId: string | number,
 		startDate: string,
 		endDate: string,
@@ -484,10 +630,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Find updated orders
-	 */
-	public async findUpdatedOrders (
+	private async _findUpdatedOrders (
 		campaignId: string | number,
 		groupKeys: string[],
 		startDate: string,
@@ -550,10 +693,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Update orders
-	 */
-	public async updateOrders (
+	private async _updateOrders (
 		orderUpdates: LimelightApiUpdateOrdersRequest,
 		options: ILimelightApiOptions = {}): Promise<LimelightApiUpdateOrdersResponse> {
 
@@ -592,10 +732,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Get a customer
-	 */
-	public async getCustomer (
+	private async _getCustomer (
 		customerId: number,
 		options: ILimelightApiOptions = {}): Promise<LimelightApiGetCustomerResponse> {
 
@@ -621,10 +758,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Find customers
-	 */
-	public async findCustomers (
+	private async _findCustomers (
 		campaignId: number | string,
 		startDate: string,
 		endDate: string,
@@ -674,10 +808,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Gets a set of products
-	 */
-	public async getProducts (
+	private async _getProducts (
 		productIds: number[],
 		options: ILimelightApiOptions = {}): Promise<LimelightApiGetProductsResponse> {
 
@@ -703,10 +834,7 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Gets the shipping methods
-	 */
-	public async findShippingMethods (
+	private async _findShippingMethods (
 		campaignId: string | number,
 		options: ILimelightApiOptions = {}): Promise<LimelightApiShippingMethodResponse> {
 
@@ -732,9 +860,6 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Compose an API request
-	 */
 	private _composeApiCall (
 		apiType: string,
 		method: string,
@@ -763,9 +888,6 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Submit an API request
-	 */
 	private async _apiRequest (
 		apiType: string,
 		method: string,
@@ -912,9 +1034,6 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Cleans up the order response
-	 */
 	private _cleanseOrder (orderId: number, order: IOrder): ILimelightApiOrder {
 
 		return {
@@ -1081,9 +1200,6 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Cleans up the campaign response
-	 */
 	private _cleanseCampaign (id: number, campaign: ICampaign): ILimelightApiCampaign {
 
 		return {
@@ -1110,9 +1226,6 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Cleans up the customer response
-	 */
 	private _cleanseCustomer (id: number, customer: ICustomer): ILimelightApiCustomer {
 
 		return {
@@ -1128,9 +1241,6 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Cleans up the shipping method response
-	 */
 	private _cleanseShippingInfo (id: number, shippingMethod: IShippingMethod): ILimelightApiShippingMethod {
 
 		return {
@@ -1145,9 +1255,6 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Cleans up the product response
-	 */
 	private async _cleanseProducts (productIds: number[], product: IProduct): Promise<ILimelightApiProduct[]> {
 
 		// const name = await this._parseCsv(product.product_name);
@@ -1205,9 +1312,6 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Parse a csv string
-	 */
 	private async _parseCsv (csvString: string): Promise<string[]> {
 
 		let result: string[] | undefined;
@@ -1236,9 +1340,6 @@ export default class Api extends Base {
 
 	}
 
-	/**
-	 * Combines API options
-	 */
 	private _mergeOptions (params: ILimelightApiOptions, options: ILimelightApiOptions): ILimelightApiOptions {
 
 		if (params.errorCodeOverrides && options.errorCodeOverrides) {
@@ -1249,6 +1350,49 @@ export default class Api extends Base {
 
 		return _.extend(options, params);
 
+	}
+
+	/**
+	 * We do not want any concurrency on LL, it has to be throttled
+	 */
+	private _sequential (fn): (...args: any[]) => Promise<any> {
+
+		let q: any = BBPromise.resolve();
+		let lastExecutionStart: moment.Moment | undefined;
+
+		return (...args) => {
+
+			const p = q.then(() => {
+
+				return (async () => {
+
+					const diff = moment().diff(lastExecutionStart, 'milliseconds');
+
+					if (lastExecutionStart && diff <= (this._conf.throttleInSeconds * 1000)) {
+
+						// console.log('THROTTLE', (this._conf.throttleInSeconds * 1000) - diff);
+
+						await BBPromise.delay((this._conf.throttleInSeconds * 1000) - diff);
+
+					} else {
+
+						// console.log('NO THROTTLE', (this._conf.throttleInSeconds * 1000) - diff);
+
+					}
+
+					lastExecutionStart = moment();
+
+					return fn(...args);
+
+				})();
+
+			});
+
+			q = p.reflect();
+
+			return p;
+
+		};
 	}
 
 }

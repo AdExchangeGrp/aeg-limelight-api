@@ -61,6 +61,7 @@
     "config": "^1.26.1",
     "fast-csv": "^2.4.0",
     "lodash": "^4.17.4",
+    "moment": "^2.19.2",
     "querystring": "^0.2.0",
     "request": "^2.81.0",
     "request-promise": "^4.2.0",

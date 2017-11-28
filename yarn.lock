@@ -2,20 +2,20 @@
 # yarn lockfile v1
 
 
-"@adexchange/aeg-common@0.0.282":
-  version "0.0.282"
-  resolved "https://registry.yarnpkg.com/@adexchange/aeg-common/-/aeg-common-0.0.282.tgz#5af290f24231af5b1a425ae458561acd10499bfb"
+"@push_innovation/aeg-common@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@push_innovation/aeg-common/-/aeg-common-0.0.8.tgz#475ce176a38646415505014634519ac98b26dc25"
   dependencies:
-    "@adexchange/aeg-logger" "0.0.157"
+    "@push_innovation/aeg-logger" "0.0.6"
     async "^2.1.5"
     babel-runtime "^6.23.0"
     bluebird "^3.4.7"
     lodash "^4.17.4"
     moment-timezone "^0.5.11"
 
-"@adexchange/aeg-logger@0.0.157":
-  version "0.0.157"
-  resolved "https://registry.yarnpkg.com/@adexchange/aeg-logger/-/aeg-logger-0.0.157.tgz#5c1a807905083d28575d52f233623001c6cc0e65"
+"@push_innovation/aeg-logger@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@push_innovation/aeg-logger/-/aeg-logger-0.0.6.tgz#c420bbd9466cd0212eea23a39bf0bab1b34a4140"
   dependencies:
     "@types/config" "0.0.32"
     "@types/winston" "^2.3.3"

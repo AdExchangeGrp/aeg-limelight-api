@@ -1002,7 +1002,10 @@ export default class Api extends Base {
 						err: ex
 					});
 
-					throw LimelightApiError.createWithOne(500, 'failed to parse result.body.data');
+					throw LimelightApiError.createWithOne(
+						500,
+						'failed to parse result.body.data',
+						{apiRequest: requestParams});
 
 				}
 
@@ -1024,7 +1027,7 @@ export default class Api extends Base {
 
 					}).length) {
 
-				throw LimelightApiError.createWithArray(results.apiActionResults);
+				throw LimelightApiError.createWithArray(results.apiActionResults, {apiRequest: requestParams});
 
 			}
 

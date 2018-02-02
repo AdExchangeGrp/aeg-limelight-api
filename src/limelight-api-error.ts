@@ -1,23 +1,36 @@
 import * as _ from 'lodash';
 import { IActionResult, IResponse } from './types/limelight-types';
 
+export interface ILimelightApiErrorOptions {
+	innerError?: Error | undefined;
+	apiRequest?: any;
+}
+
 export default class LimelightApiError extends Error {
 
-	public static createWithOne (responseCode: number, responseCodeDesc: string) {
+	public static createWithOne (responseCode: number, responseCodeDesc: string, options: ILimelightApiErrorOptions = {}) {
 
-		return new LimelightApiError({apiActionResults: [{responseCode, responseCodeDesc}], body: {}});
+		return new LimelightApiError({apiActionResults: [{responseCode, responseCodeDesc}], body: {}}, options);
+
+	}
+
+	public static createWithArray (apiActionResults: IActionResult[], options: ILimelightApiErrorOptions = {}) {
+
+		return new LimelightApiError({apiActionResults, body: {}}, options);
 
 	}
 
-	public static createWithArray (apiActionResults: IActionResult[]) {
-
-		return new LimelightApiError({apiActionResults, body: {}});
-
-	}
+	private _apiRequest: any;
 
 	private _apiResponse: IResponse;
 
 	private _innerError: Error | undefined;
+
+	get apiRequest (): any {
+
+		return this._apiRequest;
+
+	}
 
 	get apiResponse (): IResponse {
 
@@ -31,7 +44,7 @@ export default class LimelightApiError extends Error {
 
 	}
 
-	constructor (apiResponse: IResponse, innerError?: Error | undefined) {
+	constructor (apiResponse: IResponse, options: ILimelightApiErrorOptions = {}) {
 
 		const message = _.reduce(apiResponse.apiActionResults, (memo, r) => {
 
@@ -45,8 +58,9 @@ export default class LimelightApiError extends Error {
 		// Remove this when we target es2015+
 		Object.setPrototypeOf(this, LimelightApiError.prototype);
 
+		this._apiRequest = options.apiRequest;
 		this._apiResponse = apiResponse;
-		this._innerError = innerError;
+		this._innerError = options.innerError;
 
 	}
 

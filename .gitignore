@@ -38,3 +38,5 @@ xunit.xml
 
 /test-results.xml
 .nyc_output
+
+.idea

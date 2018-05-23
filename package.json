@@ -53,7 +53,7 @@
     "typescript": "^2.4.1"
   },
   "dependencies": {
-    "@adexchange/aeg-common": "^0.0.297",
+    "@adexchange/aeg-common": "0.0.300",
     "@types/config": "0.0.32",
     "@types/lodash": "^4.14.76",
     "@types/request": "^2.0.3",

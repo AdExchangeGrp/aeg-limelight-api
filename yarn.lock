@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@adexchange/aeg-common@^0.0.297":
-  version "0.0.297"
-  resolved "https://registry.yarnpkg.com/@adexchange/aeg-common/-/aeg-common-0.0.297.tgz#a47cbec6b6c704bce73b4b3ba541525aba0bf53d"
+"@adexchange/aeg-common@0.0.300":
+  version "0.0.300"
+  resolved "https://registry.yarnpkg.com/@adexchange/aeg-common/-/aeg-common-0.0.300.tgz#81db2d75d088e020ae401750619a592d67913728"
   dependencies:
     "@adexchange/aeg-logger" "0.0.157"
     async "^2.1.5"

@@ -2,9 +2,17 @@ import * as should from 'should';
 import * as _ from 'lodash';
 import Api from '../../src/api';
 
-describe('api domain globalvoffers.limelightcrm.com', async () => {
+const user = '';
+const password = '';
+const client = '';
 
-	const api = new Api('Pushinnovation', 'nnu3HRCVTawf2e', 'globalvoffers.limelightcrm.com')
+const user2 = '';
+const password2 = '';
+const client2 = '';
+
+describe('api client X', async () => {
+
+	const api = new Api(user, password, client)
 		.on('warn', (data) => {
 
 			console.log(data);
@@ -16,7 +24,7 @@ describe('api domain globalvoffers.limelightcrm.com', async () => {
 
 		});
 
-	const badApi = new Api('Pushinnovation', '1', 'globalvoffers.limelightcrm.com')
+	const badApi = new Api(user, '1', client)
 		.on('warn', (data) => {
 
 			console.log(data);
@@ -27,7 +35,7 @@ describe('api domain globalvoffers.limelightcrm.com', async () => {
 			console.log(err);
 
 		});
-
+	
 	describe('#validateCredentials()', async () => {
 
 		it('should return true', async () => {
@@ -338,9 +346,9 @@ describe('api domain globalvoffers.limelightcrm.com', async () => {
 
 });
 
-describe('api domain globalvoffers.limelightcrm.com', async () => {
+describe('api domain X2', async () => {
 
-	const apiCrmOrderCenter = new Api('Push Innovation', 'XMDQNhSN8eEGbh', 'crm-ordercenter.limelightcrm.com')
+	const apiCrmOrderCenter = new Api(user2, password2, client2)
 		.on('warn', (data) => {
 
 			console.log(data);

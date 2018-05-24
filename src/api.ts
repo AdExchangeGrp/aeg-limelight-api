@@ -586,7 +586,7 @@ export default class Api extends Base {
 			end_date: string,
 			start_time?: string,
 			end_time?: string,
-			product_ids?: number[],
+			product_ids?: string,
 			customer_id?: number,
 			search_type?: string,
 			criteria?: string
@@ -626,7 +626,7 @@ export default class Api extends Base {
 
 		if (options.productIds) {
 
-			params.product_ids = options.productIds;
+			params.product_ids = options.productIds.join(',');
 
 		}
 

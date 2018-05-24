@@ -153,11 +153,11 @@ describe('api', async () => {
 
 	});
 
-	describe.skip('#findOrders()', async () => {
+	describe('#findOrders()', async () => {
 
 		it('should not find orders', async () => {
 
-			const result = await api.findOrders(285, '01/01/2013', '02/01/2017', {productIds: [26]});
+			const result = await api.findOrders(1, '01/01/2013', '02/01/2017', {productIds: [123456789]});
 			should.exist(result);
 			should(result).be.an.Array;
 			should(result.length).be.equal(0);
@@ -166,7 +166,7 @@ describe('api', async () => {
 
 		it('should find orders', async () => {
 
-			const result = await api.findOrders('all', '01/01/2013', '02/01/2017');
+			const result = await api.findOrders('all', '01/01/2013', '02/01/2017', {productIds: [1]});
 			should.exist(result);
 			should(result).be.an.Array;
 			should(result.length).be.greaterThan(0);
@@ -175,13 +175,13 @@ describe('api', async () => {
 
 	});
 
-	describe.skip('#getOrder()', async () => {
+	describe('#getOrder()', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getOrder(10617);
+			const result = await api.getOrder(119228);
 			should.exist(result);
-			should(result!.id).be.equal(10617);
+			should(result!.id).be.equal(119228);
 			should(result!.products).be.an.Array;
 
 		});
@@ -195,11 +195,11 @@ describe('api', async () => {
 
 	});
 
-	describe.skip('#getOrders()', async () => {
+	describe('#getOrders()', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getOrders([10617, 10615]);
+			const result = await api.getOrders([119228, 1527786,]);
 			should(result).be.an.Array;
 			should(result.length).be.equal(2);
 			should(result[0].products).be.an.Array;
@@ -208,7 +208,7 @@ describe('api', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getOrders([10617]);
+			const result = await api.getOrders([119228]);
 			should(result).be.an.Array;
 			should(result.length).be.equal(1);
 			should(result[0].products).be.an.Array;
@@ -225,7 +225,7 @@ describe('api', async () => {
 
 		it('should return without error with a bad id', async () => {
 
-			const result = await api.getOrders([10617, -1]);
+			const result = await api.getOrders([119228, -1]);
 			should(result).be.an.Array;
 			should(result.length).be.equal(1);
 			should.exist(result[0]);
@@ -234,20 +234,20 @@ describe('api', async () => {
 
 	});
 
-	describe.skip('#findCustomers()', async () => {
+	describe('#findCustomers()', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findCustomers(79, '01/01/2013', '02/01/2017');
+			const result = await api.findCustomers(1, '01/01/2013', '02/01/2017');
 			should.exist(result);
 			should(result).be.an.Array;
 			should(result.length).be.greaterThan(0);
-
+			
 		});
 
 		it('should return without error', async () => {
 
-			const result = await api.findCustomers(79, '01/01/2013', '02/01/2013');
+			const result = await api.findCustomers(1, '01/01/2010', '02/01/2010');
 			should.exist(result);
 			should(result).be.an.Array;
 			should(result.length).be.equal(0);
@@ -256,11 +256,11 @@ describe('api', async () => {
 
 	});
 
-	describe.skip('#getCustomer()', async () => {
+	describe('#getCustomer()', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getCustomer(63545);
+			const result = await api.getCustomer(6395);
 			should.exist(result);
 
 		});

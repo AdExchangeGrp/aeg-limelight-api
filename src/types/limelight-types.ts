@@ -21,18 +21,18 @@ export interface IProduct {
 	product_description: string;
 	product_category_name: string;
 	product_is_shippable: string;
-	// product_name: string;
-	// product_sku: string;
-	// product_price: string;
-	// product_is_trial: string;
-	// product_rebill_product: string;
-	// product_rebill_days: string;
-	// product_max_quantity: string;
-	// preserve_recurring_quantity: string;
-	// subscription_type: string;
-	// subscription_week: string;
-	// subscription_day: string;
-	// cost_of_goods_sold: string
+	product_name: string;
+	product_sku: string;
+	product_price: string;
+	product_is_trial: string;
+	product_rebill_product: string;
+	product_rebill_days: string;
+	product_max_quantity: string;
+	preserve_recurring_quantity: string;
+	subscription_type: string;
+	subscription_week: string;
+	subscription_day: string;
+	cost_of_goods_sold: string;
 }
 
 export interface IOrder {

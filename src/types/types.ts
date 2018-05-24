@@ -1,3 +1,5 @@
+import { ICampaign } from './limelight-types';
+
 /* aeg api response types */
 
 export interface ILimelightApiOrderProduct {
@@ -19,18 +21,18 @@ export interface ILimelightApiProduct {
 	isShippable: string;
 	description: string;
 	categoryName: string;
-	// name: string,
-	// sku: string,
-	// price: string,
-	// isTrial: string,
-	// rebillProduct: string,
-	// rebillDays: string,
-	// maxQuantity: string,
-	// recurringQuantity: string,
-	// subscriptionType: string,
-	// subscriptionWeek: string,
-	// subscriptionDay: string,
-	// costOfGoodsSold: string
+	name: string;
+	sku: string;
+	price: string;
+	isTrial: string;
+	rebillProduct: string;
+	rebillDays: string;
+	maxQuantity: string;
+	preserveRecurringQuantity: string;
+	subscriptionType: string;
+	subscriptionWeek: string;
+	subscriptionDay: string;
+	costOfGoodsSold: string;
 }
 
 export interface ILimelightApiOrder {
@@ -149,9 +151,7 @@ export interface ILimelightApiCampaign {
 	gatewayId: string;
 	isLoadBalanced: string;
 	loadBalanceProfile: string;
-	productId: string;
-	productName: string;
-	isUpsell: string;
+	products: Array<{ id: number, name: string, isUpsell: boolean}>;
 	shippingId: string;
 	shippingName: string;
 	shippingDescription: string;
@@ -193,6 +193,10 @@ export interface ILimelightApiOptions {
 	errorCodeOverrides?: number[];
 }
 
+export interface ILimelightApiFindActiveCampaignsOptions extends ILimelightApiOptions {
+	limit?: number;
+}
+
 export interface ILimelightApiFindOrdersOptions extends ILimelightApiOptions {
 	productIds?: number[];
 	customerId?: number;
@@ -212,7 +216,11 @@ export type LimelightApiUpdateOrdersRequest = ILimelightApiOrderUpdate[];
 
 /* aeg api responses */
 
-export type LimelightApiFindActiveCampaignsResponse = Array<{ id: string, name: string }>;
+export interface ILimelightApiFindActiveCampaign { id: number; campaignName: string; }
+
+export type LimelightApiFindActiveCampaignsResponse = ILimelightApiFindActiveCampaign[];
+
+export type LimelightApiFindActiveCampaignsExpandedResponse = LimelightApiGetCampaignResponse[];
 
 export type LimelightApiGetCampaignResponse = ILimelightApiCampaign | undefined;
 

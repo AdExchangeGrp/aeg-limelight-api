@@ -199,7 +199,7 @@ describe('api', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getOrders([119228, 1527786,]);
+			const result = await api.getOrders([119228, 1527786]);
 			should(result).be.an.Array;
 			should(result.length).be.equal(2);
 			should(result[0].products).be.an.Array;
@@ -242,7 +242,7 @@ describe('api', async () => {
 			should.exist(result);
 			should(result).be.an.Array;
 			should(result.length).be.greaterThan(0);
-			
+
 		});
 
 		it('should return without error', async () => {
@@ -274,7 +274,7 @@ describe('api', async () => {
 
 	});
 
-	describe.skip('#findShippingMethods()', async () => {
+	describe('#findShippingMethods()', async () => {
 
 		it('should return without error', async () => {
 
@@ -287,15 +287,28 @@ describe('api', async () => {
 
 	});
 
-	describe.skip('#updateOrders()', async () => {
+	describe('#findUpdatedOrders()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.findUpdatedOrders(1276, ['refund'], '07/01/2015', '01/01/2019');
+			should.exist(result);
+			should(result).be.an.Array;
+			should(result.length).be.greaterThan(0);
+
+		});
+
+	});
+
+	describe('#updateOrders()', async () => {
 
 		it('should return without error', async () => {
 
 			const params = [
 				{
-					orderId: '10617',
+					orderId: '10350756',
 					action: 'tracking_number',
-					value: '9400111899561218198203'
+					value: '9400111699000268844354'
 				}, {
 					orderId: '99999999999',
 					action: 'tracking_number',
@@ -306,26 +319,8 @@ describe('api', async () => {
 			const result = await api.updateOrders(params);
 			should(result).be.an.Array;
 			should(result.length).be.equal(2);
-			should(result[0].orderId).be.equal(10617);
+			should(result[0].orderId).be.equal(10350756);
 			should(result[0].statusCode).be.equal(343);
-
-		});
-
-		it('should return without error', async () => {
-
-			const params = [
-				{
-					orderId: '10617',
-					action: 'tracking_number',
-					value: '9400111899561218198203'
-				}, {
-					orderId: '99999999999',
-					action: 'tracking_number',
-					value: '1234567TEST'
-				}
-			];
-
-			await api.updateOrders(params);
 
 		});
 
@@ -333,9 +328,9 @@ describe('api', async () => {
 
 			const params = [
 				{
-					orderId: '10617',
+					orderId: '10350756',
 					action: 'tracking_number',
-					value: '9400111899561218198203'
+					value: '9400111699000268844354'
 				}, {
 					orderId: '-1',
 					action: 'tracking_number',
@@ -346,23 +341,10 @@ describe('api', async () => {
 			const result = await api.updateOrders(params);
 			should(result).be.an.Array;
 			should(result.length).be.equal(2);
-			should(result[0].orderId).be.equal(10617);
+			should(result[0].orderId).be.equal(10350756);
 			should(result[0].statusCode).be.equal(343);
 			should(result[1].orderId).be.equal(-1);
 			should(result[1].statusCode).be.equal(350);
-
-		});
-
-	});
-
-	describe.skip('#findUpdatedOrders()', async () => {
-
-		it('should return without error', async () => {
-
-			const result = await api.findUpdatedOrders(261, ['chargeback'], '07/01/2015', '01/01/2018');
-			should.exist(result);
-			should(result).be.an.Array;
-			should(result.length).be.greaterThan(0);
 
 		});
 

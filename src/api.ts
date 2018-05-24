@@ -1230,6 +1230,12 @@ export default class Api extends Base {
 
 	private _cleanseCampaign (id: number, campaign: ICampaign): ILimelightApiCampaign {
 
+		const productsCount = campaign.product_id.split(',').length;
+		const productIds = campaign.product_id.split(',');
+		const productNames = campaign.product_name.split(',');
+		const productUpsells = campaign.is_upsell.split(',');
+		const productsMap = Array.from(Array(productsCount).keys());
+
 		return {
 			id,
 			campaignName: campaign.campaign_name,
@@ -1238,9 +1244,13 @@ export default class Api extends Base {
 			gatewayId: campaign.gateway_id,
 			isLoadBalanced: campaign.is_load_balanced,
 			loadBalanceProfile: campaign.load_balance_profile,
-			productId: campaign.product_id,
-			productName: campaign.product_name,
-			isUpsell: campaign.is_upsell,
+			products: _.map(productsMap, (i) => {
+				return {
+					id: Number(productIds[i]),
+					name: productNames[i],
+					isUpsell: productUpsells[i] === '1'
+				};
+			}),
 			shippingId: campaign.shipping_id,
 			shippingName: campaign.shipping_name,
 			shippingDescription: campaign.shipping_description,

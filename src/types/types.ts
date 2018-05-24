@@ -151,9 +151,7 @@ export interface ILimelightApiCampaign {
 	gatewayId: string;
 	isLoadBalanced: string;
 	loadBalanceProfile: string;
-	productId: string;
-	productName: string;
-	isUpsell: string;
+	products: Array<{ id: number, name: string, isUpsell: boolean}>;
 	shippingId: string;
 	shippingName: string;
 	shippingDescription: string;

@@ -80,7 +80,7 @@ describe('api', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.findActiveCampaignsExpanded({limit: 5});
+			const result = await api.findActiveCampaignsExpanded({limit: 3});
 			should(result).be.an.Array;
 
 			_.each(result, (r) => {
@@ -89,15 +89,17 @@ describe('api', async () => {
 
 			});
 
+			// console.log(require('util').inspect(result, { depth: null, showHidden: false}));
+
 		});
 
 	});
 
-	describe.skip('#getCampaign()', async () => {
+	describe('#getCampaign()', async () => {
 
 		it('should return without error', async () => {
 
-			const result = await api.getCampaign(285);
+			const result = await api.getCampaign(1);
 			should.exist(result);
 
 		});
@@ -106,6 +108,46 @@ describe('api', async () => {
 
 			const result = await api.getCampaign(-1);
 			should.not.exist(result);
+
+		});
+
+	});
+
+	describe('#getProducts()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([4]);
+			should.exist(result);
+			should(result).be.an.Array;
+			should(result.length).be.greaterThan(0);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([4, 5]);
+			should.exist(result);
+			should(result).be.an.Array;
+			should(result.length).be.greaterThan(0);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([-1]);
+			should.exist(result);
+			should(result).be.an.Array;
+			should(result.length).be.equal(0);
+
+		});
+
+		it('should return without error', async () => {
+
+			const result = await api.getProducts([4, -1, 5]);
+			should.exist(result);
+			should(result).be.an.Array;
+			should(result.length).be.greaterThan(0);
 
 		});
 
@@ -227,46 +269,6 @@ describe('api', async () => {
 
 			const result = await api.getCustomer(999999);
 			should.not.exist(result);
-
-		});
-
-	});
-
-	describe.skip('#getProducts()', async () => {
-
-		it('should return without error', async () => {
-
-			const result = await api.getProducts([377]);
-			should.exist(result);
-			should(result).be.an.Array;
-			should(result.length).be.greaterThan(0);
-
-		});
-
-		it('should return without error', async () => {
-
-			const result = await api.getProducts([377, 27]);
-			should.exist(result);
-			should(result).be.an.Array;
-			should(result.length).be.greaterThan(0);
-
-		});
-
-		it('should return without error', async () => {
-
-			const result = await api.getProducts([-1]);
-			should.exist(result);
-			should(result).be.an.Array;
-			should(result.length).be.equal(0);
-
-		});
-
-		it('should return without error', async () => {
-
-			const result = await api.getProducts([377, -1, 27]);
-			should.exist(result);
-			should(result).be.an.Array;
-			should(result.length).be.greaterThan(0);
 
 		});
 

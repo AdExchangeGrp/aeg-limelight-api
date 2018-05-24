@@ -1295,19 +1295,18 @@ export default class Api extends Base {
 
 	private async _cleanseProducts (productIds: number[], product: IProduct): Promise<ILimelightApiProduct[]> {
 
-		// const name = await this._parseCsv(product.product_name);
-		// const sku = await this._parseCsv(product.product_sku);
-		// const price = await this._parseCsv(product.product_price);
-		// const isTrial = await this._parseCsv(product.product_is_trial);
-		// const rebillProduct = await this._parseCsv(product.product_rebill_product);
-		// const rebillDays = await this._parseCsv(product.product_rebill_days);
-		// const maxQuantity = await this._parseCsv(product.product_max_quantity);
-		// const preserveRecurringQuantity = await this._parseCsv(product.preserve_recurring_quantity);
-		// const subscriptionType = await this._parseCsv(product.subscription_type);
-		// const subscriptionWeek = await this._parseCsv(product.subscription_week);
-		// const subscriptionDay = await this._parseCsv(product.subscription_day);
-		// const costOfGoodsSold = await this._parseCsv(product.cost_of_goods_sold);
-
+		const name = await this._parseCsv(product.product_name);
+		const sku = await this._parseCsv(product.product_sku);
+		const price = await this._parseCsv(product.product_price);
+		const isTrial = await this._parseCsv(product.product_is_trial);
+		const rebillProduct = await this._parseCsv(product.product_rebill_product);
+		const rebillDays = await this._parseCsv(product.product_rebill_days);
+		const maxQuantity = await this._parseCsv(product.product_max_quantity);
+		const preserveRecurringQuantity = await this._parseCsv(product.preserve_recurring_quantity);
+		const subscriptionType = await this._parseCsv(product.subscription_type);
+		const subscriptionWeek = await this._parseCsv(product.subscription_week);
+		const subscriptionDay = await this._parseCsv(product.subscription_day);
+		const costOfGoodsSold = await this._parseCsv(product.cost_of_goods_sold);
 		const responseCodes = await this._parseCsv(product.response_code);
 		const isShippable = await this._parseCsv(product.product_is_shippable);
 		const categoryName = await this._parseCsv(product.product_category_name);
@@ -1321,19 +1320,19 @@ export default class Api extends Base {
 					id: productIds[i],
 					categoryName: categoryName[i],
 					isShippable: isShippable[i],
-					description: description[i]
-					// name: name[i],
-					// sku: sku[i],
-					// price: price[i],
-					// isTrial: isTrial[i],
-					// rebillProduct: rebillProduct[i],
-					// rebillDays: rebillDays[i],
-					// maxQuantity: maxQuantity[i],
-					// recurringQuantity: recurringQuantity[i],
-					// subscriptionType: subscriptionType[i],
-					// subscriptionWeek: subscriptionWeek[i],
-					// subscriptionDay: subscriptionDay[i],
-					// costOfGoodsSold: costOfGoodsSold[i]
+					description: description[i],
+					name: name[i],
+					sku: sku[i],
+					price: price[i],
+					isTrial: isTrial[i],
+					rebillProduct: rebillProduct[i],
+					rebillDays: rebillDays[i],
+					maxQuantity: maxQuantity[i],
+					preserveRecurringQuantity: preserveRecurringQuantity[i],
+					subscriptionType: subscriptionType[i],
+					subscriptionWeek: subscriptionWeek[i],
+					subscriptionDay: subscriptionDay[i],
+					costOfGoodsSold: costOfGoodsSold[i]
 				};
 
 			}

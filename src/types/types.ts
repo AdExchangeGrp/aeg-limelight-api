@@ -21,18 +21,18 @@ export interface ILimelightApiProduct {
 	isShippable: string;
 	description: string;
 	categoryName: string;
-	// name: string,
-	// sku: string,
-	// price: string,
-	// isTrial: string,
-	// rebillProduct: string,
-	// rebillDays: string,
-	// maxQuantity: string,
-	// recurringQuantity: string,
-	// subscriptionType: string,
-	// subscriptionWeek: string,
-	// subscriptionDay: string,
-	// costOfGoodsSold: string
+	name: string;
+	sku: string;
+	price: string;
+	isTrial: string;
+	rebillProduct: string;
+	rebillDays: string;
+	maxQuantity: string;
+	preserveRecurringQuantity: string;
+	subscriptionType: string;
+	subscriptionWeek: string;
+	subscriptionDay: string;
+	costOfGoodsSold: string;
 }
 
 export interface ILimelightApiOrder {

@@ -40,3 +40,5 @@ xunit.xml
 .nyc_output
 
 .idea
+
+.env

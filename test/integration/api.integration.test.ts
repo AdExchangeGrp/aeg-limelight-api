@@ -1,54 +1,59 @@
+import * as dotenv from 'dotenv';
 import * as should from 'should';
 import * as _ from 'lodash';
 import Api from '../../src/api';
 
-const user = '';
-const password = '';
-const client = '';
+dotenv.config();
 
-const user2 = '';
-const password2 = '';
-const client2 = '';
+const api = new Api(process.env.USERNAME, process.env.PASSWORD, process.env.CLIENT)
+.on('info', (data) => {
 
-describe('api client X', async () => {
+	console.log(data);
 
-	const api = new Api(user, password, client)
-		.on('warn', (data) => {
+})
+.on('warn', (data) => {
 
-			console.log(data);
+	console.log(data);
 
-		})
-		.on('error', (err) => {
+})
+.on('error', (err) => {
 
-			console.log(err);
+	console.log(err);
 
-		});
+});
 
-	const badApi = new Api(user, '1', client)
-		.on('warn', (data) => {
+const badApi = new Api(process.env.USERNAME, '1', process.env.CLIENT)
+.on('info', (data) => {
 
-			console.log(data);
+	console.log(data);
 
-		})
-		.on('error', (err) => {
+})
+.on('warn', (data) => {
 
-			console.log(err);
+	console.log(data);
 
-		});
+})
+.on('error', (err) => {
+
+	console.log(err);
+
+});
+
+describe('api', async () => {
 	
 	describe('#validateCredentials()', async () => {
 
 		it('should return true', async () => {
 
 			const result = await api.validateCredentials({retries: 3});
-			should(result).be.ok;
+			should(result).be.equal(true);
 
 		});
 
 		it('should return false', async () => {
 
 			const result = await badApi.validateCredentials();
-			should(result).not.be.ok;
+			should(result).be.equal(false);
 
 		});
 
@@ -63,7 +68,7 @@ describe('api client X', async () => {
 
 			_.each(result, (r) => {
 
-				should(r).have.properties('id', 'name');
+				should(r).have.properties('id', 'campaignName');
 
 			});
 
@@ -71,7 +76,24 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#getCampaign()', async () => {
+	describe('#findActiveCampaignsExpanded()', async () => {
+
+		it('should return without error', async () => {
+
+			const result = await api.findActiveCampaignsExpanded({limit: 5});
+			should(result).be.an.Array;
+
+			_.each(result, (r) => {
+
+				should(r).have.properties('id', 'campaignName');
+
+			});
+
+		});
+
+	});
+
+	describe.skip('#getCampaign()', async () => {
 
 		it('should return without error', async () => {
 
@@ -89,7 +111,7 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#findOrders()', async () => {
+	describe.skip('#findOrders()', async () => {
 
 		it('should not find orders', async () => {
 
@@ -111,7 +133,7 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#getOrder()', async () => {
+	describe.skip('#getOrder()', async () => {
 
 		it('should return without error', async () => {
 
@@ -131,7 +153,7 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#getOrders()', async () => {
+	describe.skip('#getOrders()', async () => {
 
 		it('should return without error', async () => {
 
@@ -170,7 +192,7 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#findCustomers()', async () => {
+	describe.skip('#findCustomers()', async () => {
 
 		it('should return without error', async () => {
 
@@ -192,7 +214,7 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#getCustomer()', async () => {
+	describe.skip('#getCustomer()', async () => {
 
 		it('should return without error', async () => {
 
@@ -210,7 +232,7 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#getProducts()', async () => {
+	describe.skip('#getProducts()', async () => {
 
 		it('should return without error', async () => {
 
@@ -250,7 +272,7 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#findShippingMethods()', async () => {
+	describe.skip('#findShippingMethods()', async () => {
 
 		it('should return without error', async () => {
 
@@ -263,7 +285,7 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#updateOrders()', async () => {
+	describe.skip('#updateOrders()', async () => {
 
 		it('should return without error', async () => {
 
@@ -331,7 +353,7 @@ describe('api client X', async () => {
 
 	});
 
-	describe('#findUpdatedOrders()', async () => {
+	describe.skip('#findUpdatedOrders()', async () => {
 
 		it('should return without error', async () => {
 
@@ -339,44 +361,6 @@ describe('api client X', async () => {
 			should.exist(result);
 			should(result).be.an.Array;
 			should(result.length).be.greaterThan(0);
-
-		});
-
-	});
-
-});
-
-describe('api domain X2', async () => {
-
-	const apiCrmOrderCenter = new Api(user2, password2, client2)
-		.on('warn', (data) => {
-
-			console.log(data);
-
-		})
-		.on('error', (err) => {
-
-			console.log(err);
-
-		});
-
-	describe('#updateOrders()', async () => {
-
-		it('should return voided or refunded with override codes', async () => {
-
-			const params = [
-				{
-					orderId: '9288200',
-					action: 'tracking_number',
-					value: '9400111699000069577086'
-				}
-			];
-
-			const result = await apiCrmOrderCenter.updateOrders(params, {errorCodeOverrides: [378]});
-			should(result).be.an.Array;
-			should(result.length).be.equal(1);
-			should(result[0].orderId).be.equal(9288200);
-			should(result[0].statusCode).be.equal(379);
 
 		});
 

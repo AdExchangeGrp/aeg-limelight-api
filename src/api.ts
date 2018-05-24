@@ -13,12 +13,15 @@ import {
 	ILimelightApiCampaign,
 	ILimelightApiCustomer,
 	ILimelightApiFindOrdersOptions,
+	ILimelightApiFindActiveCampaign,
+	ILimelightApiFindActiveCampaignsOptions,
 	ILimelightApiOptions,
 	ILimelightApiOrder,
 	ILimelightApiOrderProduct,
 	ILimelightApiProduct,
 	ILimelightApiShippingMethod,
 	LimelightApiFindActiveCampaignsResponse,
+	LimelightApiFindActiveCampaignsExpandedResponse,
 	LimelightApiFindCustomersResponse,
 	LimelightApiFindOrdersResponse,
 	LimelightApiFindUpdatedOrdersResponse,
@@ -292,6 +295,28 @@ export default class Api extends Base {
 
 	}
 
+	public async findActiveCampaignsExpanded (
+		options: ILimelightApiFindActiveCampaignsOptions = {}): Promise<LimelightApiFindActiveCampaignsExpandedResponse> {
+
+		let activeCampaigns = await this._findActiveCampaignsThrottle(options);
+
+		if (options.limit && options.limit > 0) {
+
+			activeCampaigns = _.take(activeCampaigns, options.limit);
+
+		}
+
+		this.emit('info', 'findActiveCampaignsExpanded', { message: 'campaigns to expand', data: { count: activeCampaigns.length } });
+
+		return BBPromise.mapSeries<ILimelightApiFindActiveCampaign, LimelightApiGetCampaignResponse>(activeCampaigns, async (activeCampaign) => {
+
+			this.emit('info', 'findActiveCampaignsExpanded', { message: 'expanding campaign', data: { id: activeCampaign.id } });
+			return this.getCampaign(activeCampaign.id);
+
+		});
+
+	}
+
 	public async getCampaign (
 		campaignId: number,
 		options: ILimelightApiOptions = {}): Promise<LimelightApiGetCampaignResponse> {
@@ -412,11 +437,11 @@ export default class Api extends Base {
 		const campaignIds = response.body.campaign_id.split(',');
 		const campaignNames = response.body.campaign_name.split(',');
 
-		return _.map(campaignIds, (id, i) => {
+		return _.sortBy(_.map(campaignIds, (id, i) => {
 
-			return {id, name: campaignNames[i]};
+			return { id: Number(id), campaignName: campaignNames[i] };
 
-		});
+		}), 'id');
 
 	}
 
@@ -436,7 +461,7 @@ export default class Api extends Base {
 				await this._apiRequest(
 					'membership',
 					'campaign_view',
-					{campaign_id: campaignId}, options);
+					{ campaign_id: campaignId }, options);
 
 			return this._cleanseCampaign(campaignId, response.body);
 
@@ -468,7 +493,7 @@ export default class Api extends Base {
 			await this._apiRequest(
 				'membership',
 				'order_view',
-				{order_id: orderId}, this._mergeOptions({errorCodeOverrides: [350]}, options));
+				{ order_id: orderId }, this._mergeOptions({ errorCodeOverrides: [350] }, options));
 
 		if (response.body.response_code === '100') {
 
@@ -503,7 +528,7 @@ export default class Api extends Base {
 			await this._apiRequest(
 				'membership',
 				'order_view',
-				{order_id: ids.join(',')}, this._mergeOptions({errorCodeOverrides: [350]}, options));
+				{ order_id: ids.join(',') }, this._mergeOptions({ errorCodeOverrides: [350] }, options));
 
 		if (result.body && result.body.data) {
 
@@ -566,10 +591,10 @@ export default class Api extends Base {
 			search_type?: string,
 			criteria?: string
 		} = {
-			campaign_id: campaignId,
-			start_date: startDate,
-			end_date: endDate
-		};
+				campaign_id: campaignId,
+				start_date: startDate,
+				end_date: endDate
+			};
 
 		if (options.criteria) {
 
@@ -614,7 +639,7 @@ export default class Api extends Base {
 		const response: IFindOrdersResponse =
 			await this._apiRequest(
 				'membership',
-				'order_find', params, this._mergeOptions({errorCodeOverrides: [333]}, options));
+				'order_find', params, this._mergeOptions({ errorCodeOverrides: [333] }, options));
 
 		if (response.apiActionResults[0].responseCode === 333) {
 
@@ -671,7 +696,7 @@ export default class Api extends Base {
 		const response =
 			await this._apiRequest(
 				'membership',
-				'order_find_updated', params, this._mergeOptions({errorCodeOverrides: [333]}, options));
+				'order_find_updated', params, this._mergeOptions({ errorCodeOverrides: [333] }, options));
 
 		if (response.apiActionResults[0].responseCode === 333) {
 
@@ -715,7 +740,7 @@ export default class Api extends Base {
 			'membership',
 			'order_update',
 			params,
-			this._mergeOptions({errorCodeOverrides: [343, 350, 379]}, options));
+			this._mergeOptions({ errorCodeOverrides: [343, 350, 379] }, options));
 
 		return _.filter(_.map(result.apiActionResults, (innerResult, i) => {
 
@@ -746,7 +771,7 @@ export default class Api extends Base {
 			await this._apiRequest(
 				'membership',
 				'customer_view',
-				{customer_id: customerId}, this._mergeOptions({errorCodeOverrides: [603]}, options));
+				{ customer_id: customerId }, this._mergeOptions({ errorCodeOverrides: [603] }, options));
 
 		if (response.body.response_code === '100') {
 
@@ -792,7 +817,7 @@ export default class Api extends Base {
 			await this._apiRequest(
 				'membership',
 				'customer_find',
-				params, this._mergeOptions({errorCodeOverrides: [604]}, options));
+				params, this._mergeOptions({ errorCodeOverrides: [604] }, options));
 
 		if (response.apiActionResults[0].responseCode === 604) {
 
@@ -822,7 +847,7 @@ export default class Api extends Base {
 			await this._apiRequest(
 				'membership',
 				'product_index',
-				{product_id: productIds.join(',')}, this._mergeOptions({errorCodeOverrides: [600]}, options));
+				{ product_id: productIds.join(',') }, this._mergeOptions({ errorCodeOverrides: [600] }, options));
 
 		if (response.body) {
 
@@ -905,7 +930,7 @@ export default class Api extends Base {
 
 			if (attempts > 1) {
 
-				self.emit('warn', `_apiRequest: ${method}`, {message: 'retry failed', data: {attempt: attempts - 1}});
+				self.emit('warn', `_apiRequest: ${method}`, { message: 'retry failed', data: { attempt: attempts - 1 } });
 
 			}
 
@@ -927,7 +952,7 @@ export default class Api extends Base {
 
 			// so it appears LL really sucks, because it uses different response codes for different api calls
 
-			const results: IResponse = {apiActionResults: [], body};
+			const results: IResponse = { apiActionResults: [], body };
 
 			if (body.response_code) {
 
@@ -976,7 +1001,7 @@ export default class Api extends Base {
 
 			} else {
 
-				self.emit('error', '_apiRequest', {message: 'Something has gone terribly wrong', data: {body}});
+				self.emit('error', '_apiRequest', { message: 'Something has gone terribly wrong', data: { body } });
 
 				results.apiActionResults.push({
 					responseCode: 500,
@@ -1005,7 +1030,7 @@ export default class Api extends Base {
 					throw LimelightApiError.createWithOne(
 						500,
 						'failed to parse result.body.data',
-						{apiRequest: requestParams});
+						{ apiRequest: requestParams });
 
 				}
 
@@ -1013,21 +1038,21 @@ export default class Api extends Base {
 
 			// not all codes are errors on all calls
 			if (_.filter(results.apiActionResults,
-					(r) => {
+				(r) => {
 
-						if (options && options.errorCodeOverrides) {
+					if (options && options.errorCodeOverrides) {
 
-							return !_.includes(options.errorCodeOverrides, r.responseCode) && r.responseCode !== 100;
+						return !_.includes(options.errorCodeOverrides, r.responseCode) && r.responseCode !== 100;
 
-						} else {
+					} else {
 
-							return r.responseCode !== 100;
+						return r.responseCode !== 100;
 
-						}
+					}
 
-					}).length) {
+				}).length) {
 
-				throw LimelightApiError.createWithArray(results.apiActionResults, {apiRequest: requestParams});
+				throw LimelightApiError.createWithArray(results.apiActionResults, { apiRequest: requestParams });
 
 			}
 
@@ -1322,7 +1347,7 @@ export default class Api extends Base {
 		return new Promise<string[]>((resolve, reject) => {
 
 			csv
-				.fromString(csvString, {ignoreEmpty: false})
+				.fromString(csvString, { ignoreEmpty: false })
 				.on('error', (ex) => {
 
 					reject(ex);

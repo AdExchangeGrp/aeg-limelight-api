@@ -1,3 +1,5 @@
+import { ICampaign } from './limelight-types';
+
 /* aeg api response types */
 
 export interface ILimelightApiOrderProduct {
@@ -193,6 +195,10 @@ export interface ILimelightApiOptions {
 	errorCodeOverrides?: number[];
 }
 
+export interface ILimelightApiFindActiveCampaignsOptions extends ILimelightApiOptions {
+	limit?: number;
+}
+
 export interface ILimelightApiFindOrdersOptions extends ILimelightApiOptions {
 	productIds?: number[];
 	customerId?: number;
@@ -212,7 +218,11 @@ export type LimelightApiUpdateOrdersRequest = ILimelightApiOrderUpdate[];
 
 /* aeg api responses */
 
-export type LimelightApiFindActiveCampaignsResponse = Array<{ id: string, name: string }>;
+export interface ILimelightApiFindActiveCampaign { id: number; campaignName: string; }
+
+export type LimelightApiFindActiveCampaignsResponse = ILimelightApiFindActiveCampaign[];
+
+export type LimelightApiFindActiveCampaignsExpandedResponse = LimelightApiGetCampaignResponse[];
 
 export type LimelightApiGetCampaignResponse = ILimelightApiCampaign | undefined;
 

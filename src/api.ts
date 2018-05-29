@@ -20,6 +20,7 @@ import {
 	ILimelightApiOrderProduct,
 	ILimelightApiProduct,
 	ILimelightApiShippingMethod,
+	ILimelightGateway,
 	LimelightApiFindActiveCampaignsResponse,
 	LimelightApiFindActiveCampaignsExpandedResponse,
 	LimelightApiFindCustomersResponse,
@@ -32,7 +33,9 @@ import {
 	LimelightApiGetProductsResponse,
 	LimelightApiShippingMethodResponse,
 	LimelightApiUpdateOrdersRequest,
-	LimelightApiUpdateOrdersResponse
+	LimelightApiUpdateOrdersResponse,
+	LimelightApiGatewayResponse,
+	LimelightApiGatewaysResponse
 } from './types/types';
 import {
 	ICampaign,
@@ -47,7 +50,12 @@ import {
 	IGetProductsResponse,
 	IOrder,
 	IProduct,
-	IResponse, IShippingMethodResponse, IShippingMethod
+	IResponse,
+	IShippingMethodResponse,
+	IShippingMethod,
+	IGatewayResponseSingular,
+	IGatewayResponsePlural,
+	IGateway
 } from './types/limelight-types';
 
 export interface IComposeApiCallResponseType {
@@ -127,6 +135,14 @@ export default class Api extends Base {
 		campaignId: string | number,
 		options?: ILimelightApiOptions) => Promise<LimelightApiShippingMethodResponse>;
 
+	private _getGatewayThrottle: (
+		gatewayId: number,
+		options?: ILimelightApiOptions) => Promise<any>;
+
+	private _getGatewaysThrottle: (
+		gatewayIds: number[],
+		options?: ILimelightApiOptions) => Promise<any>;
+
 	constructor (user: string, password: string, domain: string) {
 
 		super();
@@ -148,6 +164,8 @@ export default class Api extends Base {
 		this._findCustomersThrottle = this._sequential(this._findCustomers.bind(this));
 		this._getProductsThrottle = this._sequential(this._getProducts.bind(this));
 		this._findShippingMethodsThrottle = this._sequential(this._findShippingMethods.bind(this));
+		this._getGatewayThrottle = this._sequential(this._getGateway.bind(this));
+		this._getGatewaysThrottle = this._sequential(this._getGateways.bind(this));
 
 		this._eventEmitter
 			.on('warn', (data) => {
@@ -401,6 +419,18 @@ export default class Api extends Base {
 		options: ILimelightApiOptions = {}): Promise<LimelightApiShippingMethodResponse> {
 
 		return this._findShippingMethodsThrottle(campaignId, options);
+
+	}
+
+	public async getGateway (gatewayId: number, options: ILimelightApiOptions = {}): Promise<any> {
+
+		return this._getGatewayThrottle(gatewayId, options);
+
+	}
+
+	public async getGateways (gatewayIds: number[], options: ILimelightApiOptions = {}): Promise<any> {
+
+		return this._getGatewaysThrottle(gatewayIds, options);
 
 	}
 
@@ -885,6 +915,54 @@ export default class Api extends Base {
 
 	}
 
+	private async _getGateway (
+		gatewayId: number,
+		options: ILimelightApiOptions = {}): Promise<LimelightApiGatewayResponse> {
+
+		if (!gatewayId) {
+
+			throw LimelightApiError.createWithOne(500, '_getGateways must have gatewayId(s)');
+
+		}
+
+		const params = {
+			gateway_id: gatewayId
+		};
+
+		const response: IGatewayResponseSingular =
+			await this._apiRequest('membership', 'gateway_view', params, options);
+
+		return this._cleanseGateway(response.body);
+
+	}
+
+	private async _getGateways (
+		gatewayIds: number[],
+		options: ILimelightApiOptions = {}): Promise<LimelightApiGatewaysResponse> {
+
+		if (!gatewayIds.length) {
+
+			throw LimelightApiError.createWithOne(500, '_getGateways must have gatewayId(s)');
+
+		}
+
+		const ids = gatewayIds.join(',');
+
+		const params = {
+			gateway_id: ids
+		};
+
+		const response: IGatewayResponsePlural =
+			await this._apiRequest('membership', 'gateway_view', params, options);
+
+		return _.map(Object.keys(response.body.data), (key) => {
+
+			return this._cleanseGateway(response.body.data[key]);
+
+		});
+
+	}
+
 	private _composeApiCall (
 		apiType: string,
 		method: string,
@@ -1059,6 +1137,28 @@ export default class Api extends Base {
 			return results;
 
 		}
+
+	}
+
+	private _cleanseGateway (gateway: IGateway): ILimelightGateway {
+
+		return {
+			id: Number(gateway.gateway_id),
+			type: gateway.gateway_type,
+			provider: gateway.gateway_provider,
+			alias: gateway.gateway_alias,
+			created: gateway.gateway_created,
+			active: gateway.gateway_active === '1',
+			globalMonthlyCap: Number(gateway.global_monthly_cap),
+			monthlySales: Number(gateway.monthly_sales),
+			processingPercent: Number(gateway.processing_percent),
+			reservePercent: Number(gateway.reserve_percent),
+			transactionFee: Number(gateway.transaction_fee),
+			chargebackFee: Number(gateway.chargeback_fee),
+			descriptor: gateway.gateway_descriptor,
+			customerServiceNumber: gateway.customer_service_number,
+			currency: gateway.gateway_currency
+		};
 
 	}
 

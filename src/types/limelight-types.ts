@@ -185,6 +185,24 @@ export interface IShippingMethod {
 	subscription_amount: string;
 }
 
+export interface IGateway {
+	gateway_id: string;
+	gateway_type: string;
+	gateway_provider: string;
+	gateway_alias: string;
+	gateway_created: string;
+	gateway_active: string;
+	global_monthly_cap: string;
+	monthly_sales: string;
+	processing_percent: string;
+	reserve_percent: string;
+	transaction_fee: string;
+	chargeback_fee: string;
+	gateway_descriptor: string;
+	customer_service_number: string;
+	gateway_currency: string;
+}
+
 /* limelight api raw responses */
 
 export interface IActionResult {
@@ -276,6 +294,27 @@ export interface IShippingMethodResponse {
 		shipping_ids: string;
 		data: {
 			[key: string]: IShippingMethod
+		}
+	};
+}
+
+export interface IGatewayResponseSingular {
+	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
+	body: {
+		response_code: string;
+		total_gateways: string;
+		gateway_ids: string;
+	} & IGateway;
+}
+
+export interface IGatewayResponsePlural {
+	apiActionResults: Array<{ responseCode: number; responseCodeDesc: string }>;
+	body: {
+		response_code: string;
+		total_gateways: string;
+		gateway_ids: string;
+		data: {
+			[key: string]: IGateway
 		}
 	};
 }

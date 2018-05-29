@@ -9,6 +9,7 @@ import * as EventEmitter from 'events';
 import * as csv from 'fast-csv';
 import * as BBPromise from 'bluebird';
 import * as moment from 'moment';
+import * as chunk from 'chunk';
 import {
 	ILimelightApiCampaign,
 	ILimelightApiCustomer,
@@ -20,7 +21,7 @@ import {
 	ILimelightApiOrderProduct,
 	ILimelightApiProduct,
 	ILimelightApiShippingMethod,
-	ILimelightGateway,
+	ILimelightApiGateway,
 	LimelightApiFindActiveCampaignsResponse,
 	LimelightApiFindActiveCampaignsExpandedResponse,
 	LimelightApiFindCustomersResponse,
@@ -948,18 +949,26 @@ export default class Api extends Base {
 
 		const ids = gatewayIds.join(',');
 
-		const params = {
-			gateway_id: ids
-		};
+		const chunks = chunk(ids, 50);
 
-		const response: IGatewayResponsePlural =
-			await this._apiRequest('membership', 'gateway_view', params, options);
+		return BBPromise.reduce<string[], ILimelightApiGateway[]>(chunks, async (memo, chunkIds) => {
 
-		return _.map(Object.keys(response.body.data), (key) => {
+			const params = {
+				gateway_id: chunkIds
+			};
 
-			return this._cleanseGateway(response.body.data[key]);
+			const response: IGatewayResponsePlural =
+				await this._apiRequest('membership', 'gateway_view', params, options);
 
-		});
+			memo.push(...(_.map(Object.keys(response.body.data), (key) => {
+
+				return this._cleanseGateway(response.body.data[key]);
+
+			})));
+
+			return memo;
+
+		}, []);
 
 	}
 
@@ -1140,7 +1149,7 @@ export default class Api extends Base {
 
 	}
 
-	private _cleanseGateway (gateway: IGateway): ILimelightGateway {
+	private _cleanseGateway (gateway: IGateway): ILimelightApiGateway {
 
 		return {
 			id: Number(gateway.gateway_id),

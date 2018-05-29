@@ -184,7 +184,7 @@ export interface ILimelightApiShippingMethod {
 	subscriptionAmount: string;
 }
 
-export interface ILimelightGateway {
+export interface ILimelightApiGateway {
 	id: number;
 	type: string;
 	provider: string;
@@ -265,6 +265,6 @@ export interface ILimelightApiUpdateOrdersResult {
 
 export type LimelightApiUpdateOrdersResponse = ILimelightApiUpdateOrdersResult[];
 
-export type LimelightApiGatewayResponse = ILimelightGateway;
+export type LimelightApiGatewayResponse = ILimelightApiGateway;
 
-export type LimelightApiGatewaysResponse = ILimelightGateway[];
+export type LimelightApiGatewaysResponse = ILimelightApiGateway[];

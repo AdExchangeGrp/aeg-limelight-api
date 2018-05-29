@@ -438,6 +438,10 @@ chokidar@~1.6.0:
   optionalDependencies:
     fsevents "^1.0.0"
 
+chunk@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/chunk/-/chunk-0.0.2.tgz#04aa4f31664ae850de500cf8d57b5f4c29cd522e"
+
 cliui@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/cliui/-/cliui-2.1.0.tgz#4b475760ff80264c762c3a1719032e91c7fea0d1"

@@ -1,4 +1,4 @@
-import { ICampaign } from './limelight-types';
+import { ICampaign, IGateway } from './limelight-types';
 
 /* aeg api response types */
 
@@ -184,6 +184,24 @@ export interface ILimelightApiShippingMethod {
 	subscriptionAmount: string;
 }
 
+export interface ILimelightGateway {
+	id: number;
+	type: string;
+	provider: string;
+	alias: string;
+	created: string;
+	active: boolean;
+	globalMonthlyCap: number;
+	monthlySales: number;
+	processingPercent: number;
+	reservePercent: number;
+	transactionFee: number;
+	chargebackFee: number;
+	descriptor: string;
+	customerServiceNumber: string;
+	currency: string;
+}
+
 /* aeg api requests */
 
 export interface ILimelightApiOptions {
@@ -246,3 +264,7 @@ export interface ILimelightApiUpdateOrdersResult {
 }
 
 export type LimelightApiUpdateOrdersResponse = ILimelightApiUpdateOrdersResult[];
+
+export type LimelightApiGatewayResponse = ILimelightGateway;
+
+export type LimelightApiGatewaysResponse = ILimelightGateway[];

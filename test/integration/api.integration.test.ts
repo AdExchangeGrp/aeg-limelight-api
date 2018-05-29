@@ -350,4 +350,27 @@ describe('api', async () => {
 
 	});
 
+	describe('#getGateway()', async () => {
+
+		it('should return true', async () => {
+
+			const result = await api.getGateway(100);
+			should.exist(result);
+
+		});
+
+	});
+
+	describe('#getGateways()', async () => {
+
+		it('should return true', async () => {
+
+			const result = await api.getGateways([100, 101, 102, 99]);
+			should.exist(result);
+			should(result.length).be.equal(3);
+
+		});
+
+	});
+
 });

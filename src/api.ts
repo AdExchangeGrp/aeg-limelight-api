@@ -138,11 +138,11 @@ export default class Api extends Base {
 
 	private _getGatewayThrottle: (
 		gatewayId: number,
-		options?: ILimelightApiOptions) => Promise<any>;
+		options?: ILimelightApiOptions) => Promise<LimelightApiGatewayResponse>;
 
 	private _getGatewaysThrottle: (
 		gatewayIds: number[],
-		options?: ILimelightApiOptions) => Promise<any>;
+		options?: ILimelightApiOptions) => Promise<LimelightApiGatewaysResponse>;
 
 	constructor (user: string, password: string, domain: string) {
 
@@ -423,13 +423,13 @@ export default class Api extends Base {
 
 	}
 
-	public async getGateway (gatewayId: number, options: ILimelightApiOptions = {}): Promise<any> {
+	public async getGateway (gatewayId: number, options: ILimelightApiOptions = {}): Promise<LimelightApiGatewayResponse> {
 
 		return this._getGatewayThrottle(gatewayId, options);
 
 	}
 
-	public async getGateways (gatewayIds: number[], options: ILimelightApiOptions = {}): Promise<any> {
+	public async getGateways (gatewayIds: number[], options: ILimelightApiOptions = {}): Promise<LimelightApiGatewaysResponse> {
 
 		return this._getGatewaysThrottle(gatewayIds, options);
 

@@ -138,11 +138,11 @@ export default class Api extends Base {
 
 	private _getGatewayThrottle: (
 		gatewayId: number,
-		options?: ILimelightApiOptions) => Promise<any>;
+		options?: ILimelightApiOptions) => Promise<LimelightApiGatewayResponse>;
 
 	private _getGatewaysThrottle: (
 		gatewayIds: number[],
-		options?: ILimelightApiOptions) => Promise<any>;
+		options?: ILimelightApiOptions) => Promise<LimelightApiGatewaysResponse>;
 
 	constructor (user: string, password: string, domain: string) {
 
@@ -327,12 +327,23 @@ export default class Api extends Base {
 
 		this.emit('info', 'findActiveCampaignsExpanded', { message: 'campaigns to expand', data: { count: activeCampaigns.length } });
 
-		return BBPromise.mapSeries<ILimelightApiFindActiveCampaign, LimelightApiGetCampaignResponse>(activeCampaigns, async (activeCampaign) => {
+		return BBPromise.reduce<ILimelightApiFindActiveCampaign, LimelightApiGetCampaignResponse[]>(activeCampaigns, async (memo, activeCampaign) => {
 
 			this.emit('info', 'findActiveCampaignsExpanded', { message: 'expanding campaign', data: { id: activeCampaign.id } });
-			return this.getCampaign(activeCampaign.id);
 
-		});
+			try {
+
+				memo.push(await this.getCampaign(activeCampaign.id));
+
+			} catch (ex) {
+
+				this.emit('warn', 'findActiveCampaignsExpanded', { message: 'could not expand campaign', data: { id: activeCampaign.id, ex } });
+
+			}
+
+			return memo;
+
+		}, []);
 
 	}
 
@@ -423,13 +434,13 @@ export default class Api extends Base {
 
 	}
 
-	public async getGateway (gatewayId: number, options: ILimelightApiOptions = {}): Promise<any> {
+	public async getGateway (gatewayId: number, options: ILimelightApiOptions = {}): Promise<LimelightApiGatewayResponse> {
 
 		return this._getGatewayThrottle(gatewayId, options);
 
 	}
 
-	public async getGateways (gatewayIds: number[], options: ILimelightApiOptions = {}): Promise<any> {
+	public async getGateways (gatewayIds: number[], options: ILimelightApiOptions = {}): Promise<LimelightApiGatewaysResponse> {
 
 		return this._getGatewaysThrottle(gatewayIds, options);
 

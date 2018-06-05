@@ -327,12 +327,23 @@ export default class Api extends Base {
 
 		this.emit('info', 'findActiveCampaignsExpanded', { message: 'campaigns to expand', data: { count: activeCampaigns.length } });
 
-		return BBPromise.mapSeries<ILimelightApiFindActiveCampaign, LimelightApiGetCampaignResponse>(activeCampaigns, async (activeCampaign) => {
+		return BBPromise.reduce<ILimelightApiFindActiveCampaign, LimelightApiGetCampaignResponse[]>(activeCampaigns, async (memo, activeCampaign) => {
 
 			this.emit('info', 'findActiveCampaignsExpanded', { message: 'expanding campaign', data: { id: activeCampaign.id } });
-			return this.getCampaign(activeCampaign.id);
 
-		});
+			try {
+
+				memo.push(await this.getCampaign(activeCampaign.id));
+
+			} catch (ex) {
+
+				this.emit('warn', 'findActiveCampaignsExpanded', { message: 'could not expand campaign', data: { id: activeCampaign.id, ex } });
+
+			}
+
+			return memo;
+
+		}, []);
 
 	}
 

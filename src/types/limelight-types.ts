@@ -1,5 +1,3 @@
-// @flow
-
 /* limelight api response types */
 
 export interface IOrderProduct {
